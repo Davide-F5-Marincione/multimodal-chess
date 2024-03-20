@@ -6,7 +6,7 @@ import config as cfg
 window = tk.Tk()
 window.title("Test")
 # window.attributes('-fullscreen', True)
-window.configure(bg=cfg.colors["background"], bd=0, highlightthickness=0, cursor="cross_reverse")
+window.configure(bg=cfg.colors["background"], bd=0, highlightthickness=0)
 window.geometry("800x800")
 
 square_size = 70
