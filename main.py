@@ -5,14 +5,14 @@ import config as cfg
 # Create the main window
 window = tk.Tk()
 window.title("Test")
-# window.attributes('-fullscreen', True)
+window.attributes('-fullscreen', True)
 window.configure(bg=cfg.colors["background"], bd=0, highlightthickness=0)
-window.geometry("800x800")
+# window.geometry("800x800")
 
 square_size = 70
 
 # Setup drawing of chess board
-canvas = tk.Canvas(master=window, bg=cfg.colors["background"], bd=0, highlightthickness=0, width=8*square_size, height=8*square_size)
+canvas = tk.Canvas(master=window, bg=cfg.colors["background"], offset="nw", bd=0, highlightthickness=0, width=8*square_size, height=8*square_size)
 
 svg_board = f"<svg width=\"{8*square_size}\" height=\"{8*square_size}\">"
 for i in range(8):
@@ -24,8 +24,10 @@ for i in range(8):
 svg_board += "</svg>"
 
 board_image = tksvg.SvgImage(master=canvas, data=svg_board)
-canvas.create_image(0, 0, image=board_image, anchor="nw")
-canvas.pack()
+canvas.create_image((0, 0), image=board_image, anchor="nw")
+
+# Figured out how to position stuff yaaaaaaay!
+canvas.pack(side="top", fill="both", expand=True, padx=0, pady=0)
 
 # Run the main event loop
 window.mainloop()
