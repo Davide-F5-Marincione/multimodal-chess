@@ -50,19 +50,22 @@ class Board(Drawable):
         self.img = pygame.image.load(io.BytesIO(utils.make_svg_board(square_size).encode()))
 
         self.pieces = []
-        self.pieces.append(Piece(drawer, square_size//2, square_size//2, self))
+        for i in range(8):
+            for j in range(8):
+                if (i+j) % 2 == 0:
+                    self.pieces.append(Piece(drawer, i*square_size, j*square_size, self, square_size))
 
     def draw(self, screen):
         screen.blit(self.img, (self.abs_x, self.abs_y))
 
 class Piece(Drawable):
-    def __init__(self, drawer, x, y, board_parent, piece_type="lp"):
+    def __init__(self, drawer, x, y, board_parent, piece_size, piece_type="lp"):
         super().__init__(drawer, x, y, board_parent)
         self.piece_type = piece_type
-        self.img = pygame.image.load("resources/" + piece_type + ".svg")
+        self.img = pygame.image.load(io.BytesIO(utils.make_svg_piece(piece_type, piece_size).encode()))
 
     def draw(self, screen):
-        screen.blit(self.img, (self.abs_x, self.abs_x))
+        screen.blit(self.img, (self.abs_x, self.abs_y))
 
 class Drawer:
     def __init__(self, width, height):
