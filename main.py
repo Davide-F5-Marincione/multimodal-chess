@@ -15,18 +15,24 @@ WIDTH, HEIGHT = 800, 800
 
 # Create the screen
 drawer = objects.Drawer(WIDTH, HEIGHT)
+clicker = objects.Clicker()
 
-objects.Board(drawer, 10, 10, 70)
+objects.Board(drawer, clicker, 10, 10)
 
 # Main loop
 pygame.mouse.set_visible(False)
 running = True
 while running:
+    
+    x,y = pygame.mouse.get_pos()
+    clicker.highlight(x,y)
     for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            clicker.find_clicked()
         if event.type == pygame.QUIT:
             running = False
 
-    drawer.step()
+    drawer.step(x,y)
 
 # Quit Pygame
 pygame.quit()
