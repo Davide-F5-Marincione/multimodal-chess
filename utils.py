@@ -18,8 +18,8 @@ def make_svg_piece(piece_type, piece_size = 70):
     with open(f"resources/{piece_type}.svg") as f:
         svg_piece = f.read()
 
-    svg_piece = svg_piece.replace("<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"45\" height=\"45\">",
-                                  f"<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"{piece_size}\" height=\"{piece_size}\" transform=\"scale({piece_size/45})\">")
+    svg_piece = svg_piece.replace("width=\"45\" height=\"45\"",
+                                  f"width=\"{piece_size}\" height=\"{piece_size}\" transform=\"scale({piece_size/45})\"")
 
     return svg_piece
 

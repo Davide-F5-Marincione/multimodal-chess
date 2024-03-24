@@ -1,4 +1,5 @@
 import pygame
+import chess
 import io
 
 import config as cfg
@@ -70,9 +71,8 @@ class Clickable(Drawable):
         pass
 
 
-
 NOTATION = dict(
-    pawn = "",
+    pawn = "P",
     knight = "N",
     bishop = "B",
     rook = "R",
@@ -90,12 +90,11 @@ SQUARE_SURFACE.set_alpha(cfg.SQUARES_ALPHA)
 This class represents a square on the board.
 """
 class Square(Clickable):
-    def __init__(self, drawer, x, y, board_parent, clicker, rank, file, curr_piece=""):
+    def __init__(self, drawer, x, y, board_parent, clicker, file, rank, curr_piece=""):
         super().__init__(drawer, x, y, board_parent, clicker, (cfg.SQUARE_SIZE, cfg.SQUARE_SIZE))
         self.draw_state = None
 
-        self.rank = rank
-        self.file = file
+        self.repr = file, rank
         self.curr_piece = curr_piece
 
     def draw(self, screen):
@@ -118,62 +117,77 @@ class Square(Clickable):
             screen.blit(PIECE_IMAGES[self.curr_piece], (self.abs_x, self.abs_y))
 
     def click(self):
-        self.parent._square_clicked(self.rank, self.file)
+        self.parent._square_clicked(*self.repr)
 
 
 """
 This class represents the board.
 """
 class Board(Drawable):
-    def __init__(self, drawer, clicker, x, y):
+    def __init__(self, drawer, clicker, x, y, starting_fen=None):
         super().__init__(drawer, x, y)
 
         self.currently_selected = None
 
         self.squares = []
-        for rank in range(8):
-            for file in range(8):
-                self.squares.append(Square(drawer, file*cfg.SQUARE_SIZE, (7 - rank)*cfg.SQUARE_SIZE, self, clicker, 7-rank, file))
+        for file in range(8):
+            for rank in range(8):
+                self.squares.append(Square(drawer, file*cfg.SQUARE_SIZE, rank*cfg.SQUARE_SIZE, self, clicker, file, 7-rank))
 
-        self.squares[11].curr_piece = "w" + NOTATION["pawn"]
+        if starting_fen:
+            self.board = chess.Board(starting_fen)
+        else:
+            self.board = chess.Board()
+
+        self._update_board()
+
+    def _update_board(self):
+        for this_square in self.squares:
+            square = chess.square(*this_square.repr)
+            piece = self.board.piece_at(square)
+            this_square.curr_piece = "" if piece is None else ("w" if piece.color else "b") + piece.symbol().upper()
 
     def draw(self, screen):
         screen.blit(BOARD_IMAGE, (self.abs_x, self.abs_y))
 
-    def get_square(self, rank, file):
-        return self.squares[(7-rank)*8 + file]
+    def get_square(self, file, rank):
+        return self.squares[file*8 + (7-rank)]
 
-    def _square_clicked(self, rank, file):
-        square = self.get_square(rank, file)
-
-        if square == self.currently_selected:
+    def _square_clicked(self, file, rank):
+        if (file, rank) == self.currently_selected:
             self._deselect_square()
             return
         
         if self.currently_selected:
-            self._move_piece(rank, file)
+            self._move_piece(file, rank)
         else:
-            self._select_square(rank, file)
+            self._select_square(file, rank)
 
-    def _select_square(self, rank, file):
-        square = self.get_square(rank, file)
+    def _select_square(self, file, rank):
+        square = self.get_square(file, rank)
         if square.curr_piece == "":
             return
         square.draw_state = "selected"
-        self.currently_selected = square
+        self.currently_selected = file, rank
 
     def _deselect_square(self):
-        self.currently_selected.draw_state = None
+        self.get_square(*self.currently_selected).draw_state = None
         self.currently_selected = None
 
-    def _move_piece(self, rank, file):
-        from_square = self.currently_selected
-        to_square = self.get_square(rank, file)
-
-        to_square.curr_piece = from_square.curr_piece
-        from_square.curr_piece = ""
+    def _move_piece(self, file, rank):
+        self.board.push(chess.Move(chess.square(*self.currently_selected), chess.square(file, rank)))
 
         self._deselect_square()
+        self._update_board()
+        
+    # def _move_piece(self, file, rank):
+    #     from_square = self.get_square(*self.currently_selected)
+    #     to_square = self.get_square(file, rank)
+
+    #     to_square.curr_piece = from_square.curr_piece
+    #     from_square.curr_piece = ""
+
+    #     self._deselect_square()
 
 
 """
