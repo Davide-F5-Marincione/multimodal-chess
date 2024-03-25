@@ -214,14 +214,11 @@ class Board(Drawable):
 
                 # Castling highlight
                 if self.board.piece_at(square_code).piece_type == chess.KING:
-                    if move.to_square == chess.G1:
-                        self.get_square(chess.F1).draw_state = "moveable"
-                    elif move.to_square == chess.C1:
-                        self.get_square(chess.D1).draw_state = "moveable"
-                    elif move.to_square == chess.G8:
-                        self.get_square(chess.F8).draw_state = "moveable"
-                    elif move.to_square == chess.C8:
-                        self.get_square(chess.D8).draw_state = "moveable"
+                    match move.to_square:
+                        case chess.G1: self.get_square(chess.F1).draw_state = "moveable"
+                        case chess.C1: self.get_square(chess.D1).draw_state = "moveable"
+                        case chess.G8: self.get_square(chess.F8).draw_state = "moveable"
+                        case chess.C8: self.get_square(chess.D8).draw_state = "moveable"
 
     def deselect_square(self):
         for square in self.gui_squares:
@@ -259,16 +256,20 @@ class GUISquare(Clickable):
             SQUARE_SURFACE.fill(cfg.colors["highlight"])
             screen.blit(SQUARE_SURFACE, self.abs_pos)
 
-        match self.draw_state:
-            case "selected":
-                SQUARE_SURFACE.fill(cfg.colors["selected"])
-                screen.blit(SQUARE_SURFACE, self.abs_pos)
-            case "moveable":
-                SQUARE_SURFACE.fill(cfg.colors["moveable"])
-                screen.blit(SQUARE_SURFACE, self.abs_pos)
-            case "danger":
-                SQUARE_SURFACE.fill(cfg.colors["danger"])
-                screen.blit(SQUARE_SURFACE, self.abs_pos)
+        if self.draw_state:
+            SQUARE_SURFACE.fill(cfg.colors[self.draw_state])
+            screen.blit(SQUARE_SURFACE, self.abs_pos)
+
+        # match self.draw_state:
+        #     case "selected":
+        #         SQUARE_SURFACE.fill(cfg.colors["selected"])
+        #         screen.blit(SQUARE_SURFACE, self.abs_pos)
+        #     case "moveable":
+        #         SQUARE_SURFACE.fill(cfg.colors["moveable"])
+        #         screen.blit(SQUARE_SURFACE, self.abs_pos)
+        #     case "danger":
+        #         SQUARE_SURFACE.fill(cfg.colors["danger"])
+        #         screen.blit(SQUARE_SURFACE, self.abs_pos)
         
         if self.piece_code > 0:
             screen.blit(PIECE_IMAGES[self.piece_code], self.abs_pos)
