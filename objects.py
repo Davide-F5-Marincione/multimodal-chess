@@ -1,3 +1,4 @@
+from typing import *
 import pygame
 import chess
 import io
@@ -5,57 +6,118 @@ import io
 import config as cfg
 import utils
 
+
 """
 This class is the base class for all objects in the game.
 It has a parent-child relationship with other objects.
 """
 class Object:
-    def __init__(self, x, y, parent=None):
+    def __init__(self, rel_pos: Tuple[int, int], parent:Self=None):
         self.parent = parent
         self.parent.children.append(self) if parent else None
         self.children = []
 
-        self.set_rel_pos(x, y)
+        self.set_rel_pos(rel_pos)
 
-    def set_rel_pos(self, x, y):
-        self.rel_x = x
-        self.rel_y = y
+    def set_rel_pos(self, rel_pos: Tuple[int, int]):
+        self.rel_pos = rel_pos
         
         if self.parent:
-            x,y = self.parent.get_abs_pos()
-            self.abs_x = x + self.rel_x
-            self.abs_y = y + self.rel_y
+            rel_pos = self.parent.get_abs_pos()
+            self.abs_pos = rel_pos[0] + self.rel_pos[0], rel_pos[1] + self.rel_pos[1]
         else:
-            self.abs_x = self.rel_x
-            self.abs_y = self.rel_y
+            self.abs_pos = self.rel_pos
 
         for child in self.children:
-            child.set_rel_pos(*child.get_rel_pos())
+            child.set_rel_pos(child.get_rel_pos())
     
     def get_rel_pos(self):
-        return self.rel_x, self.rel_y
+        return self.rel_pos
     
     def get_abs_pos(self):
-        return self.abs_x, self.abs_y
+        return self.abs_pos
+
+"""
+This class represents a drawer that draws objects on the screen.
+"""
+class Drawer:
+    def __init__(self, size: Tuple[int, int]):
+        self.size = size
+        self.screen = pygame.display.set_mode(size)
+        self.screen.fill(cfg.colors["background"])
+
+        self.drawables = []
+
+        self.cursor_mask = utils.plus_cursor_mask(cfg.cursor["size"], cfg.cursor["bottom"], cfg.cursor["top"])[:, :, None]
+
+    def step(self, cursor_pos: Tuple[int, int]):
+        for drawable in self.drawables:
+            drawable.draw(self.screen)
+
+        cursor_pos = cursor_pos[0] - cfg.cursor["offset"], cursor_pos[1] - cfg.cursor["offset"]
+
+        # Capture the area under the cursor
+        area = pygame.Surface((cfg.cursor["size"], cfg.cursor["size"]))
+        area.blit(self.screen, (0, 0), (*cursor_pos, cfg.cursor["size"], cfg.cursor["size"]))
+
+        # Convert the surface to a numpy array and make the colors contrasting
+        inverted_pixels = self.cursor_mask + pygame.surfarray.array3d(area)
+
+        # Convert the inverted array back to a surface and blit it to the screen
+        inverted_area = pygame.surfarray.make_surface(inverted_pixels)
+        self.screen.blit(inverted_area, cursor_pos)
+
+        # Update the display
+        pygame.display.flip()
+
+        # Reset colors
+        self.screen.blit(area, cursor_pos)
+
 
 """
 This class is the base class for all drawable objects in the game.
 """
 class Drawable(Object):
-    def __init__(self, drawer, x, y, parent=None):
-        super().__init__(x, y, parent)
+    def __init__(self, drawer: Drawer, rel_pos: Tuple[int, int], parent: Object=None):
+        super().__init__(rel_pos, parent)
 
         drawer.drawables.append(self)
 
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface):
         pass
+
+
+"""
+This class is responsible for colliding clicks to objects.
+"""
+class Clicker:
+    def __init__(self):
+        self.clickables = []
+        self.curr_clickable = []
+
+    def highlight(self, cursor_pos: Tuple[int, int]):
+        # Should be done with a quadtree (?)
+        self.curr_clickable.clear()
+        for clickable in self.clickables:
+            left, top = clickable.abs_pos[0], clickable.abs_pos[1]
+            right, bottom = left + clickable.rect[0], top + clickable.rect[1]
+
+            if left <= cursor_pos[0] <= right and top <= cursor_pos[1] <= bottom:
+                clickable.enable_highlight()
+                self.curr_clickable.append(clickable)
+            else:
+                clickable.disable_highlight()
+
+    def find_clicked(self):
+        for clickable in self.curr_clickable:
+            clickable.click()    
 
 """
 This class is the base class for all clickable objects in the game.
 """
 class Clickable(Drawable):
-    def __init__(self, drawer, x, y, parent, clicker, rect):
-        super().__init__(drawer, x, y, parent)
+    def __init__(self, drawer: Drawer, clicker: Clicker, rel_pos: Tuple[int, int], rect: Tuple[int, int], parent: Object=None):
+        super().__init__(drawer, rel_pos, parent)
         self.rect = rect
         self.is_highlighted = False
 
@@ -80,174 +142,136 @@ NOTATION = dict(
     king = "K"
 )
 
-PIECE_IMAGES = {side + name: pygame.image.load(io.BytesIO(utils.make_svg_piece(side + name, cfg.SQUARE_SIZE).encode())) for side in "bw" for name in NOTATION.values()}
+PIECE_IMAGES = [None] + [pygame.image.load(io.BytesIO(utils.make_svg_piece(side + name, cfg.SQUARE_SIZE).encode())) for side in "bw" for name in NOTATION.values()]
 BOARD_IMAGE = pygame.image.load(io.BytesIO(utils.make_svg_board(cfg.SQUARE_SIZE).encode()))
 
 SQUARE_SURFACE = pygame.Surface((cfg.SQUARE_SIZE, cfg.SQUARE_SIZE))
 SQUARE_SURFACE.set_alpha(cfg.SQUARES_ALPHA)
 
 """
-This class represents a square on the board.
-"""
-class Square(Clickable):
-    def __init__(self, drawer, x, y, board_parent, clicker, file, rank, curr_piece=""):
-        super().__init__(drawer, x, y, board_parent, clicker, (cfg.SQUARE_SIZE, cfg.SQUARE_SIZE))
-        self.draw_state = None
-
-        self.repr = file, rank
-        self.curr_piece = curr_piece
-
-    def draw(self, screen):
-        if self.is_highlighted:
-            SQUARE_SURFACE.fill(cfg.colors["highlight"])
-            screen.blit(SQUARE_SURFACE, (self.abs_x, self.abs_y))
-
-        match self.draw_state:
-            case "selected":
-                SQUARE_SURFACE.fill(cfg.colors["selected"])
-                screen.blit(SQUARE_SURFACE, (self.abs_x, self.abs_y))
-            case "moveable":
-                SQUARE_SURFACE.fill(cfg.colors["moveable"])
-                screen.blit(SQUARE_SURFACE, (self.abs_x, self.abs_y))
-            case "danger":
-                SQUARE_SURFACE.fill(cfg.colors["danger"])
-                screen.blit(SQUARE_SURFACE, (self.abs_x, self.abs_y))
-        
-        if len(self.curr_piece) > 0:
-            screen.blit(PIECE_IMAGES[self.curr_piece], (self.abs_x, self.abs_y))
-
-    def click(self):
-        self.parent._square_clicked(*self.repr)
-
-
-"""
 This class represents the board.
 """
 class Board(Drawable):
-    def __init__(self, drawer, clicker, x, y, starting_fen=None):
-        super().__init__(drawer, x, y)
+    def __init__(self, drawer: Drawer, clicker: Clicker, rel_pos: Tuple[int, int], starting_fen: str=None):
+        super().__init__(drawer, rel_pos)
 
         self.currently_selected = None
 
-        self.squares = []
+        self.gui_squares = [None] * 64
         for file in range(8):
             for rank in range(8):
-                self.squares.append(Square(drawer, file*cfg.SQUARE_SIZE, rank*cfg.SQUARE_SIZE, self, clicker, file, 7-rank))
+                square_code = chess.square(file, (7-rank))
+                self.gui_squares[square_code] = GUISquare(drawer, clicker, (file*cfg.SQUARE_SIZE, rank*cfg.SQUARE_SIZE), self, square_code, piece_code=0)
 
         if starting_fen:
             self.board = chess.Board(starting_fen)
         else:
             self.board = chess.Board()
 
-        self._update_board()
+        self.update_board()
 
-    def _update_board(self):
-        for this_square in self.squares:
-            square = chess.square(*this_square.repr)
-            piece = self.board.piece_at(square)
-            this_square.curr_piece = "" if piece is None else ("w" if piece.color else "b") + piece.symbol().upper()
+    def update_board(self):
+        for square in self.gui_squares:
+            if piece := self.board.piece_at(square.square_code):
+                square.piece_code = piece.color * 6 + piece.piece_type
+            else:
+                square.piece_code = 0
 
-    def draw(self, screen):
-        screen.blit(BOARD_IMAGE, (self.abs_x, self.abs_y))
+        if self.board.is_check():
+            self.get_square(self.board.king(self.board.turn)).draw_state = "danger"
 
-    def get_square(self, file, rank):
-        return self.squares[file*8 + (7-rank)]
+    def draw(self, screen: pygame.Surface):
+        screen.blit(BOARD_IMAGE, self.abs_pos)
 
-    def _square_clicked(self, file, rank):
-        if (file, rank) == self.currently_selected:
-            self._deselect_square()
-            return
-        
+    def get_square(self, square_code: int):
+        return self.gui_squares[square_code]
+
+    def square_clicked(self, square_code: int):
         if self.currently_selected:
-            self._move_piece(file, rank)
+            is_legal = False
+            for move in self.board.legal_moves:
+                if move.from_square == self.currently_selected and move.to_square == square_code:
+                    is_legal = True
+                    break
+            
+            if is_legal:
+                self.move_piece(square_code)
+            else:
+                self.deselect_square()
         else:
-            self._select_square(file, rank)
+            self.select_square(square_code)
 
-    def _select_square(self, file, rank):
-        square = self.get_square(file, rank)
-        if square.curr_piece == "":
+    def select_square(self, square_code: int):
+        gui_square = self.get_square(square_code)
+        if gui_square.piece_code == 0 or (gui_square.piece_code > 6) != self.board.turn:
             return
-        square.draw_state = "selected"
-        self.currently_selected = file, rank
+        gui_square.draw_state = "selected"
+        self.currently_selected = square_code
 
-    def _deselect_square(self):
-        self.get_square(*self.currently_selected).draw_state = None
+        for move in self.board.legal_moves:
+            if move.from_square == square_code:
+                self.get_square(move.to_square).draw_state = "moveable"
+
+                # Castling highlight
+                if self.board.piece_at(square_code).piece_type == chess.KING:
+                    if move.to_square == chess.G1:
+                        self.get_square(chess.F1).draw_state = "moveable"
+                    elif move.to_square == chess.C1:
+                        self.get_square(chess.D1).draw_state = "moveable"
+                    elif move.to_square == chess.G8:
+                        self.get_square(chess.F8).draw_state = "moveable"
+                    elif move.to_square == chess.C8:
+                        self.get_square(chess.D8).draw_state = "moveable"
+
+    def deselect_square(self):
+        for square in self.gui_squares:
+            square.draw_state = None
+
+        # Check if the king is in check
+        if self.board.is_check():
+            self.get_square(self.board.king(self.board.turn)).draw_state = "danger"
+
         self.currently_selected = None
 
-    def _move_piece(self, file, rank):
-        self.board.push(chess.Move(chess.square(*self.currently_selected), chess.square(file, rank)))
+    def move_piece(self, square_code: int):
+        if self.board.piece_at(self.currently_selected).piece_type == chess.PAWN and (chess.square_rank(square_code) == 0 or chess.square_rank(square_code) == 7):
+            # Add a way to choose the promotion piece
+            self.board.push(chess.Move(self.currently_selected, square_code, promotion=chess.QUEEN))
+        else:
+            self.board.push(chess.Move(self.currently_selected, square_code))
 
-        self._deselect_square()
-        self._update_board()
+        self.deselect_square()
+        self.update_board()
+
+"""
+This class represents a square on the board.
+"""
+class GUISquare(Clickable):
+    def __init__(self, drawer: Drawer, clicker: Clicker, rel_pos: Tuple[int, int], board_parent: Board, square_code: int, piece_code: int=0):
+        super().__init__(drawer, clicker, rel_pos, (cfg.SQUARE_SIZE, cfg.SQUARE_SIZE), board_parent)
+        self.draw_state = None
+
+        self.square_code = square_code
+        self.piece_code = piece_code
+
+    def draw(self, screen: pygame.Surface):
+        if self.is_highlighted:
+            SQUARE_SURFACE.fill(cfg.colors["highlight"])
+            screen.blit(SQUARE_SURFACE, self.abs_pos)
+
+        match self.draw_state:
+            case "selected":
+                SQUARE_SURFACE.fill(cfg.colors["selected"])
+                screen.blit(SQUARE_SURFACE, self.abs_pos)
+            case "moveable":
+                SQUARE_SURFACE.fill(cfg.colors["moveable"])
+                screen.blit(SQUARE_SURFACE, self.abs_pos)
+            case "danger":
+                SQUARE_SURFACE.fill(cfg.colors["danger"])
+                screen.blit(SQUARE_SURFACE, self.abs_pos)
         
-    # def _move_piece(self, file, rank):
-    #     from_square = self.get_square(*self.currently_selected)
-    #     to_square = self.get_square(file, rank)
+        if self.piece_code > 0:
+            screen.blit(PIECE_IMAGES[self.piece_code], self.abs_pos)
 
-    #     to_square.curr_piece = from_square.curr_piece
-    #     from_square.curr_piece = ""
-
-    #     self._deselect_square()
-
-
-"""
-This class represents a drawer that draws objects on the screen.
-"""
-class Drawer:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-        self.screen = pygame.display.set_mode((width, height))
-        self.screen.fill(cfg.colors["background"])
-
-        self.drawables = []
-
-        self.cursor_mask = utils.plus_cursor_mask(cfg.cursor["size"], cfg.cursor["bottom"], cfg.cursor["top"])[:, :, None]
-
-    def step(self, x, y):
-        for drawable in self.drawables:
-            drawable.draw(self.screen)
-
-        x = x - cfg.cursor["offset"]
-        y = y - cfg.cursor["offset"]
-
-        # Capture the area under the cursor
-        area = pygame.Surface((cfg.cursor["size"], cfg.cursor["size"]))
-        area.blit(self.screen, (0, 0), (x, y, cfg.cursor["size"], cfg.cursor["size"]))
-
-        # Convert the surface to a numpy array and make the colors contrasting
-        inverted_pixels = self.cursor_mask + pygame.surfarray.array3d(area)
-
-        # Convert the inverted array back to a surface and blit it to the screen
-        inverted_area = pygame.surfarray.make_surface(inverted_pixels)
-        self.screen.blit(inverted_area, (x, y))
-
-        # Update the display
-        pygame.display.flip()
-
-        # Reset colors
-        self.screen.blit(area, (x, y))
-
-"""
-This class is responsible for colliding clicks to objects.
-"""
-class Clicker:
-    def __init__(self):
-        self.clickables = []
-        self.curr_clickable = []
-
-    def highlight(self, x, y):
-        # Should be done with a quadtree (?)
-        self.curr_clickable.clear()
-        for clickable in self.clickables:
-            a,b,c,d = clickable.abs_x, clickable.abs_y, clickable.abs_x + clickable.rect[0], clickable.abs_y + clickable.rect[1]
-
-            if a <= x <= c and b <= y <= d:
-                clickable.enable_highlight()
-                self.curr_clickable.append(clickable)
-            else:
-                clickable.disable_highlight()
-
-    def find_clicked(self):
-        for clickable in self.curr_clickable:
-            clickable.click()
+    def click(self):
+        self.parent.square_clicked(self.square_code)
