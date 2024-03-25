@@ -1,10 +1,6 @@
 import pygame
-import numpy as np
-import io
 
-import utils
 import objects
-import config as cfg
 
 
 # Initialize Pygame
@@ -23,7 +19,7 @@ objects.Board(drawer, clicker, (10, 10))
 pygame.mouse.set_visible(False)
 running = True
 while running:
-    
+
     mouse_pos = pygame.mouse.get_pos()
     clicker.highlight(mouse_pos)
     for event in pygame.event.get():
