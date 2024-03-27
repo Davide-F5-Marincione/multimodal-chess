@@ -95,7 +95,7 @@ This class is responsible for colliding clicks to objects.
 class Clicker:
     def __init__(self):
         self.clickables = []
-        self.curr_clickable = (-1, None)
+        self.curr_clickable = (-1, None)    #priority, object 
 
     def highlight(self, cursor_pos: Tuple[int, int]):
         # Should be done with a quadtree (?) Naaaaah, it's O(n)
@@ -104,9 +104,8 @@ class Clicker:
             left, top = clickable.abs_pos[0], clickable.abs_pos[1]
             right, bottom = left + clickable.rect[0], top + clickable.rect[1]
 
-            if left <= cursor_pos[0] <= right and top <= cursor_pos[1] <= bottom:
-                clickable.enable_highlight()
-                if self.curr_clickable[0] <= clickable.priority:
+            if left <= cursor_pos[0] <= right and top <= cursor_pos[1] <= bottom and self.curr_clickable[0] <= clickable.priority:
+                    clickable.enable_highlight()
                     self.curr_clickable = (clickable.priority, clickable)
             else:
                 clickable.disable_highlight()

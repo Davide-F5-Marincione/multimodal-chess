@@ -1,0 +1,22 @@
+GIOCO 
+
+1. Pawn Promotion 
+
+-----------------------------------------------------------------
+
+EXTRA FEATURES  
+
+1. Sound cue : king in check, move sound, illegal move (to be decided if for speech or everything)
+
+------------------------------------------------------------------ 
+
+QUESTIONS 
+
+1. Preferred gestures: a. swipe, b. select & select , c. grab & release
+
+2. People's preferred movements/actions description 
+
+3. Sound cue for illegal move 
+
+
+
