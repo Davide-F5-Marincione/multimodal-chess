@@ -14,7 +14,8 @@ It has a parent-child relationship with other objects.
 class Object:
     def __init__(self, rel_pos: Tuple[int, int], parent:Self=None):
         self.parent = parent
-        self.parent.children.append(self) if parent else None
+        if parent:
+            self.parent.children.append(self)
         self.children = []
 
         self.set_rel_pos(rel_pos)
@@ -81,10 +82,11 @@ class Drawable(Object):
     def __init__(self, drawer: Drawer, rel_pos: Tuple[int, int], parent: Object=None):
         super().__init__(rel_pos, parent)
 
+        self.surface = None
         drawer.drawables.append(self)
 
     def draw(self, screen: pygame.Surface):
-        pass
+        screen.blit(self.surface, self.abs_pos)
 
 
 """
@@ -93,33 +95,35 @@ This class is responsible for colliding clicks to objects.
 class Clicker:
     def __init__(self):
         self.clickables = []
-        self.curr_clickable = []
+        self.curr_clickable = (-1, None)
 
     def highlight(self, cursor_pos: Tuple[int, int]):
-        # Should be done with a quadtree (?)
-        self.curr_clickable.clear()
+        # Should be done with a quadtree (?) Naaaaah, it's O(n)
+        self.curr_clickable = (-1, None)
         for clickable in self.clickables:
             left, top = clickable.abs_pos[0], clickable.abs_pos[1]
             right, bottom = left + clickable.rect[0], top + clickable.rect[1]
 
             if left <= cursor_pos[0] <= right and top <= cursor_pos[1] <= bottom:
                 clickable.enable_highlight()
-                self.curr_clickable.append(clickable)
+                if self.curr_clickable[0] <= clickable.priority:
+                    self.curr_clickable = (clickable.priority, clickable)
             else:
                 clickable.disable_highlight()
 
-    def find_clicked(self):
-        for clickable in self.curr_clickable:
-            clickable.click()    
+    def execute_click(self):
+        if self.curr_clickable[1]:
+            self.curr_clickable[1].click()
 
 """
 This class is the base class for all clickable objects in the game.
 """
 class Clickable(Drawable):
-    def __init__(self, drawer: Drawer, clicker: Clicker, rel_pos: Tuple[int, int], rect: Tuple[int, int], parent: Object=None):
+    def __init__(self, drawer: Drawer, clicker: Clicker, rel_pos: Tuple[int, int], rect: Tuple[int, int], priority=0, parent: Object=None):
         super().__init__(drawer, rel_pos, parent)
         self.rect = rect
         self.is_highlighted = False
+        self.priority = priority
 
         clicker.clickables.append(self)
 
@@ -170,6 +174,8 @@ class Board(Drawable):
 
         self.update_board()
 
+        self.surface = BOARD_IMAGE
+
     def update_board(self):
         for square in self.gui_squares:
             if piece := self.board.piece_at(square.square_code):
@@ -180,20 +186,14 @@ class Board(Drawable):
         if self.board.is_check():
             self.get_square(self.board.king(self.board.turn)).draw_state = "danger"
 
-    def draw(self, screen: pygame.Surface):
-        screen.blit(BOARD_IMAGE, self.abs_pos)
-
     def get_square(self, square_code: int):
         return self.gui_squares[square_code]
 
     def square_clicked(self, square_code: int):
         if self.currently_selected:
-            is_legal = False
-            for move in self.board.legal_moves:
-                if move.from_square == self.currently_selected and move.to_square == square_code:
-                    is_legal = True
-                    break
-            
+            is_legal = any(move.from_square == self.currently_selected and move.to_square == square_code
+                           for move in self.board.legal_moves)
+
             if is_legal:
                 self.move_piece(square_code)
             else:
@@ -245,7 +245,7 @@ This class represents a square on the board.
 """
 class GUISquare(Clickable):
     def __init__(self, drawer: Drawer, clicker: Clicker, rel_pos: Tuple[int, int], board_parent: Board, square_code: int, piece_code: int=0):
-        super().__init__(drawer, clicker, rel_pos, (cfg.SQUARE_SIZE, cfg.SQUARE_SIZE), board_parent)
+        super().__init__(drawer, clicker, rel_pos, (cfg.SQUARE_SIZE, cfg.SQUARE_SIZE), cfg.SQUARE_CLICK_PRIORITY, board_parent)
         self.draw_state = None
 
         self.square_code = square_code
@@ -259,19 +259,8 @@ class GUISquare(Clickable):
         if self.draw_state:
             SQUARE_SURFACE.fill(cfg.colors[self.draw_state])
             screen.blit(SQUARE_SURFACE, self.abs_pos)
-
-        # match self.draw_state:
-        #     case "selected":
-        #         SQUARE_SURFACE.fill(cfg.colors["selected"])
-        #         screen.blit(SQUARE_SURFACE, self.abs_pos)
-        #     case "moveable":
-        #         SQUARE_SURFACE.fill(cfg.colors["moveable"])
-        #         screen.blit(SQUARE_SURFACE, self.abs_pos)
-        #     case "danger":
-        #         SQUARE_SURFACE.fill(cfg.colors["danger"])
-        #         screen.blit(SQUARE_SURFACE, self.abs_pos)
         
-        if self.piece_code > 0:
+        if self.piece_code != 0:
             screen.blit(PIECE_IMAGES[self.piece_code], self.abs_pos)
 
     def click(self):

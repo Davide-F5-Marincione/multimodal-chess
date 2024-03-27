@@ -24,7 +24,7 @@ while running:
     clicker.highlight(mouse_pos)
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
-            clicker.find_clicked()
+            clicker.execute_click()
         if event.type == pygame.QUIT:
             running = False
 
