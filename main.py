@@ -10,10 +10,10 @@ pygame.init()
 WIDTH, HEIGHT = 800, 800
 
 # Create the screen
-drawer = objects.Drawer((WIDTH, HEIGHT))
+renderer = objects.Renderer((WIDTH, HEIGHT))
 clicker = objects.Clicker()
 
-objects.Board(drawer, clicker, (10, 10))
+objects.Board(renderer, clicker, (10, 10))
 
 # Main loop
 pygame.mouse.set_visible(False)
@@ -28,7 +28,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    drawer.step(mouse_pos)
+    renderer.step(mouse_pos)
 
 # Quit Pygame
 pygame.quit()

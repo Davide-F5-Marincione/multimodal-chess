@@ -39,9 +39,9 @@ class Object:
         return self.abs_pos
 
 """
-This class represents a drawer that draws objects on the screen.
+This class represents a renderer that draws objects on the screen.
 """
-class Drawer:
+class Renderer:
     def __init__(self, size: Tuple[int, int]):
         self.size = size
         self.screen = pygame.display.set_mode(size)
@@ -78,12 +78,12 @@ class Drawer:
 """
 This class is the base class for all drawable objects in the game.
 """
-class Drawable(Object):
-    def __init__(self, drawer: Drawer, rel_pos: Tuple[int, int], parent: Object=None):
+class Renderable(Object):
+    def __init__(self, renderer: Renderer, rel_pos: Tuple[int, int], parent: Object=None):
         super().__init__(rel_pos, parent)
 
         self.surface = None
-        drawer.drawables.append(self)
+        renderer.drawables.append(self)
 
     def draw(self, screen: pygame.Surface):
         screen.blit(self.surface, self.abs_pos)
@@ -117,9 +117,9 @@ class Clicker:
 """
 This class is the base class for all clickable objects in the game.
 """
-class Clickable(Drawable):
-    def __init__(self, drawer: Drawer, clicker: Clicker, rel_pos: Tuple[int, int], rect: Tuple[int, int], priority=0, parent: Object=None):
-        super().__init__(drawer, rel_pos, parent)
+class Clickable(Renderable):
+    def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Tuple[int, int], rect: Tuple[int, int], priority=0, parent: Object=None):
+        super().__init__(renderer, rel_pos, parent)
         self.rect = rect
         self.is_highlighted = False
         self.priority = priority
@@ -154,9 +154,9 @@ SQUARE_SURFACE.set_alpha(cfg.SQUARES_ALPHA)
 """
 This class represents the board.
 """
-class Board(Drawable):
-    def __init__(self, drawer: Drawer, clicker: Clicker, rel_pos: Tuple[int, int], starting_fen: str=None):
-        super().__init__(drawer, rel_pos)
+class Board(Renderable):
+    def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Tuple[int, int], starting_fen: str=None):
+        super().__init__(renderer, rel_pos)
 
         self.currently_selected = None
 
@@ -164,7 +164,7 @@ class Board(Drawable):
         for file in range(8):
             for rank in range(8):
                 square_code = chess.square(file, (7-rank))
-                self.gui_squares[square_code] = GUISquare(drawer, clicker, (file*cfg.SQUARE_SIZE, rank*cfg.SQUARE_SIZE), self, square_code, piece_code=0)
+                self.gui_squares[square_code] = GUISquare(renderer, clicker, (file*cfg.SQUARE_SIZE, rank*cfg.SQUARE_SIZE), self, square_code, piece_code=0)
 
         if starting_fen:
             self.board = chess.Board(starting_fen)
@@ -243,8 +243,8 @@ class Board(Drawable):
 This class represents a square on the board.
 """
 class GUISquare(Clickable):
-    def __init__(self, drawer: Drawer, clicker: Clicker, rel_pos: Tuple[int, int], board_parent: Board, square_code: int, piece_code: int=0):
-        super().__init__(drawer, clicker, rel_pos, (cfg.SQUARE_SIZE, cfg.SQUARE_SIZE), cfg.SQUARE_CLICK_PRIORITY, board_parent)
+    def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Tuple[int, int], board_parent: Board, square_code: int, piece_code: int=0):
+        super().__init__(renderer, clicker, rel_pos, (cfg.SQUARE_SIZE, cfg.SQUARE_SIZE), cfg.SQUARE_CLICK_PRIORITY, board_parent)
         self.draw_state = None
 
         self.square_code = square_code
