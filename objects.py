@@ -47,12 +47,12 @@ class Renderer:
         self.screen = pygame.display.set_mode(size)
         self.screen.fill(cfg.colors["background"])
 
-        self.drawables = []
+        self.renderables = []
 
         self.cursor_mask = utils.plus_cursor_mask(cfg.cursor["size"], cfg.cursor["bottom"], cfg.cursor["top"])[:, :, None]
 
     def step(self, cursor_pos: Tuple[int, int]):
-        for drawable in self.drawables:
+        for drawable in self.renderables:
             drawable.draw(self.screen)
 
         cursor_pos = cursor_pos[0] - cfg.cursor["offset"], cursor_pos[1] - cfg.cursor["offset"]
@@ -83,7 +83,7 @@ class Renderable(Object):
         super().__init__(rel_pos, parent)
 
         self.surface = None
-        renderer.drawables.append(self)
+        renderer.renderables.append(self)
 
     def draw(self, screen: pygame.Surface):
         screen.blit(self.surface, self.abs_pos)
