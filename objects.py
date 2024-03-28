@@ -52,8 +52,8 @@ class Renderer:
         self.cursor_mask = utils.plus_cursor_mask(cfg.cursor["size"], cfg.cursor["bottom"], cfg.cursor["top"])[:, :, None]
 
     def step(self, cursor_pos: Tuple[int, int]):
-        for drawable in self.renderables:
-            drawable.draw(self.screen)
+        for renderable in self.renderables:
+            renderable.draw(self.screen)
 
         cursor_pos = cursor_pos[0] - cfg.cursor["offset"], cursor_pos[1] - cfg.cursor["offset"]
 
@@ -76,7 +76,7 @@ class Renderer:
 
 
 """
-This class is the base class for all drawable objects in the game.
+This class is the base class for all renderable objects in the game.
 """
 class Renderable(Object):
     def __init__(self, renderer: Renderer, rel_pos: Tuple[int, int], parent: Object=None):
