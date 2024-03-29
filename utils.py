@@ -11,7 +11,6 @@ def make_svg_board(square_size = 70):
             else:
                 svg_board += f"<rect x=\"{i*square_size}\" y=\"{j*square_size}\" width=\"{square_size}\" height=\"{square_size}\" fill=\"" + cfg.colors["dark_square"] + "\"/>"
     svg_board += "</svg>"
-
     return svg_board
 
 def make_svg_piece(piece_type, piece_size = 70):
@@ -22,6 +21,17 @@ def make_svg_piece(piece_type, piece_size = 70):
                                   f"width=\"{piece_size}\" height=\"{piece_size}\" transform=\"scale({piece_size/45})\"")
 
     return svg_piece
+
+
+def make_svg_promotion(piece_size = 70):
+    with open(f"resources/promotionprompt.svg") as f:
+        svg_piece = f.read()
+
+    svg_piece = svg_piece.replace("width=\"315\" height=\"165\"",
+                                  f"width=\"{int(piece_size * 4.5)}\" height=\"{int(piece_size * 2.357142857142857)}\" transform=\"scale({piece_size/70})\"")
+
+    return svg_piece
+
 
 def plus_cursor_mask(size=19, bottom=7, top=11):
     # Create an empty ndarray of size*size filled with zeros

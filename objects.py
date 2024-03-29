@@ -149,10 +149,10 @@ NOTATION = dict(
 
 PIECE_IMAGES = [None] + [pygame.image.load(io.BytesIO(utils.make_svg_piece(side + name, cfg.SQUARE_SIZE).encode())) for side in "bw" for name in NOTATION.values()]
 BOARD_IMAGE = pygame.image.load(io.BytesIO(utils.make_svg_board(cfg.SQUARE_SIZE).encode()))
+PROMOTION_BUBBLE_IMAGE = pygame.image.load(io.BytesIO(utils.make_svg_promotion(cfg.SQUARE_SIZE).encode()))
 
 SQUARE_SURFACE = pygame.Surface((cfg.SQUARE_SIZE, cfg.SQUARE_SIZE))
 SQUARE_SURFACE.set_alpha(cfg.SQUARES_ALPHA)
-
 
 """
 This class represents the board.
@@ -173,6 +173,8 @@ class Board(Renderable):
             self.board = chess.Board(starting_fen)
         else:
             self.board = chess.Board()
+
+        # self.promotion = PromotionBubble(renderer, (0, 0), self) # No need for this rn
 
         self.update_board()
 
@@ -254,6 +256,7 @@ class Board(Renderable):
         self.deselect_square()
         self.update_board()
 
+
 """
 This class represents a square on the board.
 """
@@ -279,3 +282,10 @@ class GUISquare(Clickable):
 
     def click(self):
         self.parent.square_clicked(self.square_code)
+
+
+# Class to test that the promotion bubble i did is of correct size, <3
+# class PromotionBubble(Renderable):
+#     def __init__(self, renderer: Renderer, rel_pos: Tuple[int, int], parent: Object = None):
+#         super().__init__(renderer, rel_pos, parent)
+#         self.surface = PROMOTION_BUBBLE_IMAGE
