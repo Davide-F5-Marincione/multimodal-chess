@@ -18,3 +18,8 @@ cursor = dict(
     bottom = 7,
     top = 11
 )
+
+
+move_volume = .6
+illegal_move_volume = .15
+king_check_volume = .5

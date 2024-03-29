@@ -1,9 +1,11 @@
 from typing import *
+import random
 import pygame
 import chess
 import io
 
 import config as cfg
+import audio
 import utils
 
 
@@ -151,6 +153,7 @@ BOARD_IMAGE = pygame.image.load(io.BytesIO(utils.make_svg_board(cfg.SQUARE_SIZE)
 SQUARE_SURFACE = pygame.Surface((cfg.SQUARE_SIZE, cfg.SQUARE_SIZE))
 SQUARE_SURFACE.set_alpha(cfg.SQUARES_ALPHA)
 
+
 """
 This class represents the board.
 """
@@ -196,6 +199,9 @@ class Board(Renderable):
             if is_legal:
                 self.move_piece(square_code)
             else:
+                if self.currently_selected != square_code:
+                    audio.ILLEGAL_MOVE_SOUND.set_volume(cfg.illegal_move_volume)
+                    audio.ILLEGAL_MOVE_SOUND.play(loops=0, maxtime=0, fade_ms=0)
                 self.deselect_square()
         else:
             self.select_square(square_code)
@@ -235,6 +241,15 @@ class Board(Renderable):
             self.board.push(chess.Move(self.currently_selected, square_code, promotion=chess.QUEEN))
         else:
             self.board.push(chess.Move(self.currently_selected, square_code))
+
+
+        if self.board.is_check():
+            audio.CHECK_SOUND.set_volume(cfg.king_check_volume)
+            audio.CHECK_SOUND.play(loops=0, maxtime=0, fade_ms=0)
+        else:
+            # sound = random.sample(audio.MOVE_SOUNDS, 1)[0]
+            audio.MOVE_SOUND.set_volume(cfg.move_volume)
+            audio.MOVE_SOUND.play(loops=0, maxtime=0, fade_ms=0)
 
         self.deselect_square()
         self.update_board()
