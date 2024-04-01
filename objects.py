@@ -154,6 +154,8 @@ PROMOTION_BUBBLE_IMAGE = pygame.image.load(io.BytesIO(utils.make_svg_promotion(c
 SQUARE_SURFACE = pygame.Surface((cfg.SQUARE_SIZE, cfg.SQUARE_SIZE))
 SQUARE_SURFACE.set_alpha(cfg.SQUARES_ALPHA)
 
+pygame.font.init()
+
 """
 This class represents the board.
 """
@@ -178,7 +180,22 @@ class Board(Renderable):
 
         self.update_board()
 
-        self.surface = BOARD_IMAGE
+        # Create board surface
+        self.surface = pygame.Surface(size=(cfg.SQUARE_SIZE * 9, cfg.SQUARE_SIZE * 9))
+        self.surface.fill(cfg.colors["background"])
+        self.surface.blit(BOARD_IMAGE, (0, 0))
+        
+        # Add rank and file labels
+        font = pygame.font.Font(cfg.BOARD_TEXT_FONT, cfg.BOARD_TEXT_SIZE)
+        for i in range(8):
+            size = font.size("87654321"[i])
+            text = font.render("87654321"[i], cfg.TEXT_ANTIALIAS, cfg.colors["boardtext"], cfg.colors["background"])
+            self.surface.blit(text, (cfg.SQUARE_SIZE * 8 + cfg.BOARD_TEXT_DISTANCE, int(cfg.SQUARE_SIZE * (i + .5)) - size[1]//2))
+
+            size = font.size("abcdefgh"[i])
+            text = font.render("abcdefgh"[i], cfg.TEXT_ANTIALIAS, cfg.colors["boardtext"], cfg.colors["background"])
+            self.surface.blit(text, (int(cfg.SQUARE_SIZE * (i + .5)) - size[0]//2, cfg.SQUARE_SIZE * 8 + cfg.BOARD_TEXT_DISTANCE))
+
 
     def update_board(self):
         for square in self.gui_squares:
@@ -202,7 +219,7 @@ class Board(Renderable):
                 self.move_piece(square_code)
             else:
                 if self.currently_selected != square_code:
-                    audio.ILLEGAL_MOVE_SOUND.set_volume(cfg.illegal_move_volume)
+                    audio.ILLEGAL_MOVE_SOUND.set_volume(cfg.ILLEGAL_MOVE_VOLUME)
                     audio.ILLEGAL_MOVE_SOUND.play(loops=0, maxtime=0, fade_ms=0)
                 self.deselect_square()
         else:
@@ -246,11 +263,11 @@ class Board(Renderable):
 
 
         if self.board.is_check():
-            audio.CHECK_SOUND.set_volume(cfg.king_check_volume)
+            audio.CHECK_SOUND.set_volume(cfg.KING_CHECK_VOLUME)
             audio.CHECK_SOUND.play(loops=0, maxtime=0, fade_ms=0)
         else:
             # sound = random.sample(audio.MOVE_SOUNDS, 1)[0]
-            audio.MOVE_SOUND.set_volume(cfg.move_volume)
+            audio.MOVE_SOUND.set_volume(cfg.MOVE_VOLUME)
             audio.MOVE_SOUND.play(loops=0, maxtime=0, fade_ms=0)
 
         self.deselect_square()

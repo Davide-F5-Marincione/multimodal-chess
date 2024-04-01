@@ -2,6 +2,7 @@ import numpy as np
 
 import config as cfg
 
+
 def make_svg_board(square_size = 70):
     svg_board = f"<svg width=\"{8*square_size}\" height=\"{8*square_size}\">"
     for i in range(8):
