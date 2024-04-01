@@ -5,7 +5,7 @@ colors = dict(
     highlight = "#f8f8f8",
     selected = "#274c1e",
     moveable = "#7ff461",
-    danger = "#f46161",
+    danger = "#f64141",
     boardtext = "#f0f0f0"
 )
 
