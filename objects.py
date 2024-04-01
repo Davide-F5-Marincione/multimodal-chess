@@ -190,11 +190,11 @@ class Board(Renderable):
         for i in range(8):
             size = font.size("87654321"[i])
             text = font.render("87654321"[i], cfg.TEXT_ANTIALIAS, cfg.colors["boardtext"], cfg.colors["background"])
-            self.surface.blit(text, (cfg.SQUARE_SIZE * 8 + cfg.BOARD_TEXT_DISTANCE, int(cfg.SQUARE_SIZE * (i + .5)) - size[1]//2))
+            self.surface.blit(text, (cfg.SQUARE_SIZE * 8 + cfg.BOARD_TEXT_H_DISTANCE, int(cfg.SQUARE_SIZE * (i + .5)) - size[1]//2))
 
             size = font.size("abcdefgh"[i])
             text = font.render("abcdefgh"[i], cfg.TEXT_ANTIALIAS, cfg.colors["boardtext"], cfg.colors["background"])
-            self.surface.blit(text, (int(cfg.SQUARE_SIZE * (i + .5)) - size[0]//2, cfg.SQUARE_SIZE * 8 + cfg.BOARD_TEXT_DISTANCE))
+            self.surface.blit(text, (int(cfg.SQUARE_SIZE * (i + .5)) - size[0]//2, cfg.SQUARE_SIZE * 8 + cfg.BOARD_TEXT_V_DISTANCE))
 
 
     def update_board(self):
