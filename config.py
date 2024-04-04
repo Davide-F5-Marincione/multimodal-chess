@@ -6,7 +6,8 @@ colors = dict(
     selected = "#274c1e",
     moveable = "#7ff461",
     danger = "#f64141",
-    boardtext = "#f0f0f0"
+    boardtext = "#f0f0f0",
+    reset_button = "#f04141",
 )
 
 SQUARES_ALPHA = 128
@@ -19,6 +20,8 @@ BOARD_TEXT_SIZE = 20
 BOARD_TEXT_H_DISTANCE = 10
 BOARD_TEXT_V_DISTANCE = 7
 BOARD_TEXT_FONT = "resources\RobotoMono-VariableFont_wght.ttf"
+
+RESET_BUTTON_TEXT_SIZE = 28
 
 cursor = dict(
     offset = 9,

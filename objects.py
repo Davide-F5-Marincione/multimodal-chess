@@ -1,5 +1,4 @@
 from typing import *
-import random
 import pygame
 import chess
 import io
@@ -147,12 +146,20 @@ NOTATION = dict(
     king = "K"
 )
 
-PIECE_IMAGES = [None] + [pygame.image.load(io.BytesIO(utils.make_svg_piece(side + name, cfg.SQUARE_SIZE).encode())) for side in "bw" for name in NOTATION.values()]
-BOARD_IMAGE = pygame.image.load(io.BytesIO(utils.make_svg_board(cfg.SQUARE_SIZE).encode()))
-PROMOTION_BUBBLE_IMAGE = pygame.image.load(io.BytesIO(utils.make_svg_promotion(cfg.SQUARE_SIZE).encode()))
+PIECE_IMAGES = None
+BOARD_IMAGE = None
+PROMOTION_BUBBLE_IMAGE = None
 
-SQUARE_SURFACE = pygame.Surface((cfg.SQUARE_SIZE, cfg.SQUARE_SIZE))
-SQUARE_SURFACE.set_alpha(cfg.SQUARES_ALPHA)
+SQUARE_SURFACE = None
+
+def load_consts():
+    global PIECE_IMAGES, BOARD_IMAGE, PROMOTION_BUBBLE_IMAGE, SQUARE_SURFACE
+    PIECE_IMAGES = [None] + [pygame.image.load(io.BytesIO(utils.make_svg_piece(side + name, cfg.SQUARE_SIZE).encode())).convert_alpha() for side in "bw" for name in NOTATION.values()]
+    BOARD_IMAGE = pygame.image.load(io.BytesIO(utils.make_svg_board(cfg.SQUARE_SIZE).encode())).convert()
+    PROMOTION_BUBBLE_IMAGE = pygame.image.load(io.BytesIO(utils.make_svg_promotion(cfg.SQUARE_SIZE).encode())).convert_alpha()
+
+    SQUARE_SURFACE = pygame.Surface((cfg.SQUARE_SIZE, cfg.SQUARE_SIZE)).convert_alpha()
+    SQUARE_SURFACE.set_alpha(cfg.SQUARES_ALPHA)
 
 pygame.font.init()
 
@@ -274,6 +281,12 @@ class Board(Renderable):
         self.update_board()
 
 
+    def reset(self):
+        self.deselect_square()
+        self.board.reset()
+        self.update_board()
+
+
 """
 This class represents a square on the board.
 """
@@ -299,6 +312,24 @@ class GUISquare(Clickable):
 
     def click(self):
         self.parent.square_clicked(self.square_code)
+
+
+class ResetButton(Clickable):
+    def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Tuple[int, int], board: Board, border_dist=(10, 4)):
+        font = pygame.font.Font(cfg.BOARD_TEXT_FONT, cfg.RESET_BUTTON_TEXT_SIZE)
+        size = font.size("RESET")
+        size = size[0] + border_dist[0]*2, size[1] + border_dist[1]*2
+
+        super().__init__(renderer, clicker, rel_pos, size, cfg.SQUARE_CLICK_PRIORITY)
+        self.board = board
+
+        self.surface = pygame.image.load(io.BytesIO(utils.make_svg_reset(size=size, stroke_width=4).encode())).convert_alpha()
+
+        text = font.render("RESET", cfg.TEXT_ANTIALIAS, cfg.colors["reset_button"], cfg.colors["background"])
+        self.surface.blit(text, border_dist)
+
+    def click(self):
+        self.board.reset()
 
 
 # Class to test that the promotion bubble i did is of correct size, <3

@@ -13,7 +13,10 @@ WIDTH, HEIGHT = 800, 800
 renderer = objects.Renderer((WIDTH, HEIGHT))
 clicker = objects.Clicker()
 
-objects.Board(renderer, clicker, (10, 10))
+objects.load_consts()
+
+board = objects.Board(renderer, clicker, (10, 10))
+reset_button = objects.ResetButton(renderer, clicker, (650, 10), board)
 
 # Main loop
 pygame.mouse.set_visible(False)
