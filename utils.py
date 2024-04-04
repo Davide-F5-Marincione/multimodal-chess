@@ -33,8 +33,8 @@ def make_svg_promotion(piece_size = 70):
 
     return svg_promotion
 
-def make_svg_reset(size=(140, 50), stroke_width=4):
-    with open(f"resources/resetbutton.svg") as f:
+def make_svg_restart(size=(140, 50), stroke_width=4):
+    with open(f"resources/restartbutton.svg") as f:
         text = f.read()
 
     text = text.replace("outer_width", f"{size[0]}")
@@ -49,7 +49,7 @@ def make_svg_reset(size=(140, 50), stroke_width=4):
     text = text.replace("rx_val", f"7")
     text = text.replace("ry_val", f"7")
 
-    text = text.replace("stroke_color", cfg.colors["reset_button"])
+    text = text.replace("stroke_color", cfg.colors["restart_button"])
     text = text.replace("fill_val", cfg.colors["background"])
 
     return text

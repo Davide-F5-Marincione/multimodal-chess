@@ -314,18 +314,18 @@ class GUISquare(Clickable):
         self.parent.square_clicked(self.square_code)
 
 
-class ResetButton(Clickable):
+class RestartButton(Clickable):
     def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Tuple[int, int], board: Board, border_dist=(10, 4)):
-        font = pygame.font.Font(cfg.BOARD_TEXT_FONT, cfg.RESET_BUTTON_TEXT_SIZE)
-        size = font.size("RESET")
+        font = pygame.font.Font(cfg.BOARD_TEXT_FONT, cfg.RESTART_BUTTON_TEXT_SIZE)
+        size = font.size("restart")
         size = size[0] + border_dist[0]*2, size[1] + border_dist[1]*2
 
         super().__init__(renderer, clicker, rel_pos, size, cfg.SQUARE_CLICK_PRIORITY)
         self.board = board
 
-        self.surface = pygame.image.load(io.BytesIO(utils.make_svg_reset(size=size, stroke_width=4).encode())).convert_alpha()
+        self.surface = pygame.image.load(io.BytesIO(utils.make_svg_restart(size=size, stroke_width=cfg.RESTART_BUTTON_STROKE_WIDTH).encode())).convert_alpha()
 
-        text = font.render("RESET", cfg.TEXT_ANTIALIAS, cfg.colors["reset_button"], cfg.colors["background"])
+        text = font.render("restart", cfg.TEXT_ANTIALIAS, cfg.colors["restart_button"], cfg.colors["background"])
         self.surface.blit(text, border_dist)
 
     def click(self):

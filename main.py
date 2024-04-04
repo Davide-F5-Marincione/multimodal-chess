@@ -16,7 +16,7 @@ clicker = objects.Clicker()
 objects.load_consts()
 
 board = objects.Board(renderer, clicker, (10, 10))
-reset_button = objects.ResetButton(renderer, clicker, (650, 10), board)
+restart_button = objects.RestartButton(renderer, clicker, (650, 20), board)
 
 # Main loop
 pygame.mouse.set_visible(False)

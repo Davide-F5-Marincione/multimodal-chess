@@ -7,7 +7,7 @@ colors = dict(
     moveable = "#7ff461",
     danger = "#f64141",
     boardtext = "#f0f0f0",
-    reset_button = "#f04141",
+    restart_button = "#c4c4c4",
 )
 
 SQUARES_ALPHA = 128
@@ -21,7 +21,8 @@ BOARD_TEXT_H_DISTANCE = 10
 BOARD_TEXT_V_DISTANCE = 7
 BOARD_TEXT_FONT = "resources\RobotoMono-VariableFont_wght.ttf"
 
-RESET_BUTTON_TEXT_SIZE = 28
+RESTART_BUTTON_TEXT_SIZE = 18
+RESTART_BUTTON_STROKE_WIDTH = 4
 
 cursor = dict(
     offset = 9,
