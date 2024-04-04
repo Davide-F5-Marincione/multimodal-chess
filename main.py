@@ -1,6 +1,7 @@
 import pygame
 
 import objects
+import config as cfg
 
 
 # Initialize Pygame
@@ -18,6 +19,9 @@ objects.load_consts()
 board = objects.Board(renderer, clicker, (10, 10))
 restart_button = objects.RestartButton(renderer, clicker, (650, 20), board)
 
+font = pygame.font.Font("resources\FreeSerif.ttf", 32)
+pieces_test = font.render("Test: ♔♕♖♗♘♙♚♛♜♝♞♟︎", True, cfg.colors["boardtext"], cfg.colors["background"])
+
 # Main loop
 pygame.mouse.set_visible(False)
 running = True
@@ -32,6 +36,8 @@ while running:
             running = False
 
     renderer.step(mouse_pos)
+    renderer.screen.blit(pieces_test, (10, 700))
+
 
 # Quit Pygame
 pygame.quit()
