@@ -331,6 +331,13 @@ class RestartButton(Clickable):
     def click(self):
         self.board.reset()
 
+class FloatingText(Renderable):
+    def __init__(self, renderer: Renderer, rel_pos: Tuple[int, int], text: str, font_size: int, color: Tuple[int, int, int], font: str = cfg.BOARD_TEXT_FONT, parent: Object=None):
+        super().__init__(renderer, rel_pos, parent)
+
+        font = pygame.font.Font(font, font_size)
+        self.surface = font.render(text, cfg.TEXT_ANTIALIAS, color, cfg.colors["background"])
+
 
 # Class to test that the promotion bubble i did is of correct size, <3
 # class PromotionBubble(Renderable):

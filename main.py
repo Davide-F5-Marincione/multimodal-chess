@@ -17,10 +17,7 @@ clicker = objects.Clicker()
 objects.load_consts()
 
 board = objects.Board(renderer, clicker, (10, 10))
-restart_button = objects.RestartButton(renderer, clicker, (650, 20), board)
-
-font = pygame.font.Font("resources\FreeSerif.ttf", 32)
-pieces_test = font.render("Test: ♔♕♖♗♘♙♚♛♜♝♞♟︎", True, cfg.colors["boardtext"], cfg.colors["background"])
+objects.FloatingText(renderer, (10, 700), "Press \'R\' to restart", 16, cfg.colors["boardtext"])
 
 # Main loop
 pygame.mouse.set_visible(False)
@@ -30,14 +27,16 @@ while running:
     mouse_pos = pygame.mouse.get_pos()
     clicker.highlight(mouse_pos)
     for event in pygame.event.get():
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            clicker.execute_click()
-        if event.type == pygame.QUIT:
-            running = False
+        match event.type:
+            case pygame.QUIT:
+                running = False
+            case pygame.MOUSEBUTTONDOWN:
+                clicker.execute_click()
+            case pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    board.reset()       
 
     renderer.step(mouse_pos)
-    renderer.screen.blit(pieces_test, (10, 700))
-
 
 # Quit Pygame
 pygame.quit()
