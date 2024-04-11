@@ -1,3 +1,4 @@
+import pygame
 import numpy as np
 
 import config as cfg
@@ -64,3 +65,7 @@ def plus_cursor_mask(size=19, bottom=7, top=11):
     plus_array[:, bottom:top+1] = 127
     
     return plus_array
+
+
+TURN_DONE = pygame.USEREVENT + 1
+ELAPSED_AI_MOVING_TIME = pygame.USEREVENT + 2

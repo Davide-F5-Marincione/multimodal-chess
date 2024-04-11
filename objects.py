@@ -169,7 +169,7 @@ This class represents the board.
 class Board(Renderable):
     def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Tuple[int, int], starting_fen: str=None):
         super().__init__(renderer, rel_pos)
-
+        
         self.currently_selected = None
 
         self.gui_squares = [None] * 64
@@ -217,7 +217,10 @@ class Board(Renderable):
     def get_square(self, square_code: int):
         return self.gui_squares[square_code]
 
-    def square_clicked(self, square_code: int):
+    def square_clicked(self, square_code: int, clicking_color: bool = chess.WHITE):
+        if clicking_color != self.board.turn:
+            return
+
         if self.currently_selected:
             is_legal = any(move.from_square == self.currently_selected and move.to_square == square_code
                            for move in self.board.legal_moves)
@@ -280,6 +283,8 @@ class Board(Renderable):
         self.deselect_square()
         self.update_board()
 
+        pygame.event.post(pygame.event.Event(utils.TURN_DONE))
+
 
     def reset(self):
         self.deselect_square()
@@ -311,7 +316,7 @@ class GUISquare(Clickable):
             screen.blit(PIECE_IMAGES[self.piece_code], self.abs_pos)
 
     def click(self):
-        self.parent.square_clicked(self.square_code)
+        self.parent.square_clicked(self.square_code, chess.WHITE)
 
 
 class RestartButton(Clickable):
