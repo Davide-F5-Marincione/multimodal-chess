@@ -12,7 +12,7 @@ This class is the base class for all objects in the game.
 It has a parent-child relationship with other objects.
 """
 class Object:
-    def __init__(self, rel_pos: Tuple[int, int], parent:Self=None):
+    def __init__(self, rel_pos: Tuple[int, int], parent=None):
         self.parent = parent
         if parent:
             self.parent.children.append(self)
@@ -134,6 +134,24 @@ class Clickable(Renderable):
 
     def click(self):
         pass
+
+
+
+#TO DO :
+#create make_svg_bubble; #assign BUBBLE_SIZE 
+
+class PromotionBubble(Renderable):
+    def __init__(self, renderer: Renderer, rel_pos: Tuple[int, int], parent: Object=None):
+        super().__init__(renderer, rel_pos, parent)
+
+        # Load the SVG image and convert it to a pygame surface
+        #make_svg_bubble takes as input both the 
+        self.surface = pygame.image.load(io.BytesIO(utils.make_svg_bubble(cfg.BUBBLE_SIZE).encode()))
+
+    def draw(self, screen: pygame.Surface):
+        # Draw the bubble speech at the correct position
+        screen.blit(self.surface, self.abs_pos)
+
 
 
 NOTATION = dict(
