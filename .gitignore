@@ -11,3 +11,7 @@ __pycache__/
 .env/
 .conda/
 conda-*.log
+
+
+# Stockfish
+stockfish/*

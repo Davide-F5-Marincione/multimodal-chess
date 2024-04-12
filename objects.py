@@ -4,6 +4,7 @@ import chess
 import io
 
 import config as cfg
+import audio
 import utils
 
 
@@ -163,11 +164,22 @@ NOTATION = dict(
     king = "K"
 )
 
-PIECE_IMAGES = [None] + [pygame.image.load(io.BytesIO(utils.make_svg_piece(side + name, cfg.SQUARE_SIZE).encode())) for side in "bw" for name in NOTATION.values()]
-BOARD_IMAGE = pygame.image.load(io.BytesIO(utils.make_svg_board(cfg.SQUARE_SIZE).encode()))
+PIECE_IMAGES = None
+BOARD_IMAGE = None
+PROMOTION_BUBBLE_IMAGE = None
 
-SQUARE_SURFACE = pygame.Surface((cfg.SQUARE_SIZE, cfg.SQUARE_SIZE))
-SQUARE_SURFACE.set_alpha(cfg.SQUARES_ALPHA)
+SQUARE_SURFACE = None
+
+def load_consts():
+    global PIECE_IMAGES, BOARD_IMAGE, PROMOTION_BUBBLE_IMAGE, SQUARE_SURFACE
+    PIECE_IMAGES = [None] + [pygame.image.load(io.BytesIO(utils.make_svg_piece(side + name, cfg.SQUARE_SIZE).encode())).convert_alpha() for side in "bw" for name in NOTATION.values()]
+    BOARD_IMAGE = pygame.image.load(io.BytesIO(utils.make_svg_board(cfg.SQUARE_SIZE).encode())).convert()
+    PROMOTION_BUBBLE_IMAGE = pygame.image.load(io.BytesIO(utils.make_svg_promotion(cfg.SQUARE_SIZE).encode())).convert_alpha()
+
+    SQUARE_SURFACE = pygame.Surface((cfg.SQUARE_SIZE, cfg.SQUARE_SIZE)).convert_alpha()
+    SQUARE_SURFACE.set_alpha(cfg.SQUARES_ALPHA)
+
+pygame.font.init()
 
 """
 This class represents the board.
@@ -175,7 +187,7 @@ This class represents the board.
 class Board(Renderable):
     def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Tuple[int, int], starting_fen: str=None):
         super().__init__(renderer, rel_pos)
-
+        
         self.currently_selected = None
 
         self.gui_squares = [None] * 64
@@ -189,9 +201,26 @@ class Board(Renderable):
         else:
             self.board = chess.Board()
 
+        # self.promotion = PromotionBubble(renderer, (0, 0), self) # No need for this rn
+
         self.update_board()
 
-        self.surface = BOARD_IMAGE
+        # Create board surface
+        self.surface = pygame.Surface(size=(cfg.SQUARE_SIZE * 9, cfg.SQUARE_SIZE * 9))
+        self.surface.fill(cfg.colors["background"])
+        self.surface.blit(BOARD_IMAGE, (0, 0))
+        
+        # Add rank and file labels
+        font = pygame.font.Font(cfg.BOARD_TEXT_FONT, cfg.BOARD_TEXT_SIZE)
+        for i in range(8):
+            size = font.size("87654321"[i])
+            text = font.render("87654321"[i], cfg.TEXT_ANTIALIAS, cfg.colors["boardtext"], cfg.colors["background"])
+            self.surface.blit(text, (cfg.SQUARE_SIZE * 8 + cfg.BOARD_TEXT_H_DISTANCE, int(cfg.SQUARE_SIZE * (i + .5)) - size[1]//2))
+
+            size = font.size("abcdefgh"[i])
+            text = font.render("abcdefgh"[i], cfg.TEXT_ANTIALIAS, cfg.colors["boardtext"], cfg.colors["background"])
+            self.surface.blit(text, (int(cfg.SQUARE_SIZE * (i + .5)) - size[0]//2, cfg.SQUARE_SIZE * 8 + cfg.BOARD_TEXT_V_DISTANCE))
+
 
     def update_board(self):
         for square in self.gui_squares:
@@ -206,7 +235,10 @@ class Board(Renderable):
     def get_square(self, square_code: int):
         return self.gui_squares[square_code]
 
-    def square_clicked(self, square_code: int):
+    def square_clicked(self, square_code: int, clicking_color: bool = chess.WHITE):
+        if clicking_color != self.board.turn:
+            return
+
         if self.currently_selected:
             is_legal = any(move.from_square == self.currently_selected and move.to_square == square_code
                            for move in self.board.legal_moves)
@@ -214,6 +246,9 @@ class Board(Renderable):
             if is_legal:
                 self.move_piece(square_code)
             else:
+                if self.currently_selected != square_code:
+                    audio.ILLEGAL_MOVE_SOUND.set_volume(cfg.ILLEGAL_MOVE_VOLUME)
+                    audio.ILLEGAL_MOVE_SOUND.play(loops=0, maxtime=0, fade_ms=0)
                 self.deselect_square()
         else:
             self.select_square(square_code)
@@ -254,8 +289,26 @@ class Board(Renderable):
         else:
             self.board.push(chess.Move(self.currently_selected, square_code))
 
+
+        if self.board.is_check():
+            audio.CHECK_SOUND.set_volume(cfg.KING_CHECK_VOLUME)
+            audio.CHECK_SOUND.play(loops=0, maxtime=0, fade_ms=0)
+        else:
+            # sound = random.sample(audio.MOVE_SOUNDS, 1)[0]
+            audio.MOVE_SOUND.set_volume(cfg.MOVE_VOLUME)
+            audio.MOVE_SOUND.play(loops=0, maxtime=0, fade_ms=0)
+
         self.deselect_square()
         self.update_board()
+
+        pygame.event.post(pygame.event.Event(utils.TURN_DONE))
+
+
+    def reset(self):
+        self.deselect_square()
+        self.board.reset()
+        self.update_board()
+
 
 """
 This class represents a square on the board.
@@ -281,4 +334,36 @@ class GUISquare(Clickable):
             screen.blit(PIECE_IMAGES[self.piece_code], self.abs_pos)
 
     def click(self):
-        self.parent.square_clicked(self.square_code)
+        self.parent.square_clicked(self.square_code, chess.WHITE)
+
+
+class RestartButton(Clickable):
+    def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Tuple[int, int], board: Board, border_dist=(10, 4)):
+        font = pygame.font.Font(cfg.BOARD_TEXT_FONT, cfg.RESTART_BUTTON_TEXT_SIZE)
+        size = font.size("restart")
+        size = size[0] + border_dist[0]*2, size[1] + border_dist[1]*2
+
+        super().__init__(renderer, clicker, rel_pos, size, cfg.SQUARE_CLICK_PRIORITY)
+        self.board = board
+
+        self.surface = pygame.image.load(io.BytesIO(utils.make_svg_restart(size=size, stroke_width=cfg.RESTART_BUTTON_STROKE_WIDTH).encode())).convert_alpha()
+
+        text = font.render("restart", cfg.TEXT_ANTIALIAS, cfg.colors["restart_button"], cfg.colors["background"])
+        self.surface.blit(text, border_dist)
+
+    def click(self):
+        self.board.reset()
+
+class FloatingText(Renderable):
+    def __init__(self, renderer: Renderer, rel_pos: Tuple[int, int], text: str, font_size: int, color: Tuple[int, int, int], font: str = cfg.BOARD_TEXT_FONT, parent: Object=None):
+        super().__init__(renderer, rel_pos, parent)
+
+        font = pygame.font.Font(font, font_size)
+        self.surface = font.render(text, cfg.TEXT_ANTIALIAS, color, cfg.colors["background"])
+
+
+# Class to test that the promotion bubble i did is of correct size, <3
+# class PromotionBubble(Renderable):
+#     def __init__(self, renderer: Renderer, rel_pos: Tuple[int, int], parent: Object = None):
+#         super().__init__(renderer, rel_pos, parent)
+#         self.surface = PROMOTION_BUBBLE_IMAGE
