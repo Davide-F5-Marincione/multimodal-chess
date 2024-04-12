@@ -52,7 +52,7 @@ while running:
                     board.square_clicked(engine_move.from_square, chess.BLACK)
                     pygame.time.set_timer(pygame.event.Event(utils.ELAPSED_AI_MOVING_TIME), cfg.AI_MOVING_TIME, loops=1)
             case utils.ELAPSED_AI_MOVING_TIME:
-                board.square_clicked(engine_move.to_square, chess.BLACK)
+                board.square_clicked(engine_move.to_square, chess.BLACK, engine_move.promotion)
                 engine_move = None
                 elapsed_time = 0
 

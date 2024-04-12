@@ -8,6 +8,7 @@ colors = dict(
     danger = "#f64141",
     boardtext = "#f0f0f0",
     restart_button = "#c4c4c4",
+    promotion_highlight = "#7ff461"
 )
 
 SQUARES_ALPHA = 128
@@ -38,3 +39,5 @@ KING_CHECK_VOLUME = .5
 
 AI_THINK_TIME = 0.1
 AI_MOVING_TIME = 1000
+
+PROMOTION_CLICK_PRIORITY = 1

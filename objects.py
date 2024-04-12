@@ -121,10 +121,12 @@ class Clicker:
             right, bottom = left + clickable.rect[0], top + clickable.rect[1]
 
             if left <= cursor_pos[0] <= right and top <= cursor_pos[1] <= bottom and self.curr_clickable[0] <= clickable.priority:
-                    clickable.enable_highlight()
-                    self.curr_clickable = (clickable.priority, clickable)
+                self.curr_clickable = (clickable.priority, clickable)
             else:
                 clickable.disable_highlight()
+
+        if self.curr_clickable[1]:
+            self.curr_clickable[1].enable_highlight()
 
     def execute_click(self):
         if self.curr_clickable[1]:
@@ -177,6 +179,9 @@ def load_consts():
 
 pygame.font.init()
 
+def get_piece_code(piece_type: chess.PieceType, color: chess.Color):
+    return color * 6 + piece_type
+
 """
 This class represents the board.
 """
@@ -224,7 +229,7 @@ class Board(Renderable):
     def update_board(self):
         for square in self.gui_squares:
             if piece := self.board.piece_at(square.square_code):
-                square.piece_code = piece.color * 6 + piece.piece_type
+                square.piece_code = get_piece_code(piece.piece_type, piece.color)
             else:
                 square.piece_code = 0
 
@@ -234,38 +239,39 @@ class Board(Renderable):
     def get_square(self, square_code: int):
         return self.gui_squares[square_code]
 
-    def square_clicked(self, square_code: int, clicking_color: bool = chess.WHITE, promotion: int = 0):
+    def square_clicked(self, square_code: int, clicking_color: bool = chess.WHITE, promotion: int = None):
         if clicking_color != self.board.turn:
             return
 
-        if self.currently_selected:
+        if self.currently_selected is None:
+            self.select_square(square_code)
+        else:
             is_legal = any(move.from_square == self.currently_selected and move.to_square == square_code
                            for move in self.board.legal_moves)
 
             if is_legal:
                 if self.board.piece_at(self.currently_selected).piece_type == chess.PAWN and (chess.square_rank(square_code) == 0 or chess.square_rank(square_code) == 7):
-                    # Add a way to choose the promotion piece
-                    if promotion > 0:
-                        self.move_piece(square_code, promotion)
+                    if promotion is None:
+                        # Show promotion bubble
+                        self.promotion.setup(square_code, clicking_color)
                     else:
-                        #add position here 
-                        self.promotion.set_rel_pos((square_code % 8 * cfg.SQUARE_SIZE, square_code // 8 * cfg.SQUARE_SIZE))
-                        self.promotion.set_visible()
-                
+                        self.move_piece(square_code, promotion)
                 else: 
                     self.move_piece(square_code)
             else:                    
-                self.deselect_square()
                 if self.currently_selected != square_code:
+                    self.deselect_square()
                     if self.board.color_at(square_code) == clicking_color:
                         self.select_square(square_code)
                     else:
                         audio.ILLEGAL_MOVE_SOUND.set_volume(cfg.ILLEGAL_MOVE_VOLUME)
                         audio.ILLEGAL_MOVE_SOUND.play(loops=0, maxtime=0, fade_ms=0)
-        else:
-            self.select_square(square_code)
+                else:
+                    self.deselect_square()
 
     def select_square(self, square_code: int):
+        self.promotion.set_invisible()
+
         gui_square = self.get_square(square_code)
         if gui_square.piece_code == 0 or (gui_square.piece_code > 6) != self.board.turn:
             return
@@ -285,6 +291,8 @@ class Board(Renderable):
                         case chess.C8: self.get_square(chess.D8).draw_state = "moveable"
 
     def deselect_square(self):
+        self.promotion.set_invisible()
+
         for square in self.gui_squares:
             square.draw_state = None
 
@@ -294,7 +302,7 @@ class Board(Renderable):
 
         self.currently_selected = None
 
-    def move_piece(self, square_code: int, promotion : int = 0):
+    def move_piece(self, square_code: int, promotion : int = None):
         
         self.board.push(chess.Move(self.currently_selected, square_code, promotion))
 
@@ -377,11 +385,34 @@ class PromotionBubble(Renderable):
         self.surface = PROMOTION_BUBBLE_IMAGE 
         self.mirror = False
         self.square_code = None
+        self.color = None
         
-        PromotionButton(renderer, clicker, (0,0), self, chess.KNIGHT)
-        PromotionButton(renderer, clicker, (cfg.SQUARE_SIZE,0), self, chess.BISHOP)
-        PromotionButton(renderer, clicker, (cfg.SQUARE_SIZE*2,0), self, chess.ROOK)
-        PromotionButton(renderer, clicker, (cfg.SQUARE_SIZE*3,0), self, chess.QUEEN)        
+        self.kb = PromotionButton(renderer, clicker, (0,0), self, chess.KNIGHT)
+        self.bb = PromotionButton(renderer, clicker, (0,0), self, chess.BISHOP)
+        self.rb = PromotionButton(renderer, clicker, (0,0), self, chess.ROOK)
+        self.qb = PromotionButton(renderer, clicker, (0,0), self, chess.QUEEN)
+
+    def setup(self, square_code: int, color: chess.Color):
+        self.square_code = square_code
+        self.color = color
+
+        self.mirror = (square_code % 8) > 3
+
+        # some magic numbers to make the buttons flush with the bubble
+        if self.mirror:
+            self.kb.set_rel_pos((cfg.SQUARE_SIZE*0.08,cfg.SQUARE_SIZE*1.29))
+            self.bb.set_rel_pos((cfg.SQUARE_SIZE*1.08,cfg.SQUARE_SIZE*1.29))
+            self.rb.set_rel_pos((cfg.SQUARE_SIZE*2.08,cfg.SQUARE_SIZE*1.29))
+            self.qb.set_rel_pos((cfg.SQUARE_SIZE*3.08,cfg.SQUARE_SIZE*1.29))
+            self.set_rel_pos(((square_code % 8 - 3.5)* cfg.SQUARE_SIZE, (7 - square_code // 8) * cfg.SQUARE_SIZE))
+        else:
+            self.kb.set_rel_pos((cfg.SQUARE_SIZE*0.43,cfg.SQUARE_SIZE*1.29))
+            self.bb.set_rel_pos((cfg.SQUARE_SIZE*1.43,cfg.SQUARE_SIZE*1.29))
+            self.rb.set_rel_pos((cfg.SQUARE_SIZE*2.43,cfg.SQUARE_SIZE*1.29))
+            self.qb.set_rel_pos((cfg.SQUARE_SIZE*3.43,cfg.SQUARE_SIZE*1.29))
+            self.set_rel_pos((square_code % 8 * cfg.SQUARE_SIZE, (7 - square_code // 8) * cfg.SQUARE_SIZE))
+
+        self.set_visible()  
     
     def draw(self,screen: pygame.Surface):
         if self.mirror:
@@ -389,25 +420,24 @@ class PromotionBubble(Renderable):
         else:
             screen.blit(self.surface, self.abs_pos) 
     
-    def promotion_clicked(self, piece_code: int, color : chess.Color):
+    def promotion_clicked(self, piece_code: int, color: chess.Color):
         self.parent.square_clicked(self.square_code, color, piece_code)
         
         
 
 class PromotionButton(Clickable):
     def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Tuple[int, int], bubble_parent: PromotionBubble, piece_code: int=0):
-        super().__init__(renderer, clicker, rel_pos, (cfg.SQUARE_SIZE, cfg.SQUARE_SIZE), cfg.SQUARE_CLICK_PRIORITY, bubble_parent)
+        super().__init__(renderer, clicker, rel_pos, (cfg.SQUARE_SIZE, cfg.SQUARE_SIZE), cfg.PROMOTION_CLICK_PRIORITY, bubble_parent)
 
         self.piece_code = piece_code
 
     def draw(self, screen: pygame.Surface):
         if self.is_highlighted:
-            SQUARE_SURFACE.fill(cfg.colors["highlight"])
+            SQUARE_SURFACE.fill(cfg.colors["promotion_highlight"])
             screen.blit(SQUARE_SURFACE, self.abs_pos)
         
         if self.piece_code != 0:
-            screen.blit(PIECE_IMAGES[self.piece_code], self.abs_pos)
+            screen.blit(PIECE_IMAGES[get_piece_code(self.piece_code, self.parent.color)], self.abs_pos)
 
     def click(self):
         self.parent.promotion_clicked(self.piece_code, chess.WHITE)
-
