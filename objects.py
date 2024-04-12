@@ -54,7 +54,8 @@ class Renderer:
 
     def step(self, cursor_pos: Tuple[int, int]):
         for renderable in self.renderables:
-            renderable.draw(self.screen)
+            if renderable.is_visible:
+                renderable.draw(self.screen)
 
         cursor_pos = cursor_pos[0] - cfg.cursor["offset"], cursor_pos[1] - cfg.cursor["offset"]
 
@@ -84,11 +85,23 @@ class Renderable(Object):
         super().__init__(rel_pos, parent)
 
         self.surface = None
+        self.is_visible = True
         renderer.renderables.append(self)
 
     def draw(self, screen: pygame.Surface):
         screen.blit(self.surface, self.abs_pos)
-
+    
+    def set_visible(self):
+        self.is_visible = True
+        for child in self.children:
+            child.set_visible() 
+    
+    def set_invisible(self):
+        self.is_visible = False
+        for child in self.children:
+            child.set_invisible()
+    
+    
 
 """
 This class is responsible for colliding clicks to objects.
@@ -102,6 +115,8 @@ class Clicker:
         # Should be done with a quadtree (?) Naaaaah, it's O(n)
         self.curr_clickable = (-1, None)
         for clickable in self.clickables:
+            if not clickable.is_visible:
+                continue
             left, top = clickable.abs_pos[0], clickable.abs_pos[1]
             right, bottom = left + clickable.rect[0], top + clickable.rect[1]
 
@@ -137,24 +152,6 @@ class Clickable(Renderable):
         pass
 
 
-
-#TO DO :
-#create make_svg_bubble; #assign BUBBLE_SIZE 
-
-class PromotionBubble(Renderable):
-    def __init__(self, renderer: Renderer, rel_pos: Tuple[int, int], parent: Object=None):
-        super().__init__(renderer, rel_pos, parent)
-
-        # Load the SVG image and convert it to a pygame surface
-        #make_svg_bubble takes as input both the 
-        self.surface = pygame.image.load(io.BytesIO(utils.make_svg_bubble(cfg.BUBBLE_SIZE).encode()))
-
-    def draw(self, screen: pygame.Surface):
-        # Draw the bubble speech at the correct position
-        screen.blit(self.surface, self.abs_pos)
-
-
-
 NOTATION = dict(
     pawn = "P",
     knight = "N",
@@ -175,7 +172,6 @@ def load_consts():
     PIECE_IMAGES = [None] + [pygame.image.load(io.BytesIO(utils.make_svg_piece(side + name, cfg.SQUARE_SIZE).encode())).convert_alpha() for side in "bw" for name in NOTATION.values()]
     BOARD_IMAGE = pygame.image.load(io.BytesIO(utils.make_svg_board(cfg.SQUARE_SIZE).encode())).convert()
     PROMOTION_BUBBLE_IMAGE = pygame.image.load(io.BytesIO(utils.make_svg_promotion(cfg.SQUARE_SIZE).encode())).convert_alpha()
-
     SQUARE_SURFACE = pygame.Surface((cfg.SQUARE_SIZE, cfg.SQUARE_SIZE)).convert_alpha()
     SQUARE_SURFACE.set_alpha(cfg.SQUARES_ALPHA)
 
@@ -200,8 +196,11 @@ class Board(Renderable):
             self.board = chess.Board(starting_fen)
         else:
             self.board = chess.Board()
-
-        # self.promotion = PromotionBubble(renderer, (0, 0), self) # No need for this rn
+            
+            
+        # Instatiate Promotion Bubble 
+        self.promotion = PromotionBubble(renderer, clicker, (0, 0), self)
+        self.promotion.set_invisible()
 
         self.update_board()
 
@@ -235,7 +234,7 @@ class Board(Renderable):
     def get_square(self, square_code: int):
         return self.gui_squares[square_code]
 
-    def square_clicked(self, square_code: int, clicking_color: bool = chess.WHITE):
+    def square_clicked(self, square_code: int, clicking_color: bool = chess.WHITE, promotion: int = 0):
         if clicking_color != self.board.turn:
             return
 
@@ -244,12 +243,25 @@ class Board(Renderable):
                            for move in self.board.legal_moves)
 
             if is_legal:
-                self.move_piece(square_code)
-            else:
-                if self.currently_selected != square_code:
-                    audio.ILLEGAL_MOVE_SOUND.set_volume(cfg.ILLEGAL_MOVE_VOLUME)
-                    audio.ILLEGAL_MOVE_SOUND.play(loops=0, maxtime=0, fade_ms=0)
+                if self.board.piece_at(self.currently_selected).piece_type == chess.PAWN and (chess.square_rank(square_code) == 0 or chess.square_rank(square_code) == 7):
+                    # Add a way to choose the promotion piece
+                    if promotion > 0:
+                        self.move_piece(square_code, promotion)
+                    else:
+                        #add position here 
+                        self.promotion.set_rel_pos((square_code % 8 * cfg.SQUARE_SIZE, square_code // 8 * cfg.SQUARE_SIZE))
+                        self.promotion.set_visible()
+                
+                else: 
+                    self.move_piece(square_code)
+            else:                    
                 self.deselect_square()
+                if self.currently_selected != square_code:
+                    if self.board.color_at(square_code) == clicking_color:
+                        self.select_square(square_code)
+                    else:
+                        audio.ILLEGAL_MOVE_SOUND.set_volume(cfg.ILLEGAL_MOVE_VOLUME)
+                        audio.ILLEGAL_MOVE_SOUND.play(loops=0, maxtime=0, fade_ms=0)
         else:
             self.select_square(square_code)
 
@@ -282,13 +294,9 @@ class Board(Renderable):
 
         self.currently_selected = None
 
-    def move_piece(self, square_code: int):
-        if self.board.piece_at(self.currently_selected).piece_type == chess.PAWN and (chess.square_rank(square_code) == 0 or chess.square_rank(square_code) == 7):
-            # Add a way to choose the promotion piece
-            self.board.push(chess.Move(self.currently_selected, square_code, promotion=chess.QUEEN))
-        else:
-            self.board.push(chess.Move(self.currently_selected, square_code))
-
+    def move_piece(self, square_code: int, promotion : int = 0):
+        
+        self.board.push(chess.Move(self.currently_selected, square_code, promotion))
 
         if self.board.is_check():
             audio.CHECK_SOUND.set_volume(cfg.KING_CHECK_VOLUME)
@@ -362,8 +370,44 @@ class FloatingText(Renderable):
         self.surface = font.render(text, cfg.TEXT_ANTIALIAS, color, cfg.colors["background"])
 
 
-# Class to test that the promotion bubble i did is of correct size, <3
-# class PromotionBubble(Renderable):
-#     def __init__(self, renderer: Renderer, rel_pos: Tuple[int, int], parent: Object = None):
-#         super().__init__(renderer, rel_pos, parent)
-#         self.surface = PROMOTION_BUBBLE_IMAGE
+# Class to test that the promotion bubble i did is of correct size, <3, gne 
+class PromotionBubble(Renderable):
+    def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Tuple[int, int], board_parent: Board):
+        super().__init__(renderer, rel_pos, board_parent)
+        self.surface = PROMOTION_BUBBLE_IMAGE 
+        self.mirror = False
+        self.square_code = None
+        
+        PromotionButton(renderer, clicker, (0,0), self, chess.KNIGHT)
+        PromotionButton(renderer, clicker, (cfg.SQUARE_SIZE,0), self, chess.BISHOP)
+        PromotionButton(renderer, clicker, (cfg.SQUARE_SIZE*2,0), self, chess.ROOK)
+        PromotionButton(renderer, clicker, (cfg.SQUARE_SIZE*3,0), self, chess.QUEEN)        
+    
+    def draw(self,screen: pygame.Surface):
+        if self.mirror:
+            screen.blit(pygame.transform.flip(self.surface, True, False), self.abs_pos)
+        else:
+            screen.blit(self.surface, self.abs_pos) 
+    
+    def promotion_clicked(self, piece_code: int, color : chess.Color):
+        self.parent.square_clicked(self.square_code, color, piece_code)
+        
+        
+
+class PromotionButton(Clickable):
+    def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Tuple[int, int], bubble_parent: PromotionBubble, piece_code: int=0):
+        super().__init__(renderer, clicker, rel_pos, (cfg.SQUARE_SIZE, cfg.SQUARE_SIZE), cfg.SQUARE_CLICK_PRIORITY, bubble_parent)
+
+        self.piece_code = piece_code
+
+    def draw(self, screen: pygame.Surface):
+        if self.is_highlighted:
+            SQUARE_SURFACE.fill(cfg.colors["highlight"])
+            screen.blit(SQUARE_SURFACE, self.abs_pos)
+        
+        if self.piece_code != 0:
+            screen.blit(PIECE_IMAGES[self.piece_code], self.abs_pos)
+
+    def click(self):
+        self.parent.promotion_clicked(self.piece_code, chess.WHITE)
+
