@@ -122,8 +122,8 @@ class Clicker:
 
             if left <= cursor_pos[0] <= right and top <= cursor_pos[1] <= bottom and self.curr_clickable[0] <= clickable.priority:
                 self.curr_clickable = (clickable.priority, clickable)
-            else:
-                clickable.disable_highlight()
+            
+            clickable.disable_highlight()
 
         if self.curr_clickable[1]:
             self.curr_clickable[1].enable_highlight()
