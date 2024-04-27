@@ -15,3 +15,6 @@ conda-*.log
 
 # Stockfish
 stockfish/*
+
+# Kaldi model
+kaldi_model/*
