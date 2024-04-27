@@ -317,7 +317,10 @@ class Board(Renderable):
         self.deselect_square()
         self.update_board()
 
-        pygame.event.post(pygame.event.Event(utils.TURN_DONE))
+        if self.board.is_game_over():
+            pygame.event.post(pygame.event.Event(utils.GAME_ENDED))
+        else:
+            pygame.event.post(pygame.event.Event(utils.TURN_DONE))
 
 
     def reset(self):
@@ -374,8 +377,13 @@ class FloatingText(Renderable):
     def __init__(self, renderer: Renderer, rel_pos: Tuple[int, int], text: str, font_size: int, color: Tuple[int, int, int], font: str = cfg.BOARD_TEXT_FONT, parent: Object=None):
         super().__init__(renderer, rel_pos, parent)
 
-        font = pygame.font.Font(font, font_size)
-        self.surface = font.render(text, cfg.TEXT_ANTIALIAS, color, cfg.colors["background"])
+        self.font = pygame.font.Font(font, font_size)
+        self.set_text(text, color)
+
+    def set_text(self, text: str, color: Tuple[int, int, int] = None):
+        if color:
+            self.curr_color = color
+        self.surface = self.font.render(text, cfg.TEXT_ANTIALIAS, self.curr_color, cfg.colors["background"])
 
 
 # Class to test that the promotion bubble i did is of correct size, <3, gne 

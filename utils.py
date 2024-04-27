@@ -68,4 +68,5 @@ def plus_cursor_mask(size=19, bottom=7, top=11):
 
 
 TURN_DONE = pygame.USEREVENT + 1
-ELAPSED_AI_MOVING_TIME = pygame.USEREVENT + 2
+GAME_ENDED = pygame.USEREVENT + 2
+ELAPSED_AI_MOVING_TIME = pygame.USEREVENT + 3

@@ -24,16 +24,17 @@ engine.configure({
 })
 
 board = objects.Board(renderer, clicker, (10, 10))
-objects.FloatingText(renderer, (10, 700), "Press \'R\' to restart", 16, cfg.colors["boardtext"])
+context_text = objects.FloatingText(renderer, (10, 700), "Press \'R\' to restart", 16, cfg.colors["boardtext"])
 
 # Main loop
 pygame.mouse.set_visible(False)
 running = True
+game_ended = False
 engine_move = None
+left_mouse_down = False
 elapsed_time = 0
 
 while running:
-
     mouse_pos = pygame.mouse.get_pos()         
     clicker.highlight(mouse_pos)
     for event in pygame.event.get():
@@ -41,22 +42,35 @@ while running:
             case pygame.QUIT:
                 running = False
             case pygame.MOUSEBUTTONDOWN:
-                clicker.execute_click()
+                if not game_ended:
+                    if event.button == 1 and left_mouse_down:
+                        left_mouse_down = True
+                        clicker.execute_click()
+            case pygame.MOUSEBUTTONUP:
+                if not game_ended:
+                    if event.button == 1:
+                        left_mouse_down = False
             case pygame.KEYDOWN:
                 if event.key == pygame.K_r:
                     board.reset()
+                    context_text.set_text("Press \'R\' to restart", cfg.colors["boardtext"])
+                    game_ended = False
             case utils.TURN_DONE:
-                if board.board.turn == chess.BLACK:
-                    engine_move = engine.play(board.board, chess.engine.Limit(time=cfg.AI_THINK_TIME))
-                    engine_move = engine_move.move
-                    board.square_clicked(engine_move.from_square, chess.BLACK)
-                    pygame.time.set_timer(pygame.event.Event(utils.ELAPSED_AI_MOVING_TIME), cfg.AI_MOVING_TIME, loops=1)
+                if not game_ended:
+                    if board.board.turn == chess.BLACK:
+                        engine_move = engine.play(board.board, chess.engine.Limit(time=cfg.AI_THINK_TIME))
+                        engine_move = engine_move.move
+                        board.square_clicked(engine_move.from_square, chess.BLACK)
+                        pygame.time.set_timer(pygame.event.Event(utils.ELAPSED_AI_MOVING_TIME), cfg.AI_MOVING_TIME, loops=1)
             case utils.ELAPSED_AI_MOVING_TIME:
-                board.square_clicked(engine_move.to_square, chess.BLACK, engine_move.promotion)
-                engine_move = None
-                elapsed_time = 0
-
-
+                if not game_ended:
+                    board.square_clicked(engine_move.to_square, chess.BLACK, engine_move.promotion)
+                    engine_move = None
+                    elapsed_time = 0
+            case utils.GAME_ENDED:
+                game_ended = True
+                context_text.set_text("Game ended! Press \'R\' to restart", cfg.colors["redtext"])
+                
     renderer.step(mouse_pos)
 
 engine.close()

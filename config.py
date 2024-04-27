@@ -7,6 +7,7 @@ colors = dict(
     moveable = "#7ff461",
     danger = "#f64141",
     boardtext = "#f0f0f0",
+    redtext = "#f04040",
     restart_button = "#c4c4c4",
     promotion_highlight = "#7ff461"
 )
