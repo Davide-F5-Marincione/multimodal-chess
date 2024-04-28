@@ -199,7 +199,7 @@ class Clicker:
             if is_button_down:
                 self.curr_clickable.click(self.cursor)
             else:
-                self.curr_clickable.declick(self.cursor)
+                self.curr_clickable.declick()
 
 
 """
