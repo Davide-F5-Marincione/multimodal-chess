@@ -20,7 +20,7 @@ objects.load_consts()
 
 engine = chess.engine.SimpleEngine.popen_uci(".\stockfish\stockfish-windows-x86-64-avx2.exe")
 engine.configure({
-    "Skill Level": 20
+    "Skill Level": 1
 })
 
 board = objects.Board(renderer, clicker, objects.Point(10, 10))

@@ -516,7 +516,7 @@ class PromotionBubble(Renderable):
 
 class PromotionButton(Clickable):
     def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Point, bubble_parent: PromotionBubble, piece_code: int=0):
-        super().__init__(renderer, clicker, rel_pos, (cfg.SQUARE_SIZE, cfg.SQUARE_SIZE), cfg.PROMOTION_SQUARE_ORDER, bubble_parent)
+        super().__init__(renderer, clicker, rel_pos, Point(cfg.SQUARE_SIZE, cfg.SQUARE_SIZE), cfg.PROMOTION_SQUARE_ORDER, bubble_parent)
 
         self.piece_code = piece_code
 
