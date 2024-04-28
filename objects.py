@@ -20,8 +20,8 @@ It has a parent-child relationship with other objects.
 """
 class Object:
     def __init__(self, rel_pos: Point, parent=None):
-        Object.counter += 1
-        self.id = Object.counter
+        Object.COUNTER += 1
+        self.id = Object.COUNTER
 
         self.parent = parent
         if parent:
@@ -63,7 +63,7 @@ class Object:
             return False
         return self.id > other.id
     
-Object.counter = 0
+Object.COUNTER = 0
 
 
 class RenderContext(NamedTuple):
@@ -78,7 +78,6 @@ class Renderer:
     def __init__(self, size: Point):
         self.size = size
         self.screen = pygame.display.set_mode(size)
-        self.screen.fill(cfg.colors["background"])
 
         self.renderables = []
 
@@ -86,6 +85,7 @@ class Renderer:
         bisect.insort(self.renderables, (renderable.order, renderable))
 
     def step(self, cursor_pos: Point):
+        self.screen.fill(cfg.colors["background"])
         render_context = RenderContext(self.screen, cursor_pos)
 
         for _, renderable in self.renderables:
@@ -120,16 +120,49 @@ class Renderable(Object):
         self.is_visible = False
         for child in self.children:
             child.set_invisible()
-    
+
+class Cursor(Renderable):
+    def __init__(self, renderer: Renderer):
+        super().__init__(renderer, Point(0,0), order=cfg.CURSOR_ORDER)
+
+        self.surface = pygame.Surface((cfg.cursor["size"], cfg.cursor["size"]))
+        self.mask = utils.plus_cursor_mask(cfg.cursor["size"], cfg.cursor["bottom"], cfg.cursor["top"])[:, :, None]
+
+        self.holding = None
+
+        # CursorShadow(renderer, self)
+
+    def draw(self, context: RenderContext):
+        if self.holding:
+            self.holding.hold_draw(context)
+
+        self.set_rel_pos(Point(context.cursor_pos.x - cfg.cursor["offset"], context.cursor_pos.y - cfg.cursor["offset"]))
+
+        self.surface.blit(context.screen, (0, 0), (*self.abs_pos, cfg.cursor["size"], cfg.cursor["size"]))
+        context.screen.blit(pygame.surfarray.make_surface(self.mask + pygame.surfarray.array3d(self.surface)), self.abs_pos)
+
+    def release(self):
+        if self.holding:
+            self.holding.held = False
+        self.holding = None
+
+
+# class CursorShadow(Renderable):
+#     def __init__(self, renderer: Renderer, parent: Cursor):
+#         super().__init__(renderer, Point(0,0), parent, order=cfg.CURSOR_SHADOW_ORDER)
+
+#     def draw(self, context: RenderContext):
+#         context.screen.blit(self.parent.surface, self.abs_pos)
     
 
 """
 This class is responsible for colliding clicks to objects.
 """
 class Clicker:
-    def __init__(self):
+    def __init__(self, renderer: Renderer):
         self.clickables = []
         self.curr_clickable = None
+        self.cursor = Cursor(renderer)
 
     def add_clickable(self, clickable):
         bisect.insort(self.clickables, (clickable.order, clickable))
@@ -158,9 +191,16 @@ class Clicker:
                 self.curr_clickable.disable_highlight()
                 self.curr_clickable = None
 
-    def execute_click(self):
+    def execute_click(self, is_button_down=True):
+        if not is_button_down:
+            self.cursor.release()
+
         if self.curr_clickable:
-            self.curr_clickable.click()
+            if is_button_down:
+                self.curr_clickable.click(self.cursor)
+            else:
+                self.curr_clickable.declick(self.cursor)
+
 
 """
 This class is the base class for all clickable objects in the game.
@@ -179,7 +219,13 @@ class Clickable(Renderable):
     def disable_highlight(self):
         self.is_highlighted = False
 
-    def click(self):
+    def click(self, cursor: Cursor):
+        pass
+
+    def declick(self):
+        pass
+
+    def hold_draw(self, context: RenderContext):
         pass
 
 
@@ -210,30 +256,6 @@ pygame.font.init()
 
 def get_piece_code(piece_type: chess.PieceType, color: chess.Color):
     return color * 6 + piece_type
-
-
-class Cursor(Renderable):
-    def __init__(self, renderer: Renderer):
-        super().__init__(renderer, Point(0,0), order=cfg.CURSOR_ORDER)
-
-        self.surface = pygame.Surface((cfg.cursor["size"], cfg.cursor["size"]))
-        self.mask = utils.plus_cursor_mask(cfg.cursor["size"], cfg.cursor["bottom"], cfg.cursor["top"])[:, :, None]
-
-        CursorShadow(renderer, self) 
-
-    def draw(self, context: RenderContext):
-        self.set_rel_pos(Point(context.cursor_pos.x - cfg.cursor["offset"], context.cursor_pos.y - cfg.cursor["offset"]))
-
-        self.surface.blit(context.screen, (0, 0), (*self.abs_pos, cfg.cursor["size"], cfg.cursor["size"]))
-        context.screen.blit(pygame.surfarray.make_surface(self.mask + pygame.surfarray.array3d(self.surface)), self.abs_pos)
-
-
-class CursorShadow(Renderable):
-    def __init__(self, renderer: Renderer, parent: Cursor):
-        super().__init__(renderer, Point(0,0), parent, order=cfg.CURSOR_SHADOW_ORDER)
-
-    def draw(self, context: RenderContext):
-        context.screen.blit(self.parent.surface, self.abs_pos)
 
 
 """
@@ -293,12 +315,13 @@ class Board(Renderable):
     def get_square(self, square_code: int):
         return self.gui_squares[square_code]
 
-    def square_clicked(self, square_code: int, clicking_color: bool = chess.WHITE, promotion: int = None):
+    def square_clicked(self, square_code: int, clicking_color: bool = chess.WHITE, promotion: int = None, can_select=True):
         if clicking_color != self.board.turn:
             return
 
         if self.currently_selected is None:
-            self.select_square(square_code)
+            if can_select:
+                self.select_square(square_code)
         else:
             is_legal = any(move.from_square == self.currently_selected and move.to_square == square_code
                            for move in self.board.legal_moves)
@@ -316,12 +339,13 @@ class Board(Renderable):
                 if self.currently_selected != square_code:
                     self.deselect_square()
                     if self.board.color_at(square_code) == clicking_color:
-                        self.select_square(square_code)
-                    else:
-                        audio.ILLEGAL_MOVE_SOUND.set_volume(cfg.ILLEGAL_MOVE_VOLUME)
-                        audio.ILLEGAL_MOVE_SOUND.play(loops=0, maxtime=0, fade_ms=0)
-                else:
-                    self.deselect_square()
+                        if can_select:
+                            self.select_square(square_code)
+                    # else: # Play sound every time we do an "illegal move"... Do we really want to do this?
+                    #     audio.ILLEGAL_MOVE_SOUND.set_volume(cfg.ILLEGAL_MOVE_VOLUME)
+                    #     audio.ILLEGAL_MOVE_SOUND.play(loops=0, maxtime=0, fade_ms=0)
+                # else: # Deselect square when we click back on it... Do we really want to do this?
+                #     self.deselect_square()
 
     def select_square(self, square_code: int):
         self.promotion.set_invisible()
@@ -394,6 +418,7 @@ class GUISquare(Clickable):
 
         self.square_code = square_code
         self.piece_code = piece_code
+        self.held = False
 
     def draw(self, context: RenderContext):
         if self.is_highlighted:
@@ -405,14 +430,34 @@ class GUISquare(Clickable):
             context.screen.blit(SQUARE_SURFACE, self.abs_pos)
         
         if self.piece_code != 0:
-            context.screen.blit(PIECE_IMAGES[self.piece_code], self.abs_pos)
+            if self.held:
+                # Draw in place
+                PIECE_IMAGES[self.piece_code].set_alpha(cfg.SQUARES_ALPHA)
+                context.screen.blit(PIECE_IMAGES[self.piece_code], self.abs_pos)
+                PIECE_IMAGES[self.piece_code].set_alpha(255)
+            else:
+                context.screen.blit(PIECE_IMAGES[self.piece_code], self.abs_pos)
 
-    def click(self):
-        self.parent.square_clicked(self.square_code, chess.WHITE)
+    def _click(self, can_select=True):
+        self.parent.square_clicked(self.square_code, chess.WHITE, can_select=can_select)
+
+    def click(self, cursor: Cursor):
+        if self.piece_code != 0:
+            cursor.holding = self
+            self.held = True
+        self._click()
+
+    def declick(self):
+        self._click(False)
+
+    def hold_draw(self, context: RenderContext):
+        # Draw under cursor
+        context.screen.blit(PIECE_IMAGES[self.piece_code], Point(context.cursor_pos.x - cfg.SQUARE_SIZE//2, context.cursor_pos.y - cfg.SQUARE_SIZE//2))
+
 
 class FloatingText(Renderable):
     def __init__(self, renderer: Renderer, rel_pos: Point, text: str, font_size: int, color: Tuple[int, int, int], font: str = cfg.BOARD_TEXT_FONT, parent: Object=None, order=3):
-        super().__init__(renderer, rel_pos, parent)
+        super().__init__(renderer, rel_pos, parent, order)
 
         self.font = pygame.font.Font(font, font_size)
         self.set_text(text, color)
@@ -468,7 +513,6 @@ class PromotionBubble(Renderable):
     def promotion_clicked(self, piece_code: int, color: chess.Color):
         self.parent.square_clicked(self.square_code, color, piece_code)
         
-        
 
 class PromotionButton(Clickable):
     def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Point, bubble_parent: PromotionBubble, piece_code: int=0):
@@ -484,5 +528,5 @@ class PromotionButton(Clickable):
         if self.piece_code != 0:
             context.screen.blit(PIECE_IMAGES[get_piece_code(self.piece_code, self.parent.color)], self.abs_pos)
 
-    def click(self):
+    def click(self, cursor: Cursor):
         self.parent.promotion_clicked(self.piece_code, chess.WHITE)

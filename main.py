@@ -14,7 +14,7 @@ WIDTH, HEIGHT = 800, 800
 
 # Create the screen
 renderer = objects.Renderer(objects.Point(WIDTH, HEIGHT))
-clicker = objects.Clicker()
+clicker = objects.Clicker(renderer)
 
 objects.load_consts()
 
@@ -25,14 +25,12 @@ engine.configure({
 
 board = objects.Board(renderer, clicker, objects.Point(10, 10))
 context_text = objects.FloatingText(renderer, objects.Point(10, 700), "Press \'R\' to restart", 16, cfg.colors["boardtext"])
-cursor = objects.Cursor(renderer)
 
 # Main loop
 pygame.mouse.set_visible(False)
 running = True
 game_ended = False
 engine_move = None
-left_mouse_down = False
 
 while running:
     mouse_pos = objects.Point(*pygame.mouse.get_pos())         
@@ -42,18 +40,15 @@ while running:
             case pygame.QUIT:
                 running = False
             case pygame.MOUSEBUTTONDOWN:
-                if not game_ended:
-                    if event.button == 1 and not left_mouse_down:
-                        left_mouse_down = True
-                        clicker.execute_click()
+                if event.button == 1:
+                    clicker.execute_click()
             case pygame.MOUSEBUTTONUP:
-                if not game_ended:
-                    if event.button == 1:
-                        left_mouse_down = False
+                if event.button == 1:
+                    clicker.execute_click(False)
             case pygame.KEYDOWN:
                 if event.key == pygame.K_r:
+                    clicker.cursor.release()
                     board.reset()
-                    renderer.screen.fill(cfg.colors["background"]) # To avoid strange artifacts
                     context_text.set_text("Press \'R\' to restart", cfg.colors["boardtext"])
                     game_ended = False
             case utils.TURN_DONE:
