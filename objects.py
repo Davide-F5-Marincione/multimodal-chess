@@ -1,5 +1,6 @@
 from typing import *
 import pygame
+import bisect
 import chess
 import io
 
@@ -8,12 +9,20 @@ import audio
 import utils
 
 
+class Point(NamedTuple):
+    x: int
+    y: int
+
+
 """
 This class is the base class for all objects in the game.
 It has a parent-child relationship with other objects.
 """
 class Object:
-    def __init__(self, rel_pos: Tuple[int, int], parent=None):
+    def __init__(self, rel_pos: Point, parent=None):
+        Object.counter += 1
+        self.id = Object.counter
+
         self.parent = parent
         if parent:
             self.parent.children.append(self)
@@ -21,12 +30,12 @@ class Object:
 
         self.set_rel_pos(rel_pos)
 
-    def set_rel_pos(self, rel_pos: Tuple[int, int]):
+    def set_rel_pos(self, rel_pos: Point):
         self.rel_pos = rel_pos
         
         if self.parent:
             rel_pos = self.parent.get_abs_pos()
-            self.abs_pos = rel_pos[0] + self.rel_pos[0], rel_pos[1] + self.rel_pos[1]
+            self.abs_pos = Point(rel_pos.x + self.rel_pos.x, rel_pos.y + self.rel_pos.y)
         else:
             self.abs_pos = self.rel_pos
 
@@ -38,58 +47,69 @@ class Object:
     
     def get_abs_pos(self):
         return self.abs_pos
+    
+    def __eq__(self, other: Self):
+        if not isinstance(other, Object):
+            return False
+        return self.id == other.id
+    
+    def __lt__(self, other):
+        if not isinstance(other, Object):
+            return False
+        return self.id < other.id
+    
+    def __gt__(self, other):
+        if not isinstance(other, Object):
+            return False
+        return self.id > other.id
+    
+Object.counter = 0
+
+
+class RenderContext(NamedTuple):
+    screen: pygame.Surface
+    cursor_pos: Point
+
 
 """
 This class represents a renderer that draws objects on the screen.
 """
 class Renderer:
-    def __init__(self, size: Tuple[int, int]):
+    def __init__(self, size: Point):
         self.size = size
         self.screen = pygame.display.set_mode(size)
         self.screen.fill(cfg.colors["background"])
 
         self.renderables = []
 
-        self.cursor_mask = utils.plus_cursor_mask(cfg.cursor["size"], cfg.cursor["bottom"], cfg.cursor["top"])[:, :, None]
+    def add_renderable(self, renderable, order=0):
+        bisect.insort(self.renderables, (renderable.order, renderable))
 
-    def step(self, cursor_pos: Tuple[int, int]):
-        for renderable in self.renderables:
+    def step(self, cursor_pos: Point):
+        render_context = RenderContext(self.screen, cursor_pos)
+
+        for _, renderable in self.renderables:
             if renderable.is_visible:
-                renderable.draw(self.screen)
-
-        cursor_pos = cursor_pos[0] - cfg.cursor["offset"], cursor_pos[1] - cfg.cursor["offset"]
-
-        # Capture the area under the cursor
-        area = pygame.Surface((cfg.cursor["size"], cfg.cursor["size"]))
-        area.blit(self.screen, (0, 0), (*cursor_pos, cfg.cursor["size"], cfg.cursor["size"]))
-
-        # Convert the surface to a numpy array and make the colors contrasting
-        inverted_pixels = self.cursor_mask + pygame.surfarray.array3d(area)
-
-        # Convert the inverted array back to a surface and blit it to the screen
-        inverted_area = pygame.surfarray.make_surface(inverted_pixels)
-        self.screen.blit(inverted_area, cursor_pos)
+                renderable.draw(render_context)
 
         # Update the display
         pygame.display.flip()
-
-        # Reset colors
-        self.screen.blit(area, cursor_pos)
 
 
 """
 This class is the base class for all renderable objects in the game.
 """
 class Renderable(Object):
-    def __init__(self, renderer: Renderer, rel_pos: Tuple[int, int], parent: Object=None):
+    def __init__(self, renderer: Renderer, rel_pos: Point, parent: Object=None, order=0):
         super().__init__(rel_pos, parent)
 
         self.surface = None
         self.is_visible = True
-        renderer.renderables.append(self)
+        self.order = order
+        renderer.add_renderable(self)
 
-    def draw(self, screen: pygame.Surface):
-        screen.blit(self.surface, self.abs_pos)
+    def draw(self, context: RenderContext):
+        context.screen.blit(self.surface, self.abs_pos)
     
     def set_visible(self):
         self.is_visible = True
@@ -109,40 +129,49 @@ This class is responsible for colliding clicks to objects.
 class Clicker:
     def __init__(self):
         self.clickables = []
-        self.curr_clickable = (-1, None)    #priority, object 
+        self.curr_clickable = None
 
-    def highlight(self, cursor_pos: Tuple[int, int]):
+    def add_clickable(self, clickable):
+        bisect.insort(self.clickables, (clickable.order, clickable))
+
+    def highlight(self, cursor_pos: Point):
         # Should be done with a quadtree (?) Naaaaah, it's O(n)
-        self.curr_clickable = (-1, None)
-        for clickable in self.clickables:
+        found = None
+        for _, clickable in self.clickables[::-1]:
             if not clickable.is_visible:
                 continue
-            left, top = clickable.abs_pos[0], clickable.abs_pos[1]
-            right, bottom = left + clickable.rect[0], top + clickable.rect[1]
+            left, top = clickable.abs_pos.x, clickable.abs_pos.y
+            right, bottom = left + clickable.rect.x, top + clickable.rect.y
 
-            if left < cursor_pos[0] <= right and top < cursor_pos[1] <= bottom and self.curr_clickable[0] <= clickable.priority:
-                self.curr_clickable = (clickable.priority, clickable)
-            
-            clickable.disable_highlight()
-
-        if self.curr_clickable[1]:
-            self.curr_clickable[1].enable_highlight()
+            if left < cursor_pos.x <= right and top < cursor_pos.y <= bottom:
+                found = clickable
+                break
+        
+        if not found is None:
+            if found != self.curr_clickable:
+                if self.curr_clickable:
+                    self.curr_clickable.disable_highlight()
+                self.curr_clickable = found
+                self.curr_clickable.enable_highlight()
+        else:
+            if self.curr_clickable:
+                self.curr_clickable.disable_highlight()
+                self.curr_clickable = None
 
     def execute_click(self):
-        if self.curr_clickable[1]:
-            self.curr_clickable[1].click()
+        if self.curr_clickable:
+            self.curr_clickable.click()
 
 """
 This class is the base class for all clickable objects in the game.
 """
 class Clickable(Renderable):
-    def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Tuple[int, int], rect: Tuple[int, int], priority=0, parent: Object=None):
-        super().__init__(renderer, rel_pos, parent)
+    def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Point, rect: Point, order=0, parent: Object=None):
+        super().__init__(renderer, rel_pos, parent, order)
         self.rect = rect
         self.is_highlighted = False
-        self.priority = priority
 
-        clicker.clickables.append(self)
+        clicker.add_clickable(self)
 
     def enable_highlight(self):
         self.is_highlighted = True
@@ -182,12 +211,37 @@ pygame.font.init()
 def get_piece_code(piece_type: chess.PieceType, color: chess.Color):
     return color * 6 + piece_type
 
+
+class Cursor(Renderable):
+    def __init__(self, renderer: Renderer):
+        super().__init__(renderer, Point(0,0), order=cfg.CURSOR_ORDER)
+
+        self.surface = pygame.Surface((cfg.cursor["size"], cfg.cursor["size"]))
+        self.mask = utils.plus_cursor_mask(cfg.cursor["size"], cfg.cursor["bottom"], cfg.cursor["top"])[:, :, None]
+
+        CursorShadow(renderer, self) 
+
+    def draw(self, context: RenderContext):
+        self.set_rel_pos(Point(context.cursor_pos.x - cfg.cursor["offset"], context.cursor_pos.y - cfg.cursor["offset"]))
+
+        self.surface.blit(context.screen, (0, 0), (*self.abs_pos, cfg.cursor["size"], cfg.cursor["size"]))
+        context.screen.blit(pygame.surfarray.make_surface(self.mask + pygame.surfarray.array3d(self.surface)), self.abs_pos)
+
+
+class CursorShadow(Renderable):
+    def __init__(self, renderer: Renderer, parent: Cursor):
+        super().__init__(renderer, Point(0,0), parent, order=cfg.CURSOR_SHADOW_ORDER)
+
+    def draw(self, context: RenderContext):
+        context.screen.blit(self.parent.surface, self.abs_pos)
+
+
 """
 This class represents the board.
 """
 class Board(Renderable):
-    def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Tuple[int, int], starting_fen: str=None):
-        super().__init__(renderer, rel_pos)
+    def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Point, starting_fen: str=None):
+        super().__init__(renderer, rel_pos, order=cfg.BOARD_ORDER)
         
         self.currently_selected = None
 
@@ -195,7 +249,7 @@ class Board(Renderable):
         for file in range(8):
             for rank in range(8):
                 square_code = chess.square(file, (7-rank))
-                self.gui_squares[square_code] = GUISquare(renderer, clicker, (file*cfg.SQUARE_SIZE, rank*cfg.SQUARE_SIZE), self, square_code, piece_code=0)
+                self.gui_squares[square_code] = GUISquare(renderer, clicker, Point(file*cfg.SQUARE_SIZE, rank*cfg.SQUARE_SIZE), self, square_code, piece_code=0)
 
         if starting_fen:
             self.board = chess.Board(starting_fen)
@@ -204,7 +258,7 @@ class Board(Renderable):
             
             
         # Instatiate Promotion Bubble 
-        self.promotion = PromotionBubble(renderer, clicker, (0, 0), self)
+        self.promotion = PromotionBubble(renderer, clicker, Point(0, 0), self)
         self.promotion.set_invisible()
 
         self.update_board()
@@ -324,8 +378,9 @@ class Board(Renderable):
 
 
     def reset(self):
-        self.deselect_square()
         self.board.reset()
+
+        self.deselect_square()
         self.update_board()
 
 
@@ -333,48 +388,30 @@ class Board(Renderable):
 This class represents a square on the board.
 """
 class GUISquare(Clickable):
-    def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Tuple[int, int], board_parent: Board, square_code: int, piece_code: int=0):
-        super().__init__(renderer, clicker, rel_pos, (cfg.SQUARE_SIZE, cfg.SQUARE_SIZE), cfg.SQUARE_CLICK_PRIORITY, board_parent)
+    def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Point, board_parent: Board, square_code: int, piece_code: int=0):
+        super().__init__(renderer, clicker, rel_pos, Point(cfg.SQUARE_SIZE, cfg.SQUARE_SIZE), cfg.GUISQUARE_ORDER, board_parent)
         self.draw_state = None
 
         self.square_code = square_code
         self.piece_code = piece_code
 
-    def draw(self, screen: pygame.Surface):
+    def draw(self, context: RenderContext):
         if self.is_highlighted:
             SQUARE_SURFACE.fill(cfg.colors["highlight"])
-            screen.blit(SQUARE_SURFACE, self.abs_pos)
+            context.screen.blit(SQUARE_SURFACE, self.abs_pos)
 
         if self.draw_state:
             SQUARE_SURFACE.fill(cfg.colors[self.draw_state])
-            screen.blit(SQUARE_SURFACE, self.abs_pos)
+            context.screen.blit(SQUARE_SURFACE, self.abs_pos)
         
         if self.piece_code != 0:
-            screen.blit(PIECE_IMAGES[self.piece_code], self.abs_pos)
+            context.screen.blit(PIECE_IMAGES[self.piece_code], self.abs_pos)
 
     def click(self):
         self.parent.square_clicked(self.square_code, chess.WHITE)
 
-
-class RestartButton(Clickable):
-    def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Tuple[int, int], board: Board, border_dist=(10, 4)):
-        font = pygame.font.Font(cfg.BOARD_TEXT_FONT, cfg.RESTART_BUTTON_TEXT_SIZE)
-        size = font.size("restart")
-        size = size[0] + border_dist[0]*2, size[1] + border_dist[1]*2
-
-        super().__init__(renderer, clicker, rel_pos, size, cfg.SQUARE_CLICK_PRIORITY)
-        self.board = board
-
-        self.surface = pygame.image.load(io.BytesIO(utils.make_svg_restart(size=size, stroke_width=cfg.RESTART_BUTTON_STROKE_WIDTH).encode())).convert_alpha()
-
-        text = font.render("restart", cfg.TEXT_ANTIALIAS, cfg.colors["restart_button"], cfg.colors["background"])
-        self.surface.blit(text, border_dist)
-
-    def click(self):
-        self.board.reset()
-
 class FloatingText(Renderable):
-    def __init__(self, renderer: Renderer, rel_pos: Tuple[int, int], text: str, font_size: int, color: Tuple[int, int, int], font: str = cfg.BOARD_TEXT_FONT, parent: Object=None):
+    def __init__(self, renderer: Renderer, rel_pos: Point, text: str, font_size: int, color: Tuple[int, int, int], font: str = cfg.BOARD_TEXT_FONT, parent: Object=None, order=3):
         super().__init__(renderer, rel_pos, parent)
 
         self.font = pygame.font.Font(font, font_size)
@@ -388,17 +425,17 @@ class FloatingText(Renderable):
 
 # Class to test that the promotion bubble i did is of correct size, <3, gne 
 class PromotionBubble(Renderable):
-    def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Tuple[int, int], board_parent: Board):
-        super().__init__(renderer, rel_pos, board_parent)
+    def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Point, board_parent: Board):
+        super().__init__(renderer, rel_pos, board_parent, cfg.PROMOTION_BUBBLE_ORDER)
         self.surface = PROMOTION_BUBBLE_IMAGE 
         self.mirror = False
         self.square_code = None
         self.color = None
         
-        self.kb = PromotionButton(renderer, clicker, (0,0), self, chess.KNIGHT)
-        self.bb = PromotionButton(renderer, clicker, (0,0), self, chess.BISHOP)
-        self.rb = PromotionButton(renderer, clicker, (0,0), self, chess.ROOK)
-        self.qb = PromotionButton(renderer, clicker, (0,0), self, chess.QUEEN)
+        self.kb = PromotionButton(renderer, clicker, Point(0,0), self, chess.KNIGHT)
+        self.bb = PromotionButton(renderer, clicker, Point(0,0), self, chess.BISHOP)
+        self.rb = PromotionButton(renderer, clicker, Point(0,0), self, chess.ROOK)
+        self.qb = PromotionButton(renderer, clicker, Point(0,0), self, chess.QUEEN)
 
     def setup(self, square_code: int, color: chess.Color):
         self.square_code = square_code
@@ -408,25 +445,25 @@ class PromotionBubble(Renderable):
 
         # some magic numbers to make the buttons flush with the bubble
         if self.mirror:
-            self.kb.set_rel_pos((cfg.SQUARE_SIZE*0.08,cfg.SQUARE_SIZE*1.29))
-            self.bb.set_rel_pos((cfg.SQUARE_SIZE*1.08,cfg.SQUARE_SIZE*1.29))
-            self.rb.set_rel_pos((cfg.SQUARE_SIZE*2.08,cfg.SQUARE_SIZE*1.29))
-            self.qb.set_rel_pos((cfg.SQUARE_SIZE*3.08,cfg.SQUARE_SIZE*1.29))
-            self.set_rel_pos(((square_code % 8 - 3.5)* cfg.SQUARE_SIZE, (7 - square_code // 8) * cfg.SQUARE_SIZE))
+            self.kb.set_rel_pos(Point(cfg.SQUARE_SIZE*0.08,cfg.SQUARE_SIZE*1.29))
+            self.bb.set_rel_pos(Point(cfg.SQUARE_SIZE*1.08,cfg.SQUARE_SIZE*1.29))
+            self.rb.set_rel_pos(Point(cfg.SQUARE_SIZE*2.08,cfg.SQUARE_SIZE*1.29))
+            self.qb.set_rel_pos(Point(cfg.SQUARE_SIZE*3.08,cfg.SQUARE_SIZE*1.29))
+            self.set_rel_pos(Point((square_code % 8 - 3.5)* cfg.SQUARE_SIZE, (7 - square_code // 8) * cfg.SQUARE_SIZE))
         else:
-            self.kb.set_rel_pos((cfg.SQUARE_SIZE*0.43,cfg.SQUARE_SIZE*1.29))
-            self.bb.set_rel_pos((cfg.SQUARE_SIZE*1.43,cfg.SQUARE_SIZE*1.29))
-            self.rb.set_rel_pos((cfg.SQUARE_SIZE*2.43,cfg.SQUARE_SIZE*1.29))
-            self.qb.set_rel_pos((cfg.SQUARE_SIZE*3.43,cfg.SQUARE_SIZE*1.29))
-            self.set_rel_pos((square_code % 8 * cfg.SQUARE_SIZE, (7 - square_code // 8) * cfg.SQUARE_SIZE))
+            self.kb.set_rel_pos(Point(cfg.SQUARE_SIZE*0.43,cfg.SQUARE_SIZE*1.29))
+            self.bb.set_rel_pos(Point(cfg.SQUARE_SIZE*1.43,cfg.SQUARE_SIZE*1.29))
+            self.rb.set_rel_pos(Point(cfg.SQUARE_SIZE*2.43,cfg.SQUARE_SIZE*1.29))
+            self.qb.set_rel_pos(Point(cfg.SQUARE_SIZE*3.43,cfg.SQUARE_SIZE*1.29))
+            self.set_rel_pos(Point(square_code % 8 * cfg.SQUARE_SIZE, (7 - square_code // 8) * cfg.SQUARE_SIZE))
 
         self.set_visible()  
     
-    def draw(self,screen: pygame.Surface):
+    def draw(self, context: RenderContext):
         if self.mirror:
-            screen.blit(pygame.transform.flip(self.surface, True, False), self.abs_pos)
+            context.screen.blit(pygame.transform.flip(self.surface, True, False), self.abs_pos)
         else:
-            screen.blit(self.surface, self.abs_pos) 
+            context.screen.blit(self.surface, self.abs_pos) 
     
     def promotion_clicked(self, piece_code: int, color: chess.Color):
         self.parent.square_clicked(self.square_code, color, piece_code)
@@ -434,18 +471,18 @@ class PromotionBubble(Renderable):
         
 
 class PromotionButton(Clickable):
-    def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Tuple[int, int], bubble_parent: PromotionBubble, piece_code: int=0):
-        super().__init__(renderer, clicker, rel_pos, (cfg.SQUARE_SIZE, cfg.SQUARE_SIZE), cfg.PROMOTION_CLICK_PRIORITY, bubble_parent)
+    def __init__(self, renderer: Renderer, clicker: Clicker, rel_pos: Point, bubble_parent: PromotionBubble, piece_code: int=0):
+        super().__init__(renderer, clicker, rel_pos, (cfg.SQUARE_SIZE, cfg.SQUARE_SIZE), cfg.PROMOTION_SQUARE_ORDER, bubble_parent)
 
         self.piece_code = piece_code
 
-    def draw(self, screen: pygame.Surface):
+    def draw(self, context: RenderContext):
         if self.is_highlighted:
             SQUARE_SURFACE.fill(cfg.colors["promotion_highlight"])
-            screen.blit(SQUARE_SURFACE, self.abs_pos)
+            context.screen.blit(SQUARE_SURFACE, self.abs_pos)
         
         if self.piece_code != 0:
-            screen.blit(PIECE_IMAGES[get_piece_code(self.piece_code, self.parent.color)], self.abs_pos)
+            context.screen.blit(PIECE_IMAGES[get_piece_code(self.piece_code, self.parent.color)], self.abs_pos)
 
     def click(self):
         self.parent.promotion_clicked(self.piece_code, chess.WHITE)

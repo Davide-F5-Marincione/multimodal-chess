@@ -13,18 +13,19 @@ pygame.init()
 WIDTH, HEIGHT = 800, 800
 
 # Create the screen
-renderer = objects.Renderer((WIDTH, HEIGHT))
+renderer = objects.Renderer(objects.Point(WIDTH, HEIGHT))
 clicker = objects.Clicker()
 
 objects.load_consts()
 
 engine = chess.engine.SimpleEngine.popen_uci(".\stockfish\stockfish-windows-x86-64-avx2.exe")
 engine.configure({
-    "Skill Level": 1
+    "Skill Level": 20
 })
 
-board = objects.Board(renderer, clicker, (10, 10))
-context_text = objects.FloatingText(renderer, (10, 700), "Press \'R\' to restart", 16, cfg.colors["boardtext"])
+board = objects.Board(renderer, clicker, objects.Point(10, 10))
+context_text = objects.FloatingText(renderer, objects.Point(10, 700), "Press \'R\' to restart", 16, cfg.colors["boardtext"])
+cursor = objects.Cursor(renderer)
 
 # Main loop
 pygame.mouse.set_visible(False)
@@ -32,10 +33,9 @@ running = True
 game_ended = False
 engine_move = None
 left_mouse_down = False
-elapsed_time = 0
 
 while running:
-    mouse_pos = pygame.mouse.get_pos()         
+    mouse_pos = objects.Point(*pygame.mouse.get_pos())         
     clicker.highlight(mouse_pos)
     for event in pygame.event.get():
         match event.type:
@@ -43,7 +43,7 @@ while running:
                 running = False
             case pygame.MOUSEBUTTONDOWN:
                 if not game_ended:
-                    if event.button == 1 and left_mouse_down:
+                    if event.button == 1 and not left_mouse_down:
                         left_mouse_down = True
                         clicker.execute_click()
             case pygame.MOUSEBUTTONUP:
@@ -53,6 +53,7 @@ while running:
             case pygame.KEYDOWN:
                 if event.key == pygame.K_r:
                     board.reset()
+                    renderer.screen.fill(cfg.colors["background"]) # To avoid strange artifacts
                     context_text.set_text("Press \'R\' to restart", cfg.colors["boardtext"])
                     game_ended = False
             case utils.TURN_DONE:
@@ -66,7 +67,6 @@ while running:
                 if not game_ended:
                     board.square_clicked(engine_move.to_square, chess.BLACK, engine_move.promotion)
                     engine_move = None
-                    elapsed_time = 0
             case utils.GAME_ENDED:
                 game_ended = True
                 context_text.set_text("Game ended! Press \'R\' to restart", cfg.colors["redtext"])
