@@ -82,7 +82,7 @@ class Renderer:
 
         self.renderables = []
 
-    def add_renderable(self, renderable, order=0):
+    def add_renderable(self, renderable):
         bisect.insort(self.renderables, (renderable.order, renderable))
 
     def step(self, cursor_pos: Point):

@@ -8,7 +8,6 @@ colors = dict(
     danger = "#f64141",
     boardtext = "#f0f0f0",
     redtext = "#f04040",
-    restart_button = "#c4c4c4",
     promotion_highlight = "#7ff461"
 )
 
@@ -22,8 +21,6 @@ BOARD_TEXT_H_DISTANCE = 10
 BOARD_TEXT_V_DISTANCE = 7
 BOARD_TEXT_FONT = "resources\RobotoMono-VariableFont_wght.ttf"
 
-RESTART_BUTTON_TEXT_SIZE = 18
-RESTART_BUTTON_STROKE_WIDTH = 4
 
 cursor = dict(
     offset = 9,
