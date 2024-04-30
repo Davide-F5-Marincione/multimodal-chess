@@ -48,7 +48,7 @@ class Object:
     def get_abs_pos(self):
         return self.abs_pos
     
-    def __eq__(self, other: Self):
+    def __eq__(self, other):
         if not isinstance(other, Object):
             return False
         return self.id == other.id
