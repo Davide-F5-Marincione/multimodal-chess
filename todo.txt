@@ -1,8 +1,23 @@
-MULTIMODALITY 
+Gestures:
+    1. Moving cursor with hand (both translation and rotation).
+        a. Find position of hand in 3d space (weighted average between certain landmarks of hand).
+        b. Find normal of hand (cross product between certain vectors of hand's landmarks).
+        c. Find closest point on screen from hand (intersection between screen and line perpendicular to the screen passing through hand).
+        d. Find intersection between screen and hand's normal.
+        e. Interpolate between the two points (closest one and intersection) and decide how to move cursor.
+    2. Recognize gestures:
+        a. Grabbing and dropping
+        b. Selecting
 
- - Gestures 
- 
- - Speech Interaction 
-
-
-
+Speech Interaction:
+    1. Define the possible sentences.
+        "Pezzo1 a rango1 e fila1 muovi/cattura pezzo2 a rango2 e fila2, promuovi a pezzo3" = (pezzo1, rango1, fila1, tipo_di_comando, pezzo2, rango2, fila2, pezzo3)
+        "promuovi a pezzo3" = (None, None, None, None, None, None, None, pezzo3)
+        "King-side/Queen-side castle" = (pezzo1, None, None, move, None, rango2, fila2, None)
+        "cattura pezzo2" = (None, None, None, tipo_di_comando, pezzo2, None, None, None)
+        "cattura in rango e fila" = (None, None, None, tipo_di_comando, None, rango2, fila2, None)
+        a. Translate sentences into "universal commands".
+    2. Fill missing info from universal commands through game context.
+        a. Recover missing info, error if given information is not enough to process a unique command.
+        b. Check whether it is a legal move.
+    3. Execute command.
