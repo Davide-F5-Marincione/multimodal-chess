@@ -26,22 +26,22 @@ running = True
 cursor_pos = objects.Point(0, 0)
 mouse_pos = objects.Point(0, 0)
 
-hand_detector.start()
-
 while running:
     new_mouse_pos = objects.Point(*pygame.mouse.get_pos())
+    hand_detector.update()
     if new_mouse_pos != mouse_pos:
         mouse_pos = new_mouse_pos
         cursor_pos = mouse_pos
     else:
-        hand_pos, bad = hand_detector.read()
-        if not bad:
-            if hand_pos[1] > .5:
+        if not hand_detector.reset:
+            if hand_detector.handedness > .5:
                 context_text.set_text("Right hand detected")
             else:
                 context_text.set_text("Left hand detected")
 
-            cursor_pos = objects.Point(int(hand_pos[0][0] * WIDTH), int(hand_pos[0][1] * HEIGHT))
+            cursor_pos = objects.Point(int(hand_detector.cursor_pos[0] * WIDTH), int(hand_detector.cursor_pos[1] * HEIGHT))
+        else:
+            context_text.set_text("No hand detected")
     
     clicker.highlight(cursor_pos)
     for event in pygame.event.get():
@@ -56,6 +56,8 @@ while running:
                     clicker.execute_click(False)
                 
     renderer.step(cursor_pos)
+
+hand_detector.stop()
 
 # Quit Pygame
 pygame.quit()

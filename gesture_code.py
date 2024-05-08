@@ -1,7 +1,6 @@
 import cv2 as cv
+import numpy as np
 import mediapipe as mp
-from typing import List
-from threading import Thread
 
 from timeit import default_timer as timer
 
@@ -9,14 +8,10 @@ def extract_hand_pos(landmarks):
     x = landmarks[0].x * .5 + landmarks[5].x * .125 + landmarks[9].x * .125 + landmarks[13].x * .125 + landmarks[17].x * .125
     y = landmarks[0].y * .5 + landmarks[5].y * .125 + landmarks[9].y * .125 + landmarks[13].y * .125 + landmarks[17].y * .125
     z = landmarks[0].z * .5 + landmarks[5].z * .125 + landmarks[9].z * .125 + landmarks[13].z * .125 + landmarks[17].z * .125
-    return x, y, z
-
-def avg_hand_pos(hand_pos1, hand_pos2, alpha=.5):
-    return tuple(map(lambda x, y: (1-alpha)*x + alpha*y, hand_pos1, hand_pos2))
-
+    return np.array((x, y, z), dtype=np.float32)
 
 class HandDetector:
-    def __init__(self, model_path='hand_landmarker.task', h_flip=False, alpha=.86, reset_time_ms=1000, decay_v=.86):
+    def __init__(self, model_path='hand_landmarker.task', h_flip=False, alpha=.86, in_time=.1, reset_delay=1):
         self.h_flip = h_flip
 
         self.cam = cv.VideoCapture(0)
@@ -29,33 +24,27 @@ class HandDetector:
         if self.grabbed is False:
             print('No frames to read')
             exit(0)
-        self.stopped = True
-        self.reset = False
 
-        self.hand_info = ((0,0,0), 0, (0,0,0))
+        self.screenspace_hand_pos = np.zeros(3, dtype=np.float32)
+        self.cursor_pos = np.zeros(3, dtype=np.float32)
+        self.cursor_vel = np.zeros(3, dtype=np.float32)
+        self.cursor_acc = np.zeros(3, dtype=np.float32)
         self.alpha = alpha
-        self.last_seen = 0
-        self.prev_callback = 0
+
+        self.handedness = 0
+        self.screenspace_handedness = 0
+
+        self.reset_delay = reset_delay
+        self.in_time = in_time
+        self.reset = True
+        self.last_seen_time = 0
+
+        self.prev_time = 0
         
         def callback(result: mp.tasks.vision.HandLandmarkerResult, output_image: mp.Image, timestamp_ms: int):
-            prev_timestamp = self.prev_callback
-            self.prev_callback = timestamp_ms
-            if len(result.hand_landmarks):
-                self.last_seen = self.prev_callback
-                if self.reset:
-                    self.reset = False
-                    self.hand_info = extract_hand_pos(result.hand_landmarks[0]), int(result.handedness[0][0] == "Left"), (0,0,0)
-                else:
-                    curr_handedness = int(result.handedness[0][0] == "Left")
-                    curr_hand_pos = extract_hand_pos(result.hand_landmarks[0])
-                    new_hand_pos = avg_hand_pos(curr_hand_pos, self.hand_info[0], self.alpha)
-                    self.hand_info = new_hand_pos, (1-alpha) * curr_handedness + alpha * self.hand_info[1], tuple(map(lambda x, y: (x - y) / (timestamp_ms - prev_timestamp), new_hand_pos, self.hand_info[0]))
-            else:
-                if timestamp_ms - self.last_seen > reset_time_ms:
-                    self.reset = True
-                elif self.reset is False:
-                    self.hand_info = tuple(map(lambda x, y: x + y * (self.prev_callback - prev_timestamp), self.hand_info[0], self.hand_info[2])), (1-alpha) * curr_handedness + alpha * self.hand_info[1], tuple(map(lambda x, y: (x - y) / (timestamp_ms - prev_timestamp), new_hand_pos, self.hand_info[0]))
-
+            self.result = result
+                    
+        self.result = None
 
         options = mp.tasks.vision.HandLandmarkerOptions(
             base_options=mp.tasks.BaseOptions(model_asset_path=model_path),
@@ -63,35 +52,43 @@ class HandDetector:
             result_callback=callback)
         self.hand_landmarker = mp.tasks.vision.HandLandmarker.create_from_options(options)
 
-        self.t = Thread(target=self.update, args=())
-        self.t.daemon = True
-
-    def start(self):
-        self.reset = True
-        self.stopped = False
-        self.t.start()
 
     def update(self):
-        while True:
-            if self.stopped is True:
-                break
-            self.result = None
-            self.grabbed, self.frame = self.cam.read()
-            if self.grabbed is False:
-                print('No frames to read')
-                self.stopped = True
-                break
+        self.grabbed, self.frame = self.cam.read()
+        if self.grabbed is False:
+            print('No frames to read')
+            self.stopped = True
+            return None
 
-            if self.h_flip:
-                self.frame = cv.flip(self.frame, 1)
-            
-            frame_timestamp_ms = int(timer() * 1000)
-            self.hand_landmarker.detect_async(mp.Image(image_format=mp.ImageFormat.SRGB, data= cv.cvtColor(self.frame, cv.COLOR_BGR2RGB)), frame_timestamp_ms)
+        if self.h_flip:
+            self.frame = cv.flip(self.frame, 1)
 
-        self.cam.release()
+        curr_time = timer()
+        delta_time = curr_time - self.prev_time
+        
+        self.hand_landmarker.detect_async(mp.Image(image_format=mp.ImageFormat.SRGB, data= cv.cvtColor(self.frame, cv.COLOR_BGR2RGB)), int(curr_time * 1000))
 
-    def read(self):
-        return self.hand_info, self.reset
-    
+        ran = False
+
+        if not self.result is None:
+            if len(self.result.hand_landmarks):
+                ran = True
+                self.last_seen_time = curr_time
+                self.screenspace_hand_pos = extract_hand_pos(self.result.hand_landmarks[0])
+                self.screenspace_handedness = float(int(self.result.handedness[0][0].category_name == "Left"))
+                if self.reset:
+                    self.reset = False
+                    self.cursor_pos = self.screenspace_hand_pos
+                    self.handedness = self.screenspace_handedness
+        
+        self.cursor_pos = self.cursor_pos + (self.screenspace_hand_pos - self.cursor_pos) * self.alpha * delta_time / self.in_time
+        self.handedness = self.handedness + (self.screenspace_handedness - self.handedness) * self.alpha * delta_time / self.in_time
+
+        if not ran:
+            if curr_time - self.last_seen_time > self.reset_delay:
+                self.reset = True
+
+        self.prev_time = curr_time
+
     def stop(self):
-        self.stopped = True
+        self.cam.release()
