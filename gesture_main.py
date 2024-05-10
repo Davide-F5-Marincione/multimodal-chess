@@ -1,4 +1,5 @@
 import pygame
+from timeit import default_timer as timer
 
 import objects
 import config as cfg
@@ -26,20 +27,20 @@ running = True
 cursor_pos = objects.Point(0, 0)
 mouse_pos = objects.Point(0, 0)
 
+hand_detector.start()
+
 while running:
+    curr_time = int(timer() * 1000)
     new_mouse_pos = objects.Point(*pygame.mouse.get_pos())
-    hand_detector.update()
+    is_tracking = hand_detector.process_gestures(curr_time)
+
     if new_mouse_pos != mouse_pos:
         mouse_pos = new_mouse_pos
         cursor_pos = mouse_pos
     else:
-        if not hand_detector.reset:
-            if hand_detector.handedness > .5:
-                context_text.set_text("Right hand detected")
-            else:
-                context_text.set_text("Left hand detected")
-
-            cursor_pos = objects.Point(int(hand_detector.cursor_pos[0] * WIDTH), int(hand_detector.cursor_pos[1] * HEIGHT))
+        if is_tracking:
+            context_text.set_text("Detecting hand")
+            cursor_pos = objects.Point(int(hand_detector.hand_pos[0] * WIDTH), int(hand_detector.hand_pos[1] * HEIGHT))
         else:
             context_text.set_text("No hand detected")
     
