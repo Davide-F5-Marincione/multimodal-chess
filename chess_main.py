@@ -1,9 +1,11 @@
 import pygame
 import chess.engine
+from timeit import default_timer as timer
 
 import utils
 import objects
 import config as cfg
+import gesture_code
 
 
 # Initialize Pygame
@@ -25,16 +27,40 @@ engine.configure({
 
 board = objects.Board(renderer, clicker, objects.Point(10, 10))
 context_text = objects.FloatingText(renderer, objects.Point(10, 700), "Press \'R\' to restart", 16, cfg.colors["boardtext"])
+hand_detector = gesture_code.HandDetector(h_flip=True)
 
 # Main loop
 pygame.mouse.set_visible(False)
 running = True
 game_ended = False
 engine_move = None
+cursor_pos = objects.Point(0, 0)
+mouse_pos = objects.Point(0, 0)
+mouse_timestamp = -1000
+last_interaction = -1000
+
+hand_detector.start()
 
 while running:
-    mouse_pos = objects.Point(*pygame.mouse.get_pos())         
-    clicker.highlight(mouse_pos)
+    curr_time = int(timer() * 1000)
+    new_mouse_pos = objects.Point(*pygame.mouse.get_pos())
+    if new_mouse_pos != mouse_pos:
+        mouse_pos = new_mouse_pos
+        mouse_timestamp = curr_time
+    hand_cursor_pos, hand_click, hand_release, hand_timestamp = hand_detector.process_gestures(curr_time)
+
+    if mouse_timestamp >= hand_timestamp:
+        cursor_pos = mouse_pos
+        context_text.set_text("Mouse tracking")
+    else:
+        cursor_pos = objects.Point(int(hand_cursor_pos[0] * WIDTH), int(hand_cursor_pos[1] * HEIGHT))
+        context_text.set_text("Hand tracking")
+        if hand_click:
+            pygame.event.post(pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1))
+        if hand_release:
+            pygame.event.post(pygame.event.Event(pygame.MOUSEBUTTONUP, button=1))
+
+    clicker.highlight(cursor_pos)
     for event in pygame.event.get():
         match event.type:
             case pygame.QUIT:
@@ -66,7 +92,7 @@ while running:
                 game_ended = True
                 context_text.set_text("Game ended! Press \'R\' to restart", cfg.colors["redtext"])
                 
-    renderer.step(mouse_pos)
+    renderer.step(cursor_pos)
 
 engine.close()
 
