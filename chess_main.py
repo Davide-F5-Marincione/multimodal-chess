@@ -51,10 +51,8 @@ while running:
 
     if mouse_timestamp >= hand_timestamp:
         cursor_pos = mouse_pos
-        context_text.set_text("Mouse tracking")
     else:
         cursor_pos = objects.Point(int(hand_cursor_pos[0] * WIDTH), int(hand_cursor_pos[1] * HEIGHT))
-        context_text.set_text("Hand tracking")
         if hand_click:
             pygame.event.post(pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1))
         if hand_release:

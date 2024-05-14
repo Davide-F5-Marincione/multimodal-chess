@@ -71,7 +71,7 @@ class Hand:
         dot = np.dot(thumb_vec, index_vec)
         dist = np.linalg.norm(thumb_vec - index_vec)
 
-        return dot >= (.8 if prev_click else .9) and dist <= (.8 if prev_click else .5)
+        return dot >= (.75 if prev_click else .93) and dist <= (1 if prev_click else .4)
 
 class HandDetector:
     def __init__(self, model_path='hand_landmarker.task', h_flip=False, cursor_speed=.5, delete_gesture_ms=200, end_tracking_ms=700, min_cursor_movement=.01):
