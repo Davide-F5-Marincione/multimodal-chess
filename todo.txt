@@ -11,8 +11,8 @@ Gestures:
 
 Speech Interaction:
     1. Define the possible sentences.
-        "Pezzo1 a rango1 e fila1 muovi/cattura pezzo2 a rango2 e fila2, promuovi a pezzo3" = (pezzo1, rango1, fila1, tipo_di_comando, pezzo2, rango2, fila2, pezzo3)
-        "promuovi a pezzo3" = (None, None, None, None, None, None, None, pezzo3)
+        "Pezzo1 a rango1 e fila1 muovi/cattura pezzo2 a rango2 e fila2, promuovi a pezzo3" = (src_piece, src_rank, src_file, command, tgt_piece, tgt_rank, tgt_file, prm_piece)
+        "promuovi a pezzo3" = (None, None, None, None, None, None, None, prm_piece)
         "King-side/Queen-side castle" = (pezzo1, None, None, move, None, rango2, fila2, None)
         "cattura pezzo2" = (None, None, None, tipo_di_comando, pezzo2, None, None, None)
         "cattura in rango e fila" = (None, None, None, tipo_di_comando, None, rango2, fila2, None)

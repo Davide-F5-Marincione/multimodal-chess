@@ -1,0 +1,37 @@
+# Possible Phrases and Structure
+
+1.  'Move Queen to H7'                           -> VERB SRC_PIECE PREP TGT_SQUARE
+2.  'Move Queen on H8 to H7'                     -> VERB SRC_PIECE PREP SRC_SQUARE PREP TGT_SQUARE
+3.  'Move Queen'                                 -> VERB SRC_PIECE
+4.  'Move E7 to E8'                              -> VERB SRC_SQUARE PREP TGT_SQUARE 
+
+5.  'Capture Bishop'                             -> VERB TGT_PIECE
+6.  'Capture Bishop on E4 with Queen'            -> VERB TGT_PIECE PREP TGT_SQUARE PREP SRC_PIECE
+7.  'Capture E4'                                 -> VERB TGT_SQUARE 
+8.  'Promote Pawn to Queen'                      -> VERB SRC_PIECE PREP PRM_PIECE
+9.  'Move E7 to E8 and promote to Queen'         -> VERB SRC_SQUARE PREP TGT_SQUARE PREP VERB PREP PRM_PIECE
+10. 'Promote to Queen'                           -> VERB PREP PRM_PIECE
+
+
+11. 'Queen on H8 move to H7'                    -> SRC_PIECE PREP SRC_SQUARE VERB PREP TGT_SQUARE
+12. 'Queen capture E4'                           -> SRC_PIECE VERB TGT_SQUARE
+13. 'Queen capture Bishop'                       -> SRC_PIECE VERB TGT_PIECE
+14. 'Queen on H8 capture E4'                     -> SRC_PIECE PREP SRC_SQUARE VERB TGT_SQUARE
+15. 'Queen on H8 capture Bishop on E4'           -> SRC_PIECE PREP SRC_SQUARE VERB TGT_PIECE PREP TGT_SQUARE
+16. 'Pawn capture Knight and promote to Queen'   -> SRC_PIECE VERB TGT_PIECE VERB PREP PRM_PIECE
+
+
+# SPECIAL CASES 
+16. 'LongSide Castle' : 'Long Castle'  : 'QueenSide Castle' -> src_sqr = file4 ; -> tgt_sqr = file6 
+17. 'ShortSide Castle': 'Short Castle' : 'Kingside Castle'  -> src_sqr = file4 ; -> tgt_sqr = file2 
+
+
+# General Structure Rules 
+1. When PIECE and SQUARE are together, the order is PIECE SQUARE
+2. There must be a VERB in the command
+3. VERBs either come at the start or after the first PIECE/SQUARE
+4. VERBs must always have a target (not necessarily a source)
+5. When promotion is given with another command, it comes at the end of the sentence.
+6. Promotion always needs a PRM_PIE
+7. The verb 'Move' is always followed by the source_piece/source_square
+8. The verb 'Capture' is always followed by the target_piece/target_square

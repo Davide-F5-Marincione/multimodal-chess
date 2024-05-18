@@ -1,7 +1,7 @@
 from __future__ import print_function
 import logging, os
-
 import dragonfly
+from dragonfly import Key, Text, Integer, Dictation     
 
 if False:
     logging.basicConfig(level=10)
@@ -34,6 +34,7 @@ class ExampleDictationRule(dragonfly.MappingRule):
         "dictate <text>": dragonfly.Function(lambda text: print("I heard %r!" % str(text))),
     }
     extras = [ dragonfly.Dictation("text") ]
+
 
 
 # Load engine before instantiating rules/grammars!
