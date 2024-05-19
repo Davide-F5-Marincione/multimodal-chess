@@ -20,6 +20,7 @@
 15. 'Queen on H8 capture Bishop on E4'           -> SRC_PIECE PREP SRC_SQUARE VERB TGT_PIECE PREP TGT_SQUARE
 16. 'Pawn capture Knight and promote to Queen'   -> SRC_PIECE VERB TGT_PIECE VERB PREP PRM_PIECE
 
+NEW : 'Capture Pawn with E6' 
 
 # SPECIAL CASES 
 16. 'LongSide Castle' : 'Long Castle'  : 'QueenSide Castle' -> src_sqr = file4 ; -> tgt_sqr = file6 

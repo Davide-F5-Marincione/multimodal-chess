@@ -51,11 +51,6 @@ special_direction = {
 }
 
 
-# funzione che prende in input il comando e crea una stringa che rappresenta il comando
-
-#def piece_symbol(piece_type: PieceType) -> str:
-#    return typing.cast(str, PIECE_SYMBOLS[piece_type])
-
 def command2string(command):
     s = ""
     s+= "verb: " + command.verb if command.verb else ""
@@ -84,7 +79,7 @@ class MoveRule(CompoundRule):
         super().__init__()
         self.manager = manager
     
-    spec = "Move ([<src_piece> [<prep> <src_square>][<prep> <tgt_square>]] | [ <src_square> [<prep> <tgt_square>]]) [and promote to <prm_piece>] "
+    spec = "move ( [ <src_piece>] | [ <src_piece> [<prep> <src_square>] to <tgt_square>] | [ [<prep>] <src_square> to <tgt_square>]) [and promote to <prm_piece>] "
     extras = [
         Choice("prep", prep_map),
         Choice("src_piece", piece),
@@ -96,25 +91,15 @@ class MoveRule(CompoundRule):
     ]
 
     def _process_recognition(self, node, extras):
-        verb = "Move"
+        verb = "move"
         prep = extras.get("prep", None)
         src_piece = extras.get("src_piece", None)
         tgt_piece = extras.get("tgt_piece", None)
         prm_piece = extras.get("prm_piece", None) 
         src_square = chess.square(*extras["src_square"]) if "src_square" in extras else None 
         tgt_square = chess.square(*extras["tgt_square"]) if "tgt_square" in extras else None
-        
-        #print(f"Verb: {verb}")
-        #print(f"Preposition: {prep}")
-        #print(f"Source Piece: {src_piece}")
-        #print(f"Source Square: {src_square}")
-        #print(f"Target Piece: {tgt_piece}")
-        #print(f"Target Square: {tgt_square}")
-        #print(f"Promotion Piece: {prm_piece}")
-        
         result = Command(verb, src_piece, src_square, tgt_piece, tgt_square, prm_piece)
-        
-        #print(f"Result: {command2string(result)}")
+        #print(command2string(result))
         self.manager.push_command(result)  
         
 
@@ -127,7 +112,7 @@ class CaptureRule(CompoundRule):
         self.manager = manager
     
     
-    spec = "Capture (<tgt_piece> [<prep> <tgt_square>] | <tgt_square>) [with (<src_piece> | <src_square>)] [and promote to <prm_piece>]"
+    spec = "capture (<tgt_piece> [<prep> <tgt_square>] | <tgt_square>) [with (<src_piece> | <src_square>)] [and promote to <prm_piece>]"
     
     extras = [
         Choice("prep",prep_map),
@@ -139,22 +124,13 @@ class CaptureRule(CompoundRule):
     ]
 
     def _process_recognition(self, node, extras):
-        verb = "Capture"
+        verb = "capture"
         prep = extras.get("prep", None)
         src_piece = extras.get("src_piece", None)
         tgt_piece = extras.get("tgt_piece", None)
         prm_piece = extras.get("prm_piece", None) 
         src_square = chess.square(*extras["src_square"]) if "src_square" in extras else None 
         tgt_square = chess.square(*extras["tgt_square"]) if "tgt_square" in extras else None
-        
-        #print(f"Verb: {verb}")
-        #print(f"Prep: {prep}")
-        #print(f"Source Piece: {src_piece}")
-        #print(f"Source Square: {src_square}")
-        #print(f"Target Piece: {tgt_piece}")
-        #print(f"Target Square: {tgt_square}") 
-        #print(f"Promotion Piece: {prm_piece}")
-        
         result = Command(verb, src_piece, src_square, tgt_piece, tgt_square, prm_piece)
         self.manager.push_command(result) 
         
@@ -167,8 +143,7 @@ class PromoteRule(CompoundRule):
         super().__init__()
         self.manager = manager
     
-    
-    spec = "Promote [(<src_piece> | <src_square>)] to <prm_piece>"
+    spec = "promote [(<src_piece> | <src_square>)] to <prm_piece>"
     extras = [
         Choice("prep", prep_map), 
         Choice("src_piece", piece),
@@ -177,18 +152,11 @@ class PromoteRule(CompoundRule):
     ]
 
     def _process_recognition(self, node, extras):
-        verb = "Promote"
+        verb = "promote"
         prep = extras.get("prep", None) 
         src_piece = extras.get("src_piece", None)
         prm_piece = extras.get("prm_piece", None)
-        src_square = chess.square(*extras["src_square"]) if "src_square" in extras else None 
-        
-         
-        #print(f"Verb: {verb}")
-        #print(f"Source Piece: {src_piece}")
-        #print(f"Source Square: {src_square}")
-        #print(f"Promotion Piece: {prm_piece}")
-        
+        src_square = chess.square(*extras["src_square"]) if "src_square" in extras else None         
         result = Command(verb, src_piece, src_square, None, None, prm_piece)
         self.manager.push_command(result) 
 
@@ -200,19 +168,15 @@ class CastleRule(CompoundRule):
         super().__init__()
         self.manager = manager
     
-    
     spec = "(castle <special_direction> | <special_direction> castle)"
     extras = [
         Choice("special_direction", special_direction),
-        #Compound(name = "tgt_square", spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], value_func = lambda node, extras: (extras["file"], extras["rank"]))
     ]
     
     def _process_recognition(self, node, extras):
         verb = "Castle"
         special_direction = extras.get("special_direction", None)
         file = 6 if special_direction is "kingside" else 2 
-        #print(f"Verb: {verb}")
-        #print(f"Special Direction: {special_direction}")
         result = Command(verb, None, None, None, file, None)
         self.manager.push_command(result) 
 
@@ -225,9 +189,6 @@ class PieceRule(CompoundRule):
         
         super().__init__()
         self.manager = manager
-    
-    
-    
     
     spec = "<src_piece> (in <src_square> <verb> [<prep>] ( <tgt_square> | <tgt_piece> [in <tgt_square>] ) | <verb> [<prep> <src_square>]( [<prep>] <tgt_square> | <tgt_piece>  [in <tgt_square>])) [and promote to <prm_piece>]"
     
@@ -249,18 +210,38 @@ class PieceRule(CompoundRule):
         tgt_piece = extras.get("tgt_piece", None)
         prm_piece = extras.get("prm_piece", None)
         src_square = chess.square(*extras["src_square"]) if "src_square" in extras else None 
-        tgt_square = chess.square(*extras["tgt_square"]) if "tgt_square" in extras else None
-        
-        #print(f"Verb: {verb}")
-        #print(f"Prep: {prep}")
-        #print(f"Source Piece: {src_piece}")
-        #print(f"Source Square: {src_square}")
-        #print(f"Target Piece: {tgt_piece}")
-        #print(f"Target Square: {tgt_square}")
-        #print(f"Promotion Piece: {prm_piece}") 
-        
+        tgt_square = chess.square(*extras["tgt_square"]) if "tgt_square" in extras else None 
         result = Command(verb, src_piece, src_square, tgt_piece, tgt_square, prm_piece)
         self.manager.push_command(result) 
+
+
+class SquareRule(CompoundRule):
+    
+    def __init__(self, manager):
+        super().__init__()
+        self.manager = manager 
+    
+    spec = "<src_square> <verb> (<tgt_square> | <tgt_piece> [<prep> <tgt_square>])"
+    
+    extras = [
+        Choice("verb", verb_map),
+        Choice("prep", prep_map),
+        Choice("tgt_piece", piece),
+        Compound( name = "src_square", spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], value_func = lambda node, extras: (extras["file"], extras["rank"])),
+        Compound( name = "tgt_square", spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], value_func = lambda node, extras: (extras["file"], extras["rank"]))
+    ]
+    
+    def _process_recognition(self, node, extras):
+        
+        verb = extras.get("verb", None)
+        prep = extras.get("prep", None)
+        tgt_piece = extras.get("tgt_piece", None)
+        src_square = chess.square(*extras["src_square"]) if "src_square" in extras else None 
+        tgt_square = chess.square(*extras["tgt_square"]) if "tgt_square" in extras else None 
+        result = Command(verb, None, src_square, tgt_piece, tgt_square, prm_piece)
+        self.manager.push_command(result) 
+    
+    
 
 # Modelling Example Dictation Rule 
 class ExampleDictationRule(dragonfly.MappingRule):
@@ -269,9 +250,49 @@ class ExampleDictationRule(dragonfly.MappingRule):
     }
     extras = [ dragonfly.Dictation("text") ] 
 
+'''
+class MovementRule(CompoundRule):
+    spec = "Move ([<src_piece>] | [ <src_piece> [<prep> <src_square>] to <tgt_square>] | [ <src_square> [<prep> <tgt_square>]]) [and promote to <prm_piece>] "
+    extras = [
+        Choice("prep", prep_map),
+        Choice("prep_before", prep_before),
+        Choice("prep_after", prep_after),
+        Choice("src_piece", piece),
+        Choice("tgt_piece", piece),
+        Choice("prm_piece", prm_piece),
+        Compound(name = "src_square",spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], value_func = lambda node, extras: (extras["file"], extras["rank"])),
+        Compound(name = "tgt_square", spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], value_func = lambda node, extras: (extras["file"], extras["rank"])),
+        
+    ]
 
+    def _process_recognition(self, node, extras):
+        verb = "Move"
+        prep = extras.get("prep", None)
+        src_piece = extras.get("src_piece", None)
+        tgt_piece = extras.get("tgt_piece", None)
+        prm_piece = extras.get("prm_piece", None) 
+        src_square = chess.square(*extras["src_square"]) if "src_square" in extras else None 
+        tgt_square = chess.square(*extras["tgt_square"]) if "tgt_square" in extras else None
+        result = Command(verb, src_piece, src_square, tgt_piece, tgt_square, prm_piece)
+        #print(command2string(result))
+        #self.manager.push_command(result)  
+        print(verb, src_piece, src_square, tgt_piece, tgt_square, prm_piece)
+        
 
-
+speech_engine = dragonfly.get_engine("kaldi",
+            model_dir='kaldi_model',
+            vad_padding_end_ms=300,
+            audio_self_threaded = False)
+speech_engine.connect()
+grammar = dragonfly.Grammar(name="Chess Grammar")
+        
+        # Rules call disambiguator 
+move_rule = MovementRule()
+grammar.add_rule(move_rule)
+        #grammar.add_rule(ExampleDictationRule())
+grammar.load()
+speech_engine.do_recognition() 
+''' 
 
 
 

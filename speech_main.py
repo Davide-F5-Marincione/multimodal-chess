@@ -104,6 +104,10 @@ while running:
     if clicker.cursor.holding is None and board.board.turn == chess.WHITE:
         command = speech_manager.resolve_commands(curr_time) 
         # Execute command 
+        if command is not None:
+            board.select_square(command.src_square)
+            board.move_piece(command.tgt_square,command.prm_piece)
+        
     
     renderer.step(cursor_pos)
 

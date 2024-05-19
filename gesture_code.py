@@ -85,7 +85,7 @@ class HandDetector:
             print("Cannot open camera")
             exit(0)
 
-        self.scales = np.array(scale)
+        self.scales = np.array(scales)
 
         self.cursor_pos = np.zeros(2, dtype=np.float32)
         self.min_cursor_movement = min_cursor_movement
