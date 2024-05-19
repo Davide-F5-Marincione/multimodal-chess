@@ -20,7 +20,7 @@ objects.load_consts()
 
 context_text = objects.FloatingText(renderer, objects.Point(300, 400), "Mouse tracking", 16, cfg.colors["boardtext"])
 interaction_text = objects.FloatingText(renderer, objects.Point(300, 450), "No interaction", 16, cfg.colors["boardtext"])
-hand_detector = gesture_code.HandDetector(h_flip=True)
+hand_detector = gesture_code.HandDetector(h_flip=True, scales=[[.25, .25], [.75, .75]])
 
 # Main loop
 pygame.mouse.set_visible(False)
@@ -69,7 +69,8 @@ while running:
 
     if curr_time - last_interaction > 1000:
         interaction_text.set_text("No interaction")
-                
+
+
     renderer.step(cursor_pos)
 
 hand_detector.stop()

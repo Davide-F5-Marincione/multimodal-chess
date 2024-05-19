@@ -27,7 +27,7 @@ engine.configure({
 
 board = objects.Board(renderer, clicker, objects.Point(10, 10))
 context_text = objects.FloatingText(renderer, objects.Point(10, 700), "Press \'R\' to restart", 16, cfg.colors["boardtext"])
-hand_detector = gesture_code.HandDetector(h_flip=True)
+hand_detector = gesture_code.HandDetector(h_flip=True, scales=[[.25, .25], [.75, .75]])
 
 # Main loop
 pygame.mouse.set_visible(False)
