@@ -64,8 +64,6 @@ while running:
             pygame.event.post(pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1))
         if hand_release:
             pygame.event.post(pygame.event.Event(pygame.MOUSEBUTTONUP, button=1))
-
-    #  put it here ? 
     
     clicker.highlight(cursor_pos)
     
@@ -105,9 +103,13 @@ while running:
         command = speech_manager.resolve_commands(curr_time) 
         # Execute command 
         if command is not None:
-            board.select_square(command.src_square)
-            board.move_piece(command.tgt_square,command.prm_piece)
-        
+            src, tgt, prm = command
+            if src is not None:
+                board.square_clicked(src, chess.WHITE)
+                board.square_clicked(tgt, chess.WHITE, prm)
+            else:
+                # Promotion without move, have to find a way to make it work!
+                pass
     
     renderer.step(cursor_pos)
 
