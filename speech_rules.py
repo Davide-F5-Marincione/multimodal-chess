@@ -79,10 +79,10 @@ class Command(NamedTuple):
 # Modelling Move 
 class MoveRule(CompoundRule):
     
-    def __init__(self, disambiguator):
+    def __init__(self, manager):
         
         super().__init__()
-        self.disambiguator = disambiguator
+        self.manager = manager
     
     spec = "Move ([<src_piece> [<prep> <src_square>][<prep> <tgt_square>]] | [ <src_square> [<prep> <tgt_square>]]) [and promote to <prm_piece>] "
     extras = [
@@ -115,16 +115,16 @@ class MoveRule(CompoundRule):
         result = Command(verb, src_piece, src_square, tgt_piece, tgt_square, prm_piece)
         
         #print(f"Result: {command2string(result)}")
-        self.disambiguator.disambiguate(result)  
+        self.manager.push_command(result)  
         
 
 # Modelling Capture 
 class CaptureRule(CompoundRule):  
     
-    def __init__(self, disambiguator):
+    def __init__(self, manager):
         
         super().__init__()
-        self.disambiguator = disambiguator
+        self.manager = manager
     
     
     spec = "Capture (<tgt_piece> [<prep> <tgt_square>] | <tgt_square>) [with (<src_piece> | <src_square>)] [and promote to <prm_piece>]"
@@ -156,16 +156,16 @@ class CaptureRule(CompoundRule):
         #print(f"Promotion Piece: {prm_piece}")
         
         result = Command(verb, src_piece, src_square, tgt_piece, tgt_square, prm_piece)
-        self.disambiguator.disambiguate(result) 
+        self.manager.push_command(result) 
         
      
 # Modelling Promotion  
 class PromoteRule(CompoundRule):
     
-    def __init__(self, disambiguator):
+    def __init__(self, manager):
         
         super().__init__()
-        self.disambiguator = disambiguator
+        self.manager = manager
     
     
     spec = "Promote [(<src_piece> | <src_square>)] to <prm_piece>"
@@ -190,15 +190,15 @@ class PromoteRule(CompoundRule):
         #print(f"Promotion Piece: {prm_piece}")
         
         result = Command(verb, src_piece, src_square, None, None, prm_piece)
-        self.disambiguator.disambiguate(result) 
+        self.manager.push_command(result) 
 
 # Modelling Castle
 class CastleRule(CompoundRule):
     
-    def __init__(self, disambiguator):
+    def __init__(self, manager):
         
         super().__init__()
-        self.disambiguator = disambiguator
+        self.manager = manager
     
     
     spec = "(castle <special_direction> | <special_direction> castle)"
@@ -214,17 +214,17 @@ class CastleRule(CompoundRule):
         #print(f"Verb: {verb}")
         #print(f"Special Direction: {special_direction}")
         result = Command(verb, None, None, None, file, None)
-        self.disambiguator.disambiguate(result) 
+        self.manager.push_command(result) 
 
 
         
 # Modelling Rules that start with Piece
 class PieceRule(CompoundRule): 
     
-    def __init__(self, disambiguator):
+    def __init__(self, manager):
         
         super().__init__()
-        self.disambiguator = disambiguator
+        self.manager = manager
     
     
     
@@ -260,7 +260,7 @@ class PieceRule(CompoundRule):
         #print(f"Promotion Piece: {prm_piece}") 
         
         result = Command(verb, src_piece, src_square, tgt_piece, tgt_square, prm_piece)
-        self.disambiguator.disambiguate(result) 
+        self.manager.push_command(result) 
 
 # Modelling Example Dictation Rule 
 class ExampleDictationRule(dragonfly.MappingRule):
@@ -268,61 +268,8 @@ class ExampleDictationRule(dragonfly.MappingRule):
         "dictate <text>": dragonfly.Function(lambda text: print("I heard %r!" % str(text))),
     }
     extras = [ dragonfly.Dictation("text") ] 
-    
-
-# Defining Engine 
-#engine = dragonfly.get_engine("kaldi",
-#    model_dir='kaldi_model',
-    # tmp_dir='kaldi_tmp',  # default for temporary directory
-    # vad_aggressiveness= 3,  # default aggressiveness of VAD
-#    vad_padding_end_ms=300,  # default ms of required silence surrounding VAD
-    # input_device_index=None,  # set to an int to choose a non-default microphone
-    # cloud_dictation=None,  # set to 'gcloud' to use cloud dictation
-#)
-
-# Call connect() now that the engine configuration is set.
-#engine.connect()
 
 
-# We may define a context in which the grammar is executed like 
-#grammar_context = AppContext(executable="notepad")
-#grammar = Grammar("notepad_example", context=grammar_context)
-
-def initialize_grammars(disambiguator):
-    speech_engine = dragonfly.get_engine("kaldi",
-    model_dir='kaldi_model',
-    # tmp_dir='kaldi_tmp',  # default for temporary directory
-    # vad_aggressiveness= 3,  # default aggressiveness of VAD
-    vad_padding_end_ms=300,  # default ms of required silence surrounding VAD
-    # input_device_index=None,  # set to an int to choose a non-default microphone
-    # cloud_dictation=None,  # set to 'gcloud' to use cloud dictation
-)
-
-    speech_engine.connect()
-    grammar = dragonfly.Grammar(name="Chess Grammar")
-    move_rule = MoveRule(disambiguator)
-    capture_rule = CaptureRule(disambiguator)
-    promotion_rule = PromoteRule(disambiguator)
-    piece_rule = PieceRule(disambiguator)
-    castle_rule = CastleRule(disambiguator)
-    grammar.add_rule(move_rule)
-    grammar.add_rule(capture_rule)
-    grammar.add_rule(promotion_rule)
-    grammar.add_rule(piece_rule)
-    grammar.add_rule(castle_rule)
-    #grammar.add_rule(ExampleDictationRule())
-    grammar.load()
-    speech_engine.do_recognition()
-    return grammar
-
-
-    # Example usage
-    #print("Listening...")
-    #engine.do_recognition()
-
-    #print('Try saying: "I want to eat an apple" or "I want to eat a greasy hamburger" or "dictate this is just a test"')
-    #print("Listening...")
-    #engine.do_recognition()
 
 
 

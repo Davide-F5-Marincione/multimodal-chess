@@ -6,7 +6,7 @@ import utils
 import objects
 import config as cfg
 import gesture_code
-import disambiguator as dis 
+import speech_manager as sm 
 import speech_rules 
 import dragonfly
 
@@ -30,7 +30,7 @@ engine.configure({
 board = objects.Board(renderer, clicker, objects.Point(10, 10))
 context_text = objects.FloatingText(renderer, objects.Point(10, 700), "Press \'R\' to restart", 16, cfg.colors["boardtext"])
 hand_detector = gesture_code.HandDetector(h_flip=True)
-disambiguator = dis.Disambiguator(board)
+speech_manager =  sm.SpeechManager(board)     # Speech Manger references Board 
 
 
 # Main loop
@@ -44,11 +44,12 @@ mouse_timestamp = -1000
 last_interaction = -1000
 
 hand_detector.start()
-disambiguator.start()
+speech_manager.start()
 
 
 while running:
-    curr_time = int(timer() * 1000)
+    # Handling Mouse and Hand -> Registering Click and Hand Movements 
+    curr_time = int(timer() * 1000)     # Current Time 
     new_mouse_pos = objects.Point(*pygame.mouse.get_pos())
     if new_mouse_pos != mouse_pos:
         mouse_pos = new_mouse_pos
@@ -64,7 +65,11 @@ while running:
         if hand_release:
             pygame.event.post(pygame.event.Event(pygame.MOUSEBUTTONUP, button=1))
 
+    #  put it here ? 
+    
     clicker.highlight(cursor_pos)
+    
+    # Execution of Click 
     for event in pygame.event.get():
         match event.type:
             case pygame.QUIT:
@@ -95,11 +100,15 @@ while running:
             case utils.GAME_ENDED:
                 game_ended = True
                 context_text.set_text("Game ended! Press \'R\' to restart", cfg.colors["redtext"])
-                
+    
+    if clicker.cursor.holding is None and board.board.turn == chess.WHITE:
+        command = speech_manager.resolve_commands(curr_time) 
+        # Execute command 
+    
     renderer.step(cursor_pos)
 
 engine.close()
-disambiguator.stop()
+speech_manager.stop()
 
 # Quit Pygame
 pygame.quit()
