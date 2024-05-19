@@ -1,7 +1,10 @@
 from __future__ import print_function
 from dragonfly import (Grammar, RuleRef, CompoundRule, Choice, Optional, Compound)
 import dragonfly 
-import logging  
+import logging
+import chess   
+from typing import NamedTuple
+
 
 if False:
     logging.basicConfig(level=10)
@@ -17,45 +20,75 @@ else:
 
 
 file_map = { 
-    "a": "a","b": "b","c": "c","d": "d","e": "e","f": "f", "g": "g", "h": "h", 
-    "alpha" : "a", "bravo" : "b", "charlie" : "c", "delta" : "d", "echo" : "e", "foxtrot" : "f" , 
-    "golf" : "g" , "hotel" : "h" 
+    "a" : 0,"b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7, 
+    "alpha" : 0 , "bravo" : 1, "charlie" : 2, "delta" : 3, "echo" : 4, "foxtrot" : 5 , 
+    "golf" : 6 , "hotel" : 7
 }
 
 rank_map = { 
-    "one": "1", "two": "2", "three": "3", "four": "4", "five": "5", "six": "6", "seven": "7", "eight": "8",
-    "1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8"
+    "one": 0, "two": 1, "three": 2, "four": 3, "five": 4, "six": 5, "seven": 6, "eight": 7,
 }
 
 
 verb_map = {
-    "move" : "move", "capture" : "capture", "castle" : "castle"
+    "move" : "move", "capture" : "capture"
 }
 
 prep_map = {
     "to" : "to", "on" : "on", "with" : "with", "in":"in", "from" : "from"
 } 
 
-source_piece = {
-    "pawn": "pawn", "knight": "knight", "bishop": "bishop", "rook": "rook", "queen": "queen", "king": "king"
-}
-
-target_piece = {
-    "pawn": "pawn", "knight": "knight", "bishop": "bishop", "rook": "rook", "queen": "queen", "king": "king"
+piece = {
+    "pawn": chess.PAWN, "knight": chess.KNIGHT, "bishop": chess.BISHOP, "rook": chess.ROOK, "queen": chess.QUEEN, "king": chess.KING
 }
 
 prm_piece = {
-    "pawn": "pawn", "knight": "knight", "bishop": "bishop", "rook": "rook", "queen": "queen", "king": "king"
+    "knight": chess.KNIGHT, "bishop": chess.BISHOP, "rook": chess.ROOK, "queen": chess.QUEEN
 }
+
+special_direction = {
+    "queen side" : "queenside", "king side" : "kingside", "long side" : "queenside", "short side" : "kingside", "long" : "queenside", "short" : "kingside"
+}
+
+
+# funzione che prende in input il comando e crea una stringa che rappresenta il comando
+
+#def piece_symbol(piece_type: PieceType) -> str:
+#    return typing.cast(str, PIECE_SYMBOLS[piece_type])
+
+def command2string(command):
+    s = ""
+    s+= "verb: " + command.verb if command.verb else ""
+    s+= " src_piece: " + chess.piece_symbol(command.src_piece) if command.src_piece else ""
+    s+= " src_square: " + chess.square_name(command.src_square) if command.src_square else ""
+    s+= " tgt_piece: " + chess.piece_symbol(command.tgt_piece) if command.tgt_piece else  ""
+    s+= " tgt_square: " + chess.square_name(command.tgt_square) if command.tgt_square else ""
+    s+= " prm_piece: " + chess.piece_symbol(command.prm_piece) if command.prm_piece else ""
+    return s 
+
+
+class Command(NamedTuple):
+    verb : str
+    src_piece : chess.PieceType
+    src_square : chess.Square
+    tgt_piece : chess.PieceType
+    tgt_square : chess.Square
+    prm_piece : chess.PieceType
+    
 
 # Modelling Move 
 class MoveRule(CompoundRule):
     
+    def __init__(self, disambiguator):
+        
+        super().__init__()
+        self.disambiguator = disambiguator
+    
     spec = "Move ([<src_piece> [<prep> <src_square>][<prep> <tgt_square>]] | [ <src_square> [<prep> <tgt_square>]]) [and promote to <prm_piece>] "
     extras = [
         Choice("prep", prep_map),
-        Choice("src_piece", source_piece),
-        Choice("tgt_piece", source_piece),
+        Choice("src_piece", piece),
+        Choice("tgt_piece", piece),
         Choice("prm_piece", prm_piece),
         Compound(name = "src_square",spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], value_func = lambda node, extras: (extras["file"], extras["rank"])),
         Compound(name = "tgt_square", spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], value_func = lambda node, extras: (extras["file"], extras["rank"])),
@@ -68,25 +101,38 @@ class MoveRule(CompoundRule):
         src_piece = extras.get("src_piece", None)
         tgt_piece = extras.get("tgt_piece", None)
         prm_piece = extras.get("prm_piece", None) 
-        src_square = extras.get("src_square", None)
-        tgt_square = extras.get("tgt_square", None) 
+        src_square = chess.square(*extras["src_square"]) if "src_square" in extras else None 
+        tgt_square = chess.square(*extras["tgt_square"]) if "tgt_square" in extras else None
         
-        print(f"Verb: {verb}")
-        print(f"Preposition: {prep}")
-        print(f"Source Piece: {src_piece}")
-        print(f"Source Square: {src_square}")
-        print(f"Target Piece: {tgt_piece}")
-        print(f"Target Square: {tgt_square}")
-        print(f"Promotion Piece: {prm_piece}")
+        #print(f"Verb: {verb}")
+        #print(f"Preposition: {prep}")
+        #print(f"Source Piece: {src_piece}")
+        #print(f"Source Square: {src_square}")
+        #print(f"Target Piece: {tgt_piece}")
+        #print(f"Target Square: {tgt_square}")
+        #print(f"Promotion Piece: {prm_piece}")
+        
+        result = Command(verb, src_piece, src_square, tgt_piece, tgt_square, prm_piece)
+        
+        #print(f"Result: {command2string(result)}")
+        self.disambiguator.disambiguate(result)  
+        
 
 # Modelling Capture 
 class CaptureRule(CompoundRule):  
+    
+    def __init__(self, disambiguator):
+        
+        super().__init__()
+        self.disambiguator = disambiguator
+    
+    
     spec = "Capture (<tgt_piece> [<prep> <tgt_square>] | <tgt_square>) [with (<src_piece> | <src_square>)] [and promote to <prm_piece>]"
     
     extras = [
         Choice("prep",prep_map),
-        Choice("src_piece", source_piece),
-        Choice("tgt_piece", source_piece),
+        Choice("src_piece", piece),
+        Choice("tgt_piece", piece),
         Choice("prm_piece", prm_piece),
         Compound( name = "src_square", spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], value_func = lambda node, extras: (extras["file"], extras["rank"])),
         Compound( name = "tgt_square", spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], value_func = lambda node, extras: (extras["file"], extras["rank"]))
@@ -98,24 +144,34 @@ class CaptureRule(CompoundRule):
         src_piece = extras.get("src_piece", None)
         tgt_piece = extras.get("tgt_piece", None)
         prm_piece = extras.get("prm_piece", None) 
-        src_square = extras.get("src_square", None)
-        tgt_square = extras.get("tgt_square", None)
-        print(f"Verb: {verb}")
-        print(f"Prep: {prep}")
-        print(f"Source Piece: {src_piece}")
-        print(f"Source Square: {src_square}")
-        print(f"Target Piece: {tgt_piece}")
-        print(f"Target Square: {tgt_square}") 
-        print(f"Promotion Piece: {prm_piece}")
+        src_square = chess.square(*extras["src_square"]) if "src_square" in extras else None 
+        tgt_square = chess.square(*extras["tgt_square"]) if "tgt_square" in extras else None
+        
+        #print(f"Verb: {verb}")
+        #print(f"Prep: {prep}")
+        #print(f"Source Piece: {src_piece}")
+        #print(f"Source Square: {src_square}")
+        #print(f"Target Piece: {tgt_piece}")
+        #print(f"Target Square: {tgt_square}") 
+        #print(f"Promotion Piece: {prm_piece}")
+        
+        result = Command(verb, src_piece, src_square, tgt_piece, tgt_square, prm_piece)
+        self.disambiguator.disambiguate(result) 
         
      
 # Modelling Promotion  
 class PromoteRule(CompoundRule):
     
+    def __init__(self, disambiguator):
+        
+        super().__init__()
+        self.disambiguator = disambiguator
+    
+    
     spec = "Promote [(<src_piece> | <src_square>)] to <prm_piece>"
     extras = [
         Choice("prep", prep_map), 
-        Choice("src_piece", source_piece),
+        Choice("src_piece", piece),
         Choice("prm_piece", prm_piece),
         Compound( name = "src_square", spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], value_func = lambda node, extras: (extras["file"], extras["rank"]))
     ]
@@ -125,59 +181,86 @@ class PromoteRule(CompoundRule):
         prep = extras.get("prep", None) 
         src_piece = extras.get("src_piece", None)
         prm_piece = extras.get("prm_piece", None)
-        src_square = extras.get("src_square", None)
-        print(f"Verb: {verb}")
-        print(f"Source Piece: {src_piece}")
-        print(f"Source Square: {src_square}")
-        print(f"Promotion Piece: {prm_piece}")
+        src_square = chess.square(*extras["src_square"]) if "src_square" in extras else None 
+        
+         
+        #print(f"Verb: {verb}")
+        #print(f"Source Piece: {src_piece}")
+        #print(f"Source Square: {src_square}")
+        #print(f"Promotion Piece: {prm_piece}")
+        
+        result = Command(verb, src_piece, src_square, None, None, prm_piece)
+        self.disambiguator.disambiguate(result) 
 
 # Modelling Castle
 class CastleRule(CompoundRule):
-    spec = "Castle <direction>"
+    
+    def __init__(self, disambiguator):
+        
+        super().__init__()
+        self.disambiguator = disambiguator
+    
+    
+    spec = "(castle <special_direction> | <special_direction> castle)"
     extras = [
-        Choice("direction", {"King side": "King side", "Queen side": "Queen side"})
+        Choice("special_direction", special_direction),
+        #Compound(name = "tgt_square", spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], value_func = lambda node, extras: (extras["file"], extras["rank"]))
     ]
-
+    
     def _process_recognition(self, node, extras):
         verb = "Castle"
-        direction = extras.get("direction", None)
-        print(f"Verb: {verb}")
-        print(f"Direction: {direction}")
-        #re in E1 (bianco) o IN E8 (nero)  -> in G 
-        #queen in D1 (bianco) o in         -> in C 
+        special_direction = extras.get("special_direction", None)
+        file = 6 if special_direction is "kingside" else 2 
+        #print(f"Verb: {verb}")
+        #print(f"Special Direction: {special_direction}")
+        result = Command(verb, None, None, None, file, None)
+        self.disambiguator.disambiguate(result) 
 
 
+        
 # Modelling Rules that start with Piece
 class PieceRule(CompoundRule): 
+    
+    def __init__(self, disambiguator):
+        
+        super().__init__()
+        self.disambiguator = disambiguator
+    
+    
+    
+    
     spec = "<src_piece> (in <src_square> <verb> [<prep>] ( <tgt_square> | <tgt_piece> [in <tgt_square>] ) | <verb> [<prep> <src_square>]( [<prep>] <tgt_square> | <tgt_piece>  [in <tgt_square>])) [and promote to <prm_piece>]"
     
     extras = [
         Choice("verb", verb_map),
         Choice("prep",prep_map),
-        Choice("src_piece", source_piece),
-        Choice("tgt_piece", target_piece),
+        Choice("src_piece", piece),
+        Choice("tgt_piece", piece),
         Choice("prm_piece", prm_piece),
         Compound( name = "src_square", spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], value_func = lambda node, extras: (extras["file"], extras["rank"])),
         Compound( name = "tgt_square", spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], value_func = lambda node, extras: (extras["file"], extras["rank"]))
     ]
 
     def _process_recognition(self, node, extras):
+        
         verb = extras.get("verb", None)
+        prep = extras.get("prep", None)
         src_piece = extras.get("src_piece", None)
         tgt_piece = extras.get("tgt_piece", None)
         prm_piece = extras.get("prm_piece", None)
-        src_square = extras.get("src_square", None)
-        tgt_square = extras.get("tgt_square", None)
-        prep = extras.get("prep", None)
+        src_square = chess.square(*extras["src_square"]) if "src_square" in extras else None 
+        tgt_square = chess.square(*extras["tgt_square"]) if "tgt_square" in extras else None
         
-        print(f"Verb: {verb}")
-        print(f"Prep: {prep}")
-        print(f"Source Piece: {src_piece}")
-        print(f"Source Square: {src_square}")
-        print(f"Target Piece: {tgt_piece}")
-        print(f"Target Square: {tgt_square}")
-        print(f"Promotion Piece: {prm_piece}") 
-
+        #print(f"Verb: {verb}")
+        #print(f"Prep: {prep}")
+        #print(f"Source Piece: {src_piece}")
+        #print(f"Source Square: {src_square}")
+        #print(f"Target Piece: {tgt_piece}")
+        #print(f"Target Square: {tgt_square}")
+        #print(f"Promotion Piece: {prm_piece}") 
+        
+        result = Command(verb, src_piece, src_square, tgt_piece, tgt_square, prm_piece)
+        self.disambiguator.disambiguate(result) 
 
 # Modelling Example Dictation Rule 
 class ExampleDictationRule(dragonfly.MappingRule):
@@ -188,7 +271,25 @@ class ExampleDictationRule(dragonfly.MappingRule):
     
 
 # Defining Engine 
-engine = dragonfly.get_engine("kaldi",
+#engine = dragonfly.get_engine("kaldi",
+#    model_dir='kaldi_model',
+    # tmp_dir='kaldi_tmp',  # default for temporary directory
+    # vad_aggressiveness= 3,  # default aggressiveness of VAD
+#    vad_padding_end_ms=300,  # default ms of required silence surrounding VAD
+    # input_device_index=None,  # set to an int to choose a non-default microphone
+    # cloud_dictation=None,  # set to 'gcloud' to use cloud dictation
+#)
+
+# Call connect() now that the engine configuration is set.
+#engine.connect()
+
+
+# We may define a context in which the grammar is executed like 
+#grammar_context = AppContext(executable="notepad")
+#grammar = Grammar("notepad_example", context=grammar_context)
+
+def initialize_grammars(disambiguator):
+    speech_engine = dragonfly.get_engine("kaldi",
     model_dir='kaldi_model',
     # tmp_dir='kaldi_tmp',  # default for temporary directory
     # vad_aggressiveness= 3,  # default aggressiveness of VAD
@@ -197,36 +298,35 @@ engine = dragonfly.get_engine("kaldi",
     # cloud_dictation=None,  # set to 'gcloud' to use cloud dictation
 )
 
-# Call connect() now that the engine configuration is set.
-engine.connect()
+    speech_engine.connect()
+    grammar = dragonfly.Grammar(name="Chess Grammar")
+    move_rule = MoveRule(disambiguator)
+    capture_rule = CaptureRule(disambiguator)
+    promotion_rule = PromoteRule(disambiguator)
+    piece_rule = PieceRule(disambiguator)
+    castle_rule = CastleRule(disambiguator)
+    grammar.add_rule(move_rule)
+    grammar.add_rule(capture_rule)
+    grammar.add_rule(promotion_rule)
+    grammar.add_rule(piece_rule)
+    grammar.add_rule(castle_rule)
+    #grammar.add_rule(ExampleDictationRule())
+    grammar.load()
+    speech_engine.do_recognition()
+    return grammar
 
 
-# We may define a context in which the grammar is executed like 
-#grammar_context = AppContext(executable="notepad")
-#grammar = Grammar("notepad_example", context=grammar_context)
+    # Example usage
+    #print("Listening...")
+    #engine.do_recognition()
 
-grammar = dragonfly.Grammar(name="Chess Grammar")
-move_rule = MoveRule()
-capture_rule = CaptureRule()
-promotion_rule = PromoteRule()
-piece_rule = PieceRule()
-castle_rule = CastleRule()
-grammar.add_rule(move_rule)
-grammar.add_rule(capture_rule)
-grammar.add_rule(promotion_rule)
-grammar.add_rule(piece_rule)
-grammar.add_rule(castle_rule)
-grammar.add_rule(ExampleDictationRule())
-grammar.load()
-
-#print('Try saying: "I want to eat an apple" or "I want to eat a greasy hamburger" or "dictate this is just a test"')
-print("Listening...")
-engine.do_recognition()
-
-
-
+    #print('Try saying: "I want to eat an apple" or "I want to eat a greasy hamburger" or "dictate this is just a test"')
+    #print("Listening...")
+    #engine.do_recognition()
 
 
 
 
-    
+
+
+        

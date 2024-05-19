@@ -13,7 +13,7 @@
 10. 'Promote to Queen'                           -> VERB PREP PRM_PIECE
 
 
-11. 'Queen on H8 move to H7'                    -> SRC_PIECE PREP SRC_SQUARE VERB PREP TGT_SQUARE
+11. 'Queen on H8 move to H7'                     -> SRC_PIECE PREP SRC_SQUARE VERB PREP TGT_SQUARE
 12. 'Queen capture E4'                           -> SRC_PIECE VERB TGT_SQUARE
 13. 'Queen capture Bishop'                       -> SRC_PIECE VERB TGT_PIECE
 14. 'Queen on H8 capture E4'                     -> SRC_PIECE PREP SRC_SQUARE VERB TGT_SQUARE
