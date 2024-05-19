@@ -104,12 +104,15 @@ while running:
         # Execute command 
         if command is not None:
             src, tgt, prm = command
-            if src is not None:
+            if src is not None: # if src is not None, then it's a move/capture/castle (/w promotion maybe)
+                board.deselect_square() # to disable previously clicked squares.
+
+                # simulate clicks on the board
                 board.square_clicked(src, chess.WHITE)
                 board.square_clicked(tgt, chess.WHITE, prm)
-            else:
-                # Promotion without move, have to find a way to make it work!
-                pass
+            elif board.promotion.is_visible: # if src is None, then it can only be a pure promotion.
+                # simulate promotion click
+                board.square_clicked(board.promotion.square_code, chess.WHITE, prm)
     
     renderer.step(cursor_pos)
 
