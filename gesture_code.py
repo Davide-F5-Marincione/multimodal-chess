@@ -7,7 +7,6 @@ from collections import deque
 from timeit import default_timer as timer
 
 class Hand:
-
     def __init__(self, hand_repr, timestamp_ms, prev_click=False):
         abs_hand = np.array([(landmark.x, landmark.y, landmark.z) for landmark in hand_repr.hand_landmarks[0]])
 
@@ -41,6 +40,7 @@ class Hand:
 
         self.abs_hand = abs_hand
         self.origin = palm
+        self.orig_screen = self.origin[:2]
         self.basis = basis
         self.norm_hand = norm_hand
         self.handedness = hand_repr.handedness[0][0].category_name == 'Right'
@@ -72,15 +72,20 @@ class Hand:
         dist = np.linalg.norm(thumb_vec - index_vec)
 
         return dot >= (.75 if prev_click else .93) and dist <= (1 if prev_click else .4)
+    
+    def scaled(self, limits):
+        return np.clip((self.orig_screen - limits[0]) / (limits[1] - limits[0]), 0, 1)
 
 class HandDetector:
-    def __init__(self, model_path='hand_landmarker.task', h_flip=False, cursor_speed=.5, delete_gesture_ms=200, end_tracking_ms=700, min_cursor_movement=.01):
+    def __init__(self, model_path='hand_landmarker.task', h_flip=False, cursor_speed=.5, delete_gesture_ms=200, end_tracking_ms=700, min_cursor_movement=.01, scales=[[.25,.25],[.75,.75]]):
         self.h_flip = h_flip
 
         self.cam = cv.VideoCapture(0)
         if not self.cam.isOpened():
             print("Cannot open camera")
             exit(0)
+
+        self.scales = np.array(scale)
 
         self.cursor_pos = np.zeros(2, dtype=np.float32)
         self.min_cursor_movement = min_cursor_movement
@@ -112,6 +117,9 @@ class HandDetector:
         self.t = Thread(target=self.update, args=())
         self.t.daemon = True
         self.stopped = True
+
+    def set_scales(self, scales):
+        self.scales = np.array(scales)
 
     def start(self):
         self.stopped = False
@@ -155,30 +163,32 @@ class HandDetector:
         
         if self.reset:
             self.reset = False
-            self.cursor_pos = self.curr_hand.origin[:2]
+            self.cursor_pos = self.curr_hand.scaled(self.scales)
+
+        
         
         if not self.prev_hand is None:
             if not self.prev_hand.is_same(self.curr_hand):
                 pass # Do something? Hands are different!
 
-            dist = np.linalg.norm(self.prev_hand.origin[:2] - self.cursor_pos)
+            dist = np.linalg.norm(self.prev_hand.scaled(self.scales) - self.cursor_pos)
             if dist <= self.min_cursor_movement:
                 self.prev_hand = None
 
 
-        dist = np.linalg.norm(self.curr_hand.origin[:2] - self.cursor_pos)
+        dist = np.linalg.norm(self.curr_hand.scaled(self.scales) - self.cursor_pos)
         if self.prev_hand is None:
             # Linear interpolation
             if dist > self.min_cursor_movement:
                 perc = min(1, self.cursor_speed * delta_t / dist)
-                self.cursor_pos = np.clip(self.cursor_pos + (self.curr_hand.origin[:2] - self.cursor_pos) * perc ,0,1)
+                self.cursor_pos = np.clip(self.cursor_pos + (self.curr_hand.scaled(self.scales) - self.cursor_pos) * perc ,0,1)
         else:
             # Quadratic interpolation
             if dist > self.min_cursor_movement:
                 perc = min(1, self.cursor_speed * delta_t / dist)
 
-                p1 = self.cursor_pos + (self.prev_hand.origin[:2] - self.cursor_pos) * perc
-                p2 = self.prev_hand.origin[:2] + (self.curr_hand.origin[:2] - self.prev_hand.origin[:2]) * perc
+                p1 = self.cursor_pos + (self.prev_hand.scaled(self.scales) - self.cursor_pos) * perc
+                p2 = self.prev_hand.scaled(self.scales) + (self.curr_hand.scaled(self.scales) - self.prev_hand.scaled(self.scales)) * perc
 
                 self.cursor_pos = np.clip(p1 + (p2 - p1) * perc, 0, 1)
 
