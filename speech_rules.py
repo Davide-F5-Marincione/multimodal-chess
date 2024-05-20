@@ -86,8 +86,7 @@ class MoveRule(CompoundRule):
         Choice("tgt_piece", piece),
         Choice("prm_piece", prm_piece),
         Compound(name = "src_square",spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], value_func = lambda node, extras: (extras["file"], extras["rank"])),
-        Compound(name = "tgt_square", spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], value_func = lambda node, extras: (extras["file"], extras["rank"])),
-        
+        Compound(name = "tgt_square", spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], value_func = lambda node, extras: (extras["file"], extras["rank"]))
     ]
 
     def _process_recognition(self, node, extras):
@@ -113,7 +112,6 @@ class CaptureRule(CompoundRule):
     
     
     spec = "capture (<tgt_piece> [<prep> <tgt_square>] | <tgt_square>) [with (<src_piece> | <src_square>)] [and promote to <prm_piece>]"
-    
     extras = [
         Choice("prep",prep_map),
         Choice("src_piece", piece),
@@ -221,7 +219,7 @@ class SquareRule(CompoundRule):
         super().__init__()
         self.manager = manager 
     
-    spec = "<src_square> <verb> (<tgt_square> | <tgt_piece> [<prep> <tgt_square>])"
+    spec = "<src_square> <verb> ([<prep>] <tgt_square> | <tgt_piece> [<prep> <tgt_square>])"
     
     extras = [
         Choice("verb", verb_map),
@@ -238,7 +236,7 @@ class SquareRule(CompoundRule):
         tgt_piece = extras.get("tgt_piece", None)
         src_square = chess.square(*extras["src_square"]) if "src_square" in extras else None 
         tgt_square = chess.square(*extras["tgt_square"]) if "tgt_square" in extras else None 
-        result = Command(verb, None, src_square, tgt_piece, tgt_square, prm_piece)
+        result = Command(verb, None, src_square, tgt_piece, tgt_square, None)
         self.manager.push_command(result) 
     
     

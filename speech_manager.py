@@ -62,10 +62,12 @@ class SpeechManager():
             if curr_time - timestamp > cfg.VOCAL_COMMANDS_TIMOUT:
                 continue
 
+            print(speech_rules.command2string(command))
+
             some_command = True
             
             # Extract command details
-            verb = command.verb.lower()
+            verb = command.verb
             src_piece = command.src_piece 
             tgt_piece = command.tgt_piece 
             prm_piece = command.prm_piece 
