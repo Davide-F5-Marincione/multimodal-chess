@@ -5,7 +5,6 @@ import dragonfly
 from threading import Thread 
 from collections import deque 
 from timeit import default_timer as timer
-import audio 
 import config as cfg 
 
 class SpeechManager():
@@ -54,6 +53,7 @@ class SpeechManager():
         
     def resolve_commands(self, curr_time):
         legal_moves = self.board.board.legal_moves
+        some_command = False
         
         while len(self.commands) > 0:
             command, timestamp = self.commands.popleft() 
@@ -61,6 +61,8 @@ class SpeechManager():
             # Check timeout of command
             if curr_time - timestamp > cfg.VOCAL_COMMANDS_TIMOUT:
                 continue
+
+            some_command = True
             
             # Extract command details
             verb = command.verb.lower()
@@ -87,7 +89,7 @@ class SpeechManager():
                         tgt_square = chess.C8
             
             elif verb == "promote":
-                return None, None, prm_piece
+                return (None, None, prm_piece), some_command
             
 
             # Execute generator of legal moves
@@ -106,17 +108,9 @@ class SpeechManager():
                 moves = [move for move in moves if move.promotion is not None and move.promotion == prm_piece]
 
             # If a single move remains... that's it!
-            if len(moves) == 1:
+            if len(moves) == 1 or (len(moves) == 4 and all(move.promotion is not None for move in moves)):
                 # Special case if capture.
-                if verb.lower() == "capture" and self.board.board.piece_at(moves[0].to_square) is None:
-                    audio.ILLEGAL_MOVE_SOUND.set_volume(cfg.ILLEGAL_MOVE_VOLUME)
-                    audio.ILLEGAL_MOVE_SOUND.play(loops=0, maxtime=0, fade_ms=0) 
-                    continue
-                    
-                # Return only needed details.
-                return moves[0].from_square, moves[0].to_square, moves[0].promotion
-            else:
-                audio.ILLEGAL_MOVE_SOUND.set_volume(cfg.ILLEGAL_MOVE_VOLUME)
-                audio.ILLEGAL_MOVE_SOUND.play(loops=0, maxtime=0, fade_ms=0) 
-                continue
-        return None 
+                if verb != "capture" or self.board.board.piece_at(moves[0].to_square) is not None:
+                    return (moves[0].from_square, moves[0].to_square, prm_piece), some_command
+
+        return None, some_command

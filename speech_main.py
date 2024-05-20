@@ -7,8 +7,7 @@ import objects
 import config as cfg
 import gesture_code
 import speech_manager as sm 
-import speech_rules 
-import dragonfly
+import audio
 
 # Initialize Pygame
 pygame.init()
@@ -100,9 +99,9 @@ while running:
                 context_text.set_text("Game ended! Press \'R\' to restart", cfg.colors["redtext"])
     
     if clicker.cursor.holding is None and board.board.turn == chess.WHITE:
-        command = speech_manager.resolve_commands(curr_time) 
+        command, some_command = speech_manager.resolve_commands(curr_time)
         # Execute command 
-        if command is not None:
+        if command:
             src, tgt, prm = command
             if src is not None: # if src is not None, then it's a move/capture/castle (/w promotion maybe)
                 board.deselect_square() # to disable previously clicked squares.
@@ -113,6 +112,12 @@ while running:
             elif board.promotion.is_visible: # if src is None, then it can only be a pure promotion.
                 # simulate promotion click
                 board.square_clicked(board.promotion.square_code, chess.WHITE, prm)
+            else:
+                audio.ILLEGAL_MOVE_SOUND.set_volume(cfg.ILLEGAL_MOVE_VOLUME)
+                audio.ILLEGAL_MOVE_SOUND.play(loops=0, maxtime=0, fade_ms=0)
+        elif some_command:
+            audio.ILLEGAL_MOVE_SOUND.set_volume(cfg.ILLEGAL_MOVE_VOLUME)
+            audio.ILLEGAL_MOVE_SOUND.play(loops=0, maxtime=0, fade_ms=0)
     
     renderer.step(cursor_pos)
 
