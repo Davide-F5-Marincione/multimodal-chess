@@ -221,7 +221,7 @@ class SquareRule(CompoundRule):
         super().__init__()
         self.manager = manager 
     
-    spec = "<src_square> <verb> (<tgt_square> | <tgt_piece> [<prep> <tgt_square>])"
+    spec = "<src_square> <verb> ( [<prep>] <tgt_square> | <tgt_piece> [<prep> <tgt_square>])"
     
     extras = [
         Choice("verb", verb_map),
