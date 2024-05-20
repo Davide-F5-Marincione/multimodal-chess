@@ -112,7 +112,7 @@ class CaptureRule(CompoundRule):
         self.manager = manager
     
     
-    spec = "capture (<tgt_piece> [<prep> <tgt_square>] | <tgt_square>) [with (<src_piece> | <src_square>)] [and promote to <prm_piece>]"
+    spec = "capture (<tgt_piece> [<prep> <tgt_square>] | <tgt_square>) [with (<src_piece> [<prep> <src_square>] | <src_square>)] [and promote to <prm_piece>]"
     
     extras = [
         Choice("prep",prep_map),
@@ -238,7 +238,7 @@ class SquareRule(CompoundRule):
         tgt_piece = extras.get("tgt_piece", None)
         src_square = chess.square(*extras["src_square"]) if "src_square" in extras else None 
         tgt_square = chess.square(*extras["tgt_square"]) if "tgt_square" in extras else None 
-        result = Command(verb, None, src_square, tgt_piece, tgt_square, prm_piece)
+        result = Command(verb, None, src_square, tgt_piece, tgt_square, None)
         self.manager.push_command(result) 
     
     
@@ -250,51 +250,3 @@ class ExampleDictationRule(dragonfly.MappingRule):
     }
     extras = [ dragonfly.Dictation("text") ] 
 
-'''
-class MovementRule(CompoundRule):
-    spec = "Move ([<src_piece>] | [ <src_piece> [<prep> <src_square>] to <tgt_square>] | [ <src_square> [<prep> <tgt_square>]]) [and promote to <prm_piece>] "
-    extras = [
-        Choice("prep", prep_map),
-        Choice("prep_before", prep_before),
-        Choice("prep_after", prep_after),
-        Choice("src_piece", piece),
-        Choice("tgt_piece", piece),
-        Choice("prm_piece", prm_piece),
-        Compound(name = "src_square",spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], value_func = lambda node, extras: (extras["file"], extras["rank"])),
-        Compound(name = "tgt_square", spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], value_func = lambda node, extras: (extras["file"], extras["rank"])),
-        
-    ]
-
-    def _process_recognition(self, node, extras):
-        verb = "Move"
-        prep = extras.get("prep", None)
-        src_piece = extras.get("src_piece", None)
-        tgt_piece = extras.get("tgt_piece", None)
-        prm_piece = extras.get("prm_piece", None) 
-        src_square = chess.square(*extras["src_square"]) if "src_square" in extras else None 
-        tgt_square = chess.square(*extras["tgt_square"]) if "tgt_square" in extras else None
-        result = Command(verb, src_piece, src_square, tgt_piece, tgt_square, prm_piece)
-        #print(command2string(result))
-        #self.manager.push_command(result)  
-        print(verb, src_piece, src_square, tgt_piece, tgt_square, prm_piece)
-        
-
-speech_engine = dragonfly.get_engine("kaldi",
-            model_dir='kaldi_model',
-            vad_padding_end_ms=300,
-            audio_self_threaded = False)
-speech_engine.connect()
-grammar = dragonfly.Grammar(name="Chess Grammar")
-        
-        # Rules call disambiguator 
-move_rule = MovementRule()
-grammar.add_rule(move_rule)
-        #grammar.add_rule(ExampleDictationRule())
-grammar.load()
-speech_engine.do_recognition() 
-''' 
-
-
-
-
-        

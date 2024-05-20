@@ -65,7 +65,7 @@ class SpeechManager():
             some_command = True
             
             # Extract command details
-            verb = command.verb.lower()
+            verb = command.verb.lower() if command.verb else None
             src_piece = command.src_piece 
             tgt_piece = command.tgt_piece 
             prm_piece = command.prm_piece 
