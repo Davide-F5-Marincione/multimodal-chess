@@ -6,7 +6,8 @@ import utils
 import objects
 import config as cfg
 import gesture_code
-
+import speech_manager as sm 
+import audio
 
 # Initialize Pygame
 pygame.init()
@@ -25,9 +26,20 @@ engine.configure({
     "Skill Level": 1
 })
 
-board = objects.Board(renderer, clicker, objects.Point(10, 10))
+# If starting_fen is None, then the default starting position is used
+# Otherwise that starting fen setup is used,
+# here are some FEN strings:
+# 'Almost to promotion': "2r5/1P6/8/5pk1/1KP1q1p1/1Q6/8/8"
+# 'Yesterday's lichess puzzle': "5rk1/pP2pp2/3p2p1/2pPb2p/2Q1N1q1/1R2P3/3B1PPP/6K1 b"
+# 'Bongcloud opening': "r2qk2r/ppp1bppp/2n1bn2/3pp3/4P3/3P1P2/PPP2KPP/RNB1QBNR"
+#
+# Site to make other FEN strings: http://www.netreal.de/Forsyth-Edwards-Notation/index.php
+board = objects.Board(renderer, clicker, objects.Point(10, 10), starting_fen=None) # Add string HERE!
+
+
 context_text = objects.FloatingText(renderer, objects.Point(10, 700), "Press \'R\' to restart", 16, cfg.colors["boardtext"])
-hand_detector = gesture_code.HandDetector(h_flip=True, scales=[[.25, .25], [.75, .75]])
+hand_detector = gesture_code.HandDetector(h_flip=True,scales=[[.25, .25], [.75, .75]])
+speech_manager =  sm.SpeechManager(board)     # Speech Manger references Board
 
 # Main loop
 pygame.mouse.set_visible(False)
@@ -40,9 +52,16 @@ mouse_timestamp = -1000
 last_interaction = -1000
 
 hand_detector.start()
+speech_manager.start()
+
+
+if board.board.turn == chess.BLACK:
+    # Add end turn event to let ai run.
+    pygame.event.post(pygame.event.Event(utils.TURN_DONE))
 
 while running:
-    curr_time = int(timer() * 1000)
+    # Handling Mouse and Hand -> Registering Click and Hand Movements 
+    curr_time = int(timer() * 1000)     # Current Time 
     new_mouse_pos = objects.Point(*pygame.mouse.get_pos())
     if new_mouse_pos != mouse_pos:
         mouse_pos = new_mouse_pos
@@ -57,8 +76,10 @@ while running:
             pygame.event.post(pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1))
         if hand_release:
             pygame.event.post(pygame.event.Event(pygame.MOUSEBUTTONUP, button=1))
-
+    
     clicker.highlight(cursor_pos)
+    
+    # Execution of Click 
     for event in pygame.event.get():
         match event.type:
             case pygame.QUIT:
@@ -89,10 +110,32 @@ while running:
             case utils.GAME_ENDED:
                 game_ended = True
                 context_text.set_text("Game ended! Press \'R\' to restart", cfg.colors["redtext"])
-                
+    
+    if clicker.cursor.holding is None and board.board.turn == chess.WHITE:
+        command, some_command = speech_manager.resolve_commands(curr_time)
+        # Execute command 
+        if command:
+            src, tgt, prm = command
+            if src is not None: # if src is not None, then it's a move/capture/castle (/w promotion maybe)
+                board.deselect_square() # to disable previously clicked squares.
+
+                # simulate clicks on the board
+                board.square_clicked(src, chess.WHITE)
+                board.square_clicked(tgt, chess.WHITE, prm)
+            elif board.promotion.is_visible: # if src is None, then it can only be a pure promotion.
+                # simulate promotion click
+                board.square_clicked(board.promotion.square_code, chess.WHITE, prm)
+            else:
+                audio.ILLEGAL_MOVE_SOUND.set_volume(cfg.ILLEGAL_MOVE_VOLUME)
+                audio.ILLEGAL_MOVE_SOUND.play(loops=0, maxtime=0, fade_ms=0)
+        elif some_command:
+            audio.ILLEGAL_MOVE_SOUND.set_volume(cfg.ILLEGAL_MOVE_VOLUME)
+            audio.ILLEGAL_MOVE_SOUND.play(loops=0, maxtime=0, fade_ms=0)
+    
     renderer.step(cursor_pos)
 
 engine.close()
+speech_manager.stop()
 
 # Quit Pygame
 pygame.quit()
