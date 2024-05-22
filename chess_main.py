@@ -10,6 +10,9 @@ import gesture_code
 import speech_manager as sm 
 import audio
 import json
+import os
+
+os.makedirs("./recordings", exist_ok=True)
 
 # get current datetime
 recording_start = datetime.now()
