@@ -45,9 +45,10 @@ engine.configure({
 # 'Bongcloud opening': "r2qk2r/ppp1bppp/2n1bn2/3pp3/4P3/3P1P2/PPP2KPP/RNB1QBNR"
 #
 # Site to make other FEN strings: http://www.netreal.de/Forsyth-Edwards-Notation/index.php
-STARTING_FEN = "2r5/1P6/8/5pk1/1KP1q1p1/1Q6/8/8"
 
-board = objects.Board(renderer, clicker, objects.Point(10, 10), starting_fen=STARTING_FEN) # Add string HERE!
+STARTING_FEN = None # Add string HERE!
+
+board = objects.Board(renderer, clicker, objects.Point(10, 10), starting_fen=STARTING_FEN)
 
 
 context_text = objects.FloatingText(renderer, objects.Point(10, 700), "Press \'R\' to restart", 16, cfg.colors["boardtext"])
