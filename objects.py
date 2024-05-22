@@ -266,6 +266,7 @@ class Board(Renderable):
         super().__init__(renderer, rel_pos, order=cfg.BOARD_ORDER)
         
         self.currently_selected = None
+        self.last_move = None
 
         self.gui_squares = [None] * 64
         for file in range(8):
@@ -311,6 +312,7 @@ class Board(Renderable):
 
         if self.board.is_check():
             self.get_square(self.board.king(self.board.turn)).draw_state = "danger"
+        self.last_move = None
 
     def get_square(self, square_code: int):
         return self.gui_squares[square_code]
@@ -381,6 +383,8 @@ class Board(Renderable):
         self.currently_selected = None
 
     def move_piece(self, square_code: int, promotion : int = None):
+
+        last_move = (chess.piece_name(self.board.piece_at(self.currently_selected).piece_type), chess.square_name(self.currently_selected), chess.square_name(square_code), chess.piece_name(promotion) if promotion is not None else None)
         
         self.board.push(chess.Move(self.currently_selected, square_code, promotion))
 
@@ -399,6 +403,8 @@ class Board(Renderable):
             pygame.event.post(pygame.event.Event(utils.GAME_ENDED))
         else:
             pygame.event.post(pygame.event.Event(utils.TURN_DONE))
+
+        self.last_move = last_move
 
 
     def reset(self):

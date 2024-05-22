@@ -40,9 +40,8 @@ class SpeechManager():
         grammar.add_rule(piece_rule)
         grammar.add_rule(castle_rule)
         grammar.add_rule(square_rule)
-        #grammar.add_rule(ExampleDictationRule())
         grammar.load()
-        self.speech_engine.do_recognition() 
+        self.speech_engine.do_recognition()
     
     def start(self):
         self.t.start()

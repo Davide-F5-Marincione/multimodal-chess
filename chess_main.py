@@ -1,6 +1,7 @@
 import pygame
 import chess.engine
 from timeit import default_timer as timer
+from datetime import datetime
 
 import utils
 import objects
@@ -8,6 +9,13 @@ import config as cfg
 import gesture_code
 import speech_manager as sm 
 import audio
+import json
+
+# get current datetime
+recording_start = datetime.now()
+actions = []
+curr_action = None
+ai_moves = []
 
 # Initialize Pygame
 pygame.init()
@@ -34,7 +42,9 @@ engine.configure({
 # 'Bongcloud opening': "r2qk2r/ppp1bppp/2n1bn2/3pp3/4P3/3P1P2/PPP2KPP/RNB1QBNR"
 #
 # Site to make other FEN strings: http://www.netreal.de/Forsyth-Edwards-Notation/index.php
-board = objects.Board(renderer, clicker, objects.Point(10, 10), starting_fen="r1bqk2r/ppp1nppp/3p4/2P1p3/3nP3/8/PP1K1PPP/RNB2BNR") # Add string HERE!
+STARTING_FEN = "2r5/1P6/8/5pk1/1KP1q1p1/1Q6/8/8"
+
+board = objects.Board(renderer, clicker, objects.Point(10, 10), starting_fen=STARTING_FEN) # Add string HERE!
 
 
 context_text = objects.FloatingText(renderer, objects.Point(10, 700), "Press \'R\' to restart", 16, cfg.colors["boardtext"])
@@ -54,16 +64,25 @@ last_interaction = -1000
 hand_detector.start()
 speech_manager.start()
 
+last_board_move = board.last_move
+
 
 if board.board.turn == chess.BLACK:
     # Add end turn event to let ai run.
     pygame.event.post(pygame.event.Event(utils.TURN_DONE))
 
+last_action_type = None
+
 while running:
+    prev_cursor_pos = cursor_pos
+    down_button = 0
+    up_button = 0
+
     # Handling Mouse and Hand -> Registering Click and Hand Movements 
     curr_time = int(timer() * 1000)     # Current Time 
     new_mouse_pos = objects.Point(*pygame.mouse.get_pos())
     if new_mouse_pos != mouse_pos:
+        last_action_type = 0
         mouse_pos = new_mouse_pos
         mouse_timestamp = curr_time
     hand_cursor_pos, hand_click, hand_release, hand_timestamp = hand_detector.process_gestures(curr_time)
@@ -71,6 +90,7 @@ while running:
     if mouse_timestamp >= hand_timestamp:
         cursor_pos = mouse_pos
     else:
+        last_action_type = 1
         cursor_pos = objects.Point(int(hand_cursor_pos[0] * WIDTH), int(hand_cursor_pos[1] * HEIGHT))
         if hand_click:
             pygame.event.post(pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1))
@@ -87,9 +107,11 @@ while running:
             case pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     clicker.execute_click()
+                    down_button += 1
             case pygame.MOUSEBUTTONUP:
                 if event.button == 1:
                     clicker.execute_click(False)
+                    up_button += 1
             case pygame.KEYDOWN:
                 if event.key == pygame.K_r:
                     clicker.cursor.release()
@@ -107,14 +129,19 @@ while running:
                 if not game_ended:
                     board.square_clicked(engine_move.to_square, chess.BLACK, engine_move.promotion)
                     engine_move = None
+                    ai_moves.append(board.last_move)
             case utils.GAME_ENDED:
                 game_ended = True
                 context_text.set_text("Game ended! Press \'R\' to restart", cfg.colors["redtext"])
     
+    utterances = 0
+
     if clicker.cursor.holding is None and board.board.turn == chess.WHITE:
+        utterances = len(speech_manager.commands)
         command, some_command = speech_manager.resolve_commands(curr_time)
         # Execute command 
         if command:
+            last_action_type = 2
             src, tgt, prm = command
             if src is not None: # if src is not None, then it's a move/capture/castle (/w promotion maybe)
                 board.deselect_square() # to disable previously clicked squares.
@@ -134,8 +161,58 @@ while running:
     
     renderer.step(cursor_pos)
 
+    now = str(datetime.now())
+    cursor_dist = ((prev_cursor_pos[0] - cursor_pos[0]) ** 2 + (prev_cursor_pos[1] - cursor_pos[1]) ** 2) ** .5
+    did_move = None
+    if last_board_move != board.last_move:
+        if board.board.turn == chess.BLACK:
+            did_move = board.last_move
+            last_board_move = board.last_move
+
+    match last_action_type:
+        case 0: # Mouse action
+            if curr_action is not None:
+                if curr_action["action_type"] != "mouse":
+                    curr_action["action_end"] = now
+                    actions.append(curr_action)
+                    curr_action = {"action_start": now, "action_type": "mouse", "action_dist": 0.0, "down_button": 0, "up_button": 0, "moves": []}
+            else:
+                curr_action = {"action_start": now, "action_type": "mouse", "action_dist": 0.0, "down_button": 0, "up_button": 0, "moves": []}
+            curr_action["action_dist"] += cursor_dist
+            curr_action["down_button"] += down_button
+            curr_action["up_button"] += up_button
+        case 1: # Hand action
+            if curr_action is not None:
+                if curr_action["action_type"] != "hand":
+                    curr_action["action_end"] = now
+                    actions.append(curr_action)
+                    curr_action = {"action_start": now, "action_type": "hand", "action_dist": 0.0, "down_button": 0, "up_button": 0, "moves": []}
+            else:
+                curr_action = {"action_start": now, "action_type": "hand", "action_dist": 0.0, "down_button": 0, "up_button": 0, "moves": []}
+            curr_action["action_dist"] += cursor_dist
+            curr_action["down_button"] += down_button
+            curr_action["up_button"] += up_button
+        case 2: # Speech action
+            if curr_action is not None:
+                if curr_action["action_type"] != "speech":
+                    curr_action["action_end"] = now
+                    actions.append(curr_action)
+                    curr_action = {"action_start": now, "action_type": "speech", "utterances": 0, "moves": []}
+            else:
+                curr_action = {"action_start": now, "action_type": "speech", "utterances": 0, "moves": []}
+            curr_action["utterances"] += utterances
+    
+    if curr_action is not None and did_move:
+        curr_action["moves"].append(did_move)
+
+            
 engine.close()
 speech_manager.stop()
 
 # Quit Pygame
 pygame.quit()
+
+if curr_action is not None:
+    actions.append(curr_action)
+with open("./recordings/recording_" + recording_start.strftime("%Y-%m-%d_%H-%M-%S") + ".json", "w") as f:
+    json.dump({"fen":STARTING_FEN,"player":actions, "ai": ai_moves}, f)

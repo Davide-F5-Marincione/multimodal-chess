@@ -164,8 +164,6 @@ class HandDetector:
         if self.reset:
             self.reset = False
             self.cursor_pos = self.curr_hand.scaled(self.scales)
-
-        
         
         if not self.prev_hand is None:
             if not self.prev_hand.is_same(self.curr_hand):

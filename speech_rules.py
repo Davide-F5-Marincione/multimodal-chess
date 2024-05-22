@@ -16,7 +16,7 @@ if False:
 else:
     # logging.basicConfig(level=20)
     from dragonfly.log import setup_log
-    setup_log() 
+    setup_log()
 
 
 file_map = { 
@@ -175,10 +175,9 @@ class CastleRule(CompoundRule):
     def _process_recognition(self, node, extras):
         verb = "Castle"
         special_direction = extras.get("special_direction", None)
-        file = 6 if special_direction is "kingside" else 2 
+        file = 6 if special_direction == "kingside" else 2 
         result = Command(verb, None, None, None, file, None)
-        self.manager.push_command(result) 
-
+        self.manager.push_command(result)
 
         
 # Modelling Rules that start with Piece
