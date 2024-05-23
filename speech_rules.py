@@ -173,7 +173,7 @@ class CastleRule(CompoundRule):
     ]
     
     def _process_recognition(self, node, extras):
-        verb = "Castle"
+        verb = "castle"
         special_direction = extras.get("special_direction", None)
         file = 6 if special_direction == "kingside" else 2 
         result = Command(verb, None, None, None, file, None)
