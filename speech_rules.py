@@ -188,7 +188,7 @@ class PieceRule(CompoundRule):
         super().__init__()
         self.manager = manager
     
-    spec = "<src_piece> (in <src_square> <verb> [<prep>] ( <tgt_square> | <tgt_piece> [in <tgt_square>] ) | <verb> [<prep> <src_square>]( [<prep>] <tgt_square> | <tgt_piece>  [in <tgt_square>])) [and promote to <prm_piece>]"
+    spec = "<src_piece> ( [<prep>] <tgt_square> |in <src_square> <verb> [<prep>] ( <tgt_square> | <tgt_piece> [in <tgt_square>] ) | <verb> [<prep> <src_square>]( [<prep>] <tgt_square> | <tgt_piece>  [in <tgt_square>])) [and promote to <prm_piece>]"
     
     extras = [
         Choice("verb", verb_map),
