@@ -107,6 +107,8 @@ class HandDetector:
                     self.prev_hand = self.curr_hand
                     self.curr_hand = Hand(result, timestamp_ms, self.prev_hand.is_click)
                 self.clicks.append((self.curr_hand.is_click, timestamp_ms))
+            self.go = True
+                
 
         options = mp.tasks.vision.HandLandmarkerOptions(
             base_options=mp.tasks.BaseOptions(model_asset_path=model_path),
@@ -135,6 +137,7 @@ class HandDetector:
         self.stopped = True
 
     def update(self):
+        self.go = True
         while not self.stopped:
             self.grabbed, self.frame = self.cam.read()
             if self.grabbed is False:
@@ -144,10 +147,10 @@ class HandDetector:
 
             if self.h_flip:
                 self.frame = cv.flip(self.frame, 1)
-
-            self.frame.flags.writeable = False
-
-            self.hand_landmarker.detect_async(mp.Image(image_format=mp.ImageFormat.SRGB, data= cv.cvtColor(self.frame, cv.COLOR_BGR2RGB)), int(timer() * 1000))
+            if self.go:
+                self.frame.flags.writeable = False
+                self.go = False
+                self.hand_landmarker.detect_async(mp.Image(image_format=mp.ImageFormat.SRGB, data= cv.cvtColor(self.frame, cv.COLOR_BGR2RGB)), int(timer() * 1000))
 
         self.cam.release()
     
