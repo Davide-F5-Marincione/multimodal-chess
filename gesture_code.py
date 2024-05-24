@@ -4,6 +4,8 @@ import mediapipe as mp
 from threading import Thread
 from collections import deque
 
+import config as cfg
+
 from timeit import default_timer as timer
 
 class Hand:
@@ -52,10 +54,10 @@ class Hand:
         if self.handedness != other.handedness:
             return False
         
-        if abs(self.palm_width - other.palm_width) > self.palm_width * .1:
+        if abs(self.palm_width - other.palm_width) > self.palm_width * cfg.MIN_PALM_WIDTH_DIFFERENCE:
             return False
         
-        return np.linalg.norm(self.origin - other.origin) < self.palm_width * 10
+        return np.linalg.norm(self.origin - other.origin) < self.palm_width * cfg.MAX_HAND_MOVEMENT
 
     def is_facing_screen(self):
         return self.basis[2, 2] < 0
@@ -71,7 +73,7 @@ class Hand:
         dot = np.dot(thumb_vec, index_vec)
         dist = np.linalg.norm(thumb_vec - index_vec)
 
-        return dot >= (.75 if prev_click else .93) and dist <= (1 if prev_click else .4)
+        return dot >= (cfg.DOT_CLICK_HYST if prev_click else cfg.DOT_CLICK) and dist <= (cfg.DIST_CLICK_HYST if prev_click else cfg.DIST_CLICK)
     
     def scaled(self, limits):
         return np.clip((self.orig_screen - limits[0]) / (limits[1] - limits[0]), 0, 1)
