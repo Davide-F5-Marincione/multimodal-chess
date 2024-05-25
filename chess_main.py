@@ -46,7 +46,7 @@ engine.configure({
 #
 # Site to make other FEN strings: http://www.netreal.de/Forsyth-Edwards-Notation/index.php
 
-STARTING_FEN = None # Add string HERE!
+STARTING_FEN = "r2qk2r/ppp1bppp/2n1bn2/3pp3/4P3/3P1P2/PPP2KPP/RNB1QBNR" # Add string HERE!
 
 board = objects.Board(renderer, clicker, objects.Point(10, 10), starting_fen=STARTING_FEN)
 
@@ -140,7 +140,7 @@ while running:
     
     utterances = 0
 
-    if clicker.cursor.holding is None and board.board.turn == chess.WHITE:
+    if clicker.cursor.holding is None and hand_cursor_pos is None and board.board.turn == chess.WHITE:
         utterances = len(speech_manager.commands)
         command, some_command = speech_manager.resolve_commands(curr_time)
         # Execute command 

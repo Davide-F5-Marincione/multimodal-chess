@@ -53,13 +53,13 @@ MAX_HAND_MOVEMENT = 10
 
 
 # Former values
-# DOT_CLICK_HYST = .75
-# DOT_CLICK = .93
-# DIST_CLICK_HYST = 1
-# DIST_CLICK = .4
-
-# new values, no hysteresis and no dot product check
-DOT_CLICK_HYST = 0
-DOT_CLICK = 0
+DOT_CLICK_HYST = .8
+DOT_CLICK = .8
 DIST_CLICK_HYST = .4
 DIST_CLICK = .4
+
+# new values, no hysteresis and no dot product check
+# DOT_CLICK_HYST = 0
+# DOT_CLICK = 0
+# DIST_CLICK_HYST = .4
+# DIST_CLICK = .4
