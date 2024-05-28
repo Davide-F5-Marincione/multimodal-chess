@@ -284,6 +284,8 @@ class Board(Renderable):
         self.promotion = PromotionBubble(renderer, clicker, Point(0, 0), self)
         self.promotion.set_invisible()
 
+        self.game_end_text = FloatingText(renderer, Point(10, cfg.SQUARE_SIZE*3), "GAME OVER", 100, cfg.colors["redtext"], background=None, parent=self)
+
         self.update_board()
 
         # Create board surface
@@ -302,8 +304,18 @@ class Board(Renderable):
             text = font.render("abcdefgh"[i], cfg.TEXT_ANTIALIAS, cfg.colors["boardtext"], cfg.colors["background"])
             self.surface.blit(text, (int(cfg.SQUARE_SIZE * (i + .5)) - size[0]//2, cfg.SQUARE_SIZE * 8 + cfg.BOARD_TEXT_V_DISTANCE))
 
+    def takeback(self):
+        try:
+            self.board.pop()
+            if self.board.turn == chess.BLACK:
+                self.board.pop()
+        except IndexError:
+            pass # WHO?! WHO DARES TO TAKEBACK WHEN THERE IS NO MOVE TO TAKEBACK?!
+        self.deselect_square()
+        self.update_board()
 
     def update_board(self):
+        self.game_end_text.set_invisible()
         for square in self.gui_squares:
             if piece := self.board.piece_at(square.square_code):
                 square.piece_code = get_piece_code(piece.piece_type, piece.color)
@@ -401,6 +413,7 @@ class Board(Renderable):
 
         if self.board.is_game_over():
             pygame.event.post(pygame.event.Event(utils.GAME_ENDED))
+            self.game_end_text.set_visible()
         else:
             pygame.event.post(pygame.event.Event(utils.TURN_DONE))
 
@@ -462,16 +475,17 @@ class GUISquare(Clickable):
 
 
 class FloatingText(Renderable):
-    def __init__(self, renderer: Renderer, rel_pos: Point, text: str, font_size: int, color: Tuple[int, int, int], font: str = cfg.BOARD_TEXT_FONT, parent: Object=None, order=3):
+    def __init__(self, renderer: Renderer, rel_pos: Point, text: str, font_size: int, color: Tuple[int, int, int], font: str = cfg.BOARD_TEXT_FONT, background=cfg.colors["background"], parent: Object=None, order=3):
         super().__init__(renderer, rel_pos, parent, order)
 
         self.font = pygame.font.Font(font, font_size)
+        self.background = background
         self.set_text(text, color)
 
     def set_text(self, text: str, color: Tuple[int, int, int] = None):
         if color:
             self.curr_color = color
-        self.surface = self.font.render(text, cfg.TEXT_ANTIALIAS, self.curr_color, cfg.colors["background"])
+        self.surface = self.font.render(text, cfg.TEXT_ANTIALIAS, self.curr_color, self.background)
 
 
 # Class to test that the promotion bubble i did is of correct size, <3, gne 

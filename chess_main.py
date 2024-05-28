@@ -51,7 +51,8 @@ STARTING_FEN = "r2qk2r/ppp1bppp/2n1bn2/3pp3/4P3/3P1P2/PPP2KPP/RNB1QBNR" # Add st
 board = objects.Board(renderer, clicker, objects.Point(10, 10), starting_fen=STARTING_FEN)
 
 
-context_text = objects.FloatingText(renderer, objects.Point(10, 700), "Press \'R\' to restart", 16, cfg.colors["boardtext"])
+objects.FloatingText(renderer, objects.Point(10, 650), "Press \'R\' to restart", 16, cfg.colors["restart"])
+objects.FloatingText(renderer, objects.Point(10, 680), "Press \'T\' to takeback", 16, cfg.colors["takeback"])
 hand_detector = gesture_code.HandDetector(h_flip=True,scales=[[.25, .25], [.75, .75]])
 speech_manager =  sm.SpeechManager(board)     # Speech Manger references Board
 
@@ -120,7 +121,10 @@ while running:
                 if event.key == pygame.K_r:
                     clicker.cursor.release()
                     board.reset()
-                    context_text.set_text("Press \'R\' to restart", cfg.colors["boardtext"])
+                    game_ended = False
+                if event.key == pygame.K_t:
+                    clicker.cursor.release()
+                    board.takeback()
                     game_ended = False
             case utils.TURN_DONE:
                 if not game_ended:
@@ -136,7 +140,6 @@ while running:
                     ai_moves.append(board.last_move)
             case utils.GAME_ENDED:
                 game_ended = True
-                context_text.set_text("Game ended! Press \'R\' to restart", cfg.colors["redtext"])
     
     utterances = 0
 

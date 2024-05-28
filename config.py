@@ -7,8 +7,10 @@ colors = dict(
     moveable = "#7ff461",
     danger = "#f64141",
     boardtext = "#f0f0f0",
-    redtext = "#f04040",
-    promotion_highlight = "#7ff461"
+    redtext = "#CB0202",
+    promotion_highlight = "#7ff461",
+    restart = "#4DE094",
+    takeback = "#4DE0DB",
 )
 
 SQUARES_ALPHA = 128
