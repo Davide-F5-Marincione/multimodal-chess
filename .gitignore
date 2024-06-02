@@ -18,3 +18,8 @@ stockfish/*
 
 # Kaldi model
 kaldi_model/*
+report/report.aux
+report/report.fdb_latexmk
+report/report.fls
+report/report.log
+report/report.synctex.gz
