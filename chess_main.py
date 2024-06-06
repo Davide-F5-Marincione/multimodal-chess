@@ -46,7 +46,7 @@ engine.configure({
 #
 # Site to make other FEN strings: http://www.netreal.de/Forsyth-Edwards-Notation/index.php
 
-STARTING_FEN = "r2qk2r/ppp1bppp/2n1bn2/3pp3/4P3/3P1P2/PPP2KPP/RNB1QBNR" # Add string HERE!
+STARTING_FEN = None # Add string HERE!
 
 board = objects.Board(renderer, clicker, objects.Point(10, 10), starting_fen=STARTING_FEN)
 

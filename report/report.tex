@@ -3,6 +3,7 @@
 \usepackage{graphicx}
 \usepackage[scale=.8]{geometry}
 \usepackage{microtype}
+\usepackage{algpseudocode}
 
 \title{Some title for a multimodal chess interface}
 \author{Giuseppina Iannotti, and Davide Marincione}
@@ -23,18 +24,66 @@
     \paragraph*{Libraries} A chess program is quite complex to make, and since writing one would've been a project in itself, we have decided to use the \texttt{python-chess} library. This choice enabled us to abstract away the complexity of the game, and to focus on making the interface and the interaction. \texttt{python-chess} is used all over the project's code, to make checks and queries to display the correct information, but also to interact with the chess engine and to make moves.\\For the graphics, audio and event handling, we used the \texttt{pygame} library, which is a set of \texttt{python} modules designed for writing small video games. It is simple yet very powerful, as it allows to draw shapes, images and text on the screen, to play sounds, and to handle user input. Admittedly, it can be quite slow for medium to large-scale projects, as its main drawback is the graphics rendering, which is done via old-fashioned blitting. But, for a project such as ours, it was more than enough.
 
     \paragraph*{Programming paradigm} For all its usefullness, \texttt{pygame} only provides basic functionalities and none of the data structures and systems used in writing videogames. Things that, to a certain extent, we needed for our project. So we decided to go for an OOP approach, defining ever more refined objects, building on top of more abstract ones. This tactic proved to be extremely successful, as in the later parts of the project there were a couple of instances in which we needed a new class, and we were able to define it without much hassle.
-    \begin{figure*}\label{fig:uml}
+    \begin{figure*}
         \centering
         \includegraphics[width=.8\textwidth]{uml.pdf}
         \caption{UML description of the basic structure of the program.}
+        \label{fig:uml}
     \end{figure*}
-    \paragraph*{Basic structure} Inspired by many game engines (Unity, Godot, etc.), our first class was the \texttt{Object} class, which is the base class for all the elements in our program. It is defined to be as generic as possible: an object in 2d space which, being in a parent-child hierarchy, can have its absolute position changed by the parent, while maintaining its relative position to it.
+    \paragraph*{Basic structure} Inspired by many game engines (Unity, Godot, etc.), our main class is the \texttt{Object} class, which is the base class for most of the elements in our program \ref{fig:uml}. It is defined to be as generic as possible: an object in 2d space which, being in a parent-child hierarchy, can have its absolute position changed by the parent, while maintaining its relative position to it. Internally it has a class-wide \texttt{OBJECT\_COUNTER} member which is used to give each \texttt{Object} its \texttt{id}, used to recognize it among the other objects.
+    \paragraph*{Rendering} We then have the \texttt{Renderable} class, which inherits from \texttt{Object}. And, with it, a \texttt{Renderer} class, which is a singleton that keeps track of all the \texttt{Renderable} objects and renders them. As such, the \texttt{Renderable} class has a \texttt{draw()} method, a \texttt{set\_visible()} method and an \texttt{order} attribute, which is used to determine the order in which the objects are rendered. The \texttt{Renderer} class has a \texttt{step()} method, which is called every frame, and it renders all the \texttt{Renderable} objects in the correct order.
+    \paragraph*{Clickables} The \texttt{Clickable} class inherits from \texttt{Renderable} and is used to define objects that can be clicked (in our simple system, we don't have invisible but clickable objects). Like with \texttt{Renderer} and \texttt{Renderable}, we have a \texttt{Clicker} singleton, that keeps track of all the \texttt{Clickable}s. It too has a method called every frame, named \texttt{highlight()}, which determines which \texttt{Clickable} would be clicked if a "click" event was called. When that happens, its \texttt{execute\_click()} method is called, which runs the \texttt{click()} and \texttt{declick()}\footnote{The \texttt{declick()} method is run when the left mouse button is released, instead of pressed.} methods that each \texttt{Clickable} must have. This way, we can define different behaviours for different objects.\\Other than that, the \texttt{Clickable} class has a \texttt{enable\_highlight()} method and \texttt{disable\_highlight()} method, which are used to enable and disable the highlight state of the object, respectively. Furthermore, it has a \texttt{hold\_draw()} method, used by the \texttt{Cursor} class to draw the object when it is being held (if it can be held).
+    \begin{figure}
+        \centering
+        \includegraphics[width=.45\textwidth]{images/cursor_comparison.png}
+        \caption{The cursor, with different backgrounds.}
+        \label{fig:cursor}
+    \end{figure}
+    \paragraph*{Cursor} The \texttt{Cursor} class is a singleton that inherits from \texttt{Renderable}. As the name suggests it is used to draw the cursor on the screen, and to keep track of the object that is being held. As described in the next sections it can be driven either by mouse or by hand gestures, and it is referenced by the \texttt{Clicker} as it handles which object is being held (as only \texttt{Clickable}s are holdable). We decided to make the \texttt{Cursor} a \texttt{Renderable} such as to make it different from the os mouse cursor; we felt that it would be better to have a custom cursor such as to give a distinct visual feedback, especially when the cursor is driven by hand gestures. With this class we have made our first interface choice, as the cursor is designed to be a fairly big cross symbol, which distorts the colors it is drawn upon; making it always visible, no matter the background \ref{fig:cursor}. Initially we had thought of using
+    \begin{equation}
+        c^* = 255 - c,
+    \end{equation}
+    but we found this to be insufficient, as one can expect most colors to sit in the middle of the color spectrum, thus getting a situation in which the cursor is invisible on most colors, as
+    \begin{equation}
+        255 - 127 = 128.
+    \end{equation}
+    To avoid this, we resorted to
+    \begin{equation}
+        c^* = (c + 128)\ \mathrm{mod}\ 256,
+    \end{equation}
+    which assures us to always get a color that is distant enough from the original.
+    \paragraph*{Text} As we sometimes needed to display text on the screen, we have defined the \texttt{FloatingText} class, which inherits from \texttt{Renderable}. It exploits \texttt{pygame}'s \texttt{Font} class, which is used to render text on the screen, and thanks to that it can dynamically change the displayed text and the color (as the \texttt{Font} class enables that).
+    \paragraph*{Board} The \texttt{Board} class is a singleton that inherits from \texttt{Renderable}. Internally, it has a \texttt{board} attribute, which contains a \texttt{chess.Board} object, used to make moves and to check the state of the game. Furthermore, it has a reference to 64 \texttt{GUISquare} objects, which inherit from \texttt{Clickable} and handle the drawing of pieces on the screen, and their interaction with the user. To build a satisfying interface, \texttt{Board} has a number of features:
+    \begin{itemize}
+        \item It enables a red square under the king when it is in check.
+        \item It marks a square with green when it gets selected (as a move can be done by doing two clicks, the first one to select the piece, the second one to select the destination), and highlights in the same way all of the possible moves.
+        \item It plays a sound when a move is done, and a different one when a king gets in check.
+    \end{itemize}
+    \begin{figure}
+        \centering
+        \includegraphics[width=.45\textwidth]{images/promotion_bubble.png}
+        \caption{How the promotion bubble looks like.}
+        \label{fig:promotion}
+    \end{figure}
+    \paragraph*{Promotion} The \texttt{Board} recognizes when a pawn reaches the last opposite row, when this happens, before executing the move by calling its internal \texttt{chess.Board} object, it makes a popup element appear, the \texttt{PromotionBubble} \ref{fig:promotion}. This is a \texttt{Renderable} which contains four \texttt{PromotionButton}s, which inherit from \texttt{Clickable}. Each of these buttons represent a piece to which the pawn can be promoted to. When a button is clicked, the \texttt{PromotionBubble} calls the \texttt{Board} to finalize the move and to promote the pawn.
+    \paragraph*{Game loop, events and AI} The main loop of the program can be found in \texttt{chess\_main.py}. After the initialization of all the objects and systems, it enters a loop which can be roughly described as follows:
+    \begin{enumerate}
+        \item Update the cursor position with the latest mouse or hand position, and run \texttt{clicker.highlight(cursor\_pos)}. If a hand gesture is detected, push a mouse event.
+        \item Resolve events, such as mouse clicks, key presses (quit game, takebacks), and moves done (for the AI).
+        \item Resolve voice commands.
+        \item Run \texttt{renderer.step()}.
+        \item Run metrics recorder.
+    \end{enumerate}
+    During the game, the player competes against Stockfish 16 (which, in our tests, we limited); we easily were able to do this thanks to the \texttt{python-chess} library, which has an built-in interface to communicate with a multitude of chess engines. The AI is run during event handling, as our \texttt{Board} emits a custom \texttt{TURN\_DONE} event which we use to discern when the AI has to make a move.
+    \paragraph*{Game recording} At the end of development, we wanted to collect quantitative data about the tests. To do this, we implemented a recording system that saves multiple metrics about the runtime; such as the amount of moves made during a modality, the distance traveled with the hand and the number of utterances by the user. In the Experiments section of this report, we'll talk more about this.
 
     \section{Hand gestures}
 
     \section{Voice commands}
 
     \section{Experiments and Results}
+
+    On a note, in each of our experiments, we have found that no user has ever complained about the visibility of the cursor, which we take as a sign that its conception was successful.
 
     \section{Conclusions}
 
