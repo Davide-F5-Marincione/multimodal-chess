@@ -130,8 +130,6 @@ class Cursor(Renderable):
 
         self.holding = None
 
-        # CursorShadow(renderer, self)
-
     def draw(self, context: RenderContext):
         if self.holding:
             self.holding.hold_draw(context)
@@ -145,14 +143,6 @@ class Cursor(Renderable):
         if self.holding:
             self.holding.held = False
         self.holding = None
-
-
-# class CursorShadow(Renderable):
-#     def __init__(self, renderer: Renderer, parent: Cursor):
-#         super().__init__(renderer, Point(0,0), parent, order=cfg.CURSOR_SHADOW_ORDER)
-
-#     def draw(self, context: RenderContext):
-#         context.screen.blit(self.parent.surface, self.abs_pos)
     
 
 """
