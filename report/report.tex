@@ -156,7 +156,7 @@
         \item The cursor moving even when the hand is still. This can either happen because humans have a natural tremor in their hands, which can be picked up by the hand tracking system, or because the tracking is noisy. To avoid this, we only update the cursor if the hand has moved a certain distance.
         \item A grabbed piece being dropped for whatever reason, while the user is still keeping a grab gesture. This is avoided by keeping a list of the most recent detections and checking if even one of them is a grab gesture.
     \end{enumerate}
-    
+    All of this combined we achieved a system that, in spite of all the noise and issues, provides a smooth experience. We describe the tests and the results in the Experiments section.
 
     \section{Voice commands}
     To enhance user interaction with our application, our project aims to integrate voice commands. Playing chess using verbal instructions can provide a more engaging experience and offer advantages over traditional input methods. This approach can be particularly beneficial for users with accessibility needs or those in hands-free environments.
@@ -216,6 +216,13 @@
     \section{Experiments and Results}
 
     On a note, in each of our experiments, we have found that no user has ever complained about the visibility of the cursor, which we take as a sign that its conception was successful.
+
+    In the few cases when the users chose to use the mouse, they were able to pick it up instantly and without any issues. Reassuring us that we had a solid baseline.
+
+    When it comes to the hand tracking mechanism, we found that no user reported fatigue (keeping in mind the tests were usually less than 10 minutes long). 
+
+    As expected, there was no need to match hand and cursor in a 1:1 mapping, as users were more concerned in looking at where the cursor was, rather than where their hand was.
+
 
     \section{Conclusions}
 
