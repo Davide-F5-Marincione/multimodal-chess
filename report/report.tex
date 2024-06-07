@@ -4,6 +4,9 @@
 \usepackage[scale=.8]{geometry}
 \usepackage{microtype}
 \usepackage{algpseudocode}
+\usepackage{tabularx}
+\usepackage{lipsum} 
+
 
 \title{Some title for a multimodal chess interface}
 \author{Giuseppina Iannotti, and Davide Marincione}
@@ -156,7 +159,60 @@
     
 
     \section{Voice commands}
+    To enhance user interaction with our application, our project aims to integrate voice commands. Playing chess using verbal instructions can provide a more engaging experience and offer advantages over traditional input methods. This approach can be particularly beneficial for users with accessibility needs or those in hands-free environments.
+    \paragraph*{Dragonfly} To implement voice commands, we used the \emph{dragonfly} library, a Python package that facilitates the creation of voice command scripts. Dragonfly allows for the intuitive definition of complex command grammars and simplifies the processing of recognition results by treating speech commands and grammar objects as first-class Python objects. Additionally, Dragonfly provides a unified front-end interface that seamlessly integrates with Kaldi as a back-end speech recognition engine.
+    
+    \begin{table*}[h]
+        \centering
+        \caption{Rules and Specifications}
+        \begin{tabularx}{\textwidth}{|l | X|}
+            \hline
+            \textbf{Rule Name} & \textbf{Specification} \\
+            \hline
+            Move Rule & \texttt{"move ( [ <src\_piece>] | [ <src\_piece> [<prep> <src\_square>] to <tgt\_square>] | [ [<prep>] <src\_square> to <tgt\_square>]) [and promote to <prm\_piece>]"} \\
+            \hline
+            Capture Rule & \texttt{"capture (<tgt\_piece> [<prep> <tgt\_square>] | <tgt\_square>) [with (<src\_piece> [<prep> <src\_square>] | <src\_square>)] [and promote to <prm\_piece>]"}\\
+            \hline
+            Promote Rule & \texttt{"promote [(<src\_piece> | <src\_square>)] to <prm\_piece>"} \\
+            \hline 
+            Castle Rule & \texttt{"(castle <special\_direction> | <special\_direction> castle)"} \\
+            \hline 
+            Piece Rule & \texttt{"<src\_piece> ( [<prep>] <tgt\_square> |in <src\_square> <verb> [<prep>] ( <tgt\_square> | <tgt\_piece> [in <tgt\_square>] ) | <verb> [<prep> <src\_square>]( [<prep>] <tgt\_square> | <tgt\_piece>  [in <tgt\_square>])) [and promote to <prm\_piece>]"}\\
+            \hline
+            Square Rule & \texttt{"<src\_square> <verb> ( [<prep>] <tgt\_square> | <tgt\_piece> [<prep> <tgt\_square>])"}\\
+            \hline
+        \end{tabularx}
+        \label{tab:rules}
+    \end{table*}
+    
+    
+    \paragraph*{Rules} Voice commands are defined using a set of rules that specify the structure of the commands and map them to corresponding actions in the chess game. Each rule is defined as a \texttt{CompoundRule} class, designed to make it very easy to create a rule based on a single compound spec. This rule class has the following parameters to customize its behavior:
+    \begin{itemize}
+        \item \emph{spec} : Compound specification for the rules root element 
+        \item \emph{extras} : Extras elements referenced from the compound spec. It includes choices for prepositions, pieces, and squares.
+    \end{itemize}
+    The rules are organized into a hierarchy, with each rule defining a specific type of voice command. 
+        
+    \paragraph*{Grammar} The rules are combined into a grammar object, which is then loaded into the Dragonfly engine. The grammar object is responsible for processing the voice input and matching it against the defined rules. When a match is found, the corresponding action is executed, such as moving a chess piece or promoting a pawn. In particular, our Chess Grammar is composed of the following set of rules, shown at \ref{tab:rules}: 
+    \begin{itemize}
+        \item \textit{MoveRule}: It defines a structured syntax pattern for recognizing different types of actions, specifically those that start with the verb \emph{"Move"}. Examples of commands recognized by this rule are : 
+        \item \textit{CaptureRule}:  It defines a syntax pattern for recognizing and processing those actions that start with the verb \emph{"Capture"}. This pattern allows for the identification of the target piece and square, the source piece and square, and any promotion piece involved in the capture action. Examples of commands recognized by this rule are : 
+        \item \textit{PromotionRule}:  It defines the syntax for recognizing and processing pawn promotion actions, specifically those that start with the verb \emph{"Promote"}. This pattern allows for the identification of either the source piece or the source square from which the promotion is initiated and specifies the piece to which the pawn should be promoted. Examples of commands recognized by this rule are : 
+        \item \textit{CastleRule}: It defines the syntax for recognizing and processing castling commands. This rule focuses on recognizing the castling action and the specific direction of the castle (kingside or queenside). Examples of commands recognized by this rule are :
+        \item \textit{PieceRule}: It defines a structured syntax pattern for interpreting commands that start with a piece name. This rule is designed to handle various actions involving a specified piece, such as moving, capturing, and promoting.
+        \item \textit{SquareRule}: It defines a pattern for recognizing commands that involve specifying source square and, subsequently, a target square or a target piece on the chessboard. This rule is designed to handle actions that involve moving or capturing a piece from a specific square to another square or piece. Example of this rule are: 
+    \end{itemize} 
 
+    Each rule has a process recognition method, responsible for handling the recognized voice command. It extracts the relevant components from the recognition result and constructs a Command object representing the chess move. This command is then passed to the Speech Manager for execution.
+
+    \paragraph*{Speech Manager} 
+    We have opted for a single-threaded approach for speech recognition too. This design choice was made to simplify the implementation and ensure efficient processing of vocal commands within the application. The \emph{SpeechManager} class is responsible for interpreting vocal commands and translating them into actionable moves within the chess application. It acts as a bridge between the speech recognition system and the chess engine, ensuring seamless interaction between the user's spoken instructions and the game state. Upon receiving vocal commands from the speech recognition system, it analyzes each command to extract relevant information such as the verb (e.g., move, capture), source and target pieces, and destination squares. The function validates the extracted commands against the legal moves available on the chessboard. It filters the available moves based on the provided details and determines the most appropriate move based on the context. Moreover, It handles special cases such as castling and pawn promotion separately to ensure accurate interpretation and execution of these complex maneuvers. To prevent outdated or delayed commands from being executed, the function incorporates a timeout mechanism to discard commands that exceed a specified time threshold.
+
+
+
+
+
+    
     \section{Experiments and Results}
 
     On a note, in each of our experiments, we have found that no user has ever complained about the visibility of the cursor, which we take as a sign that its conception was successful.
