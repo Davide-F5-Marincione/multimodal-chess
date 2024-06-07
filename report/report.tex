@@ -26,7 +26,7 @@
     \paragraph*{Programming paradigm} For all its usefullness, \texttt{pygame} only provides basic functionalities and none of the data structures and systems used in writing videogames. Things that, to a certain extent, we needed for our project. So we decided to go for an OOP approach, defining ever more refined objects, building on top of more abstract ones. This tactic proved to be extremely successful, as in the later parts of the project there were a couple of instances in which we needed a new class, and we were able to define it without much hassle.
     \begin{figure*}
         \centering
-        \includegraphics[width=.8\textwidth]{uml.pdf}
+        \includegraphics[width=.8\textwidth]{images/uml.pdf}
         \caption{UML description of the basic structure of the program.}
         \label{fig:uml}
     \end{figure*}
@@ -76,8 +76,84 @@
     \end{enumerate}
     During the game, the player competes against Stockfish 16 (which, in our tests, we limited); we easily were able to do this thanks to the \texttt{python-chess} library, which has an built-in interface to communicate with a multitude of chess engines. The AI is run during event handling, as our \texttt{Board} emits a custom \texttt{TURN\_DONE} event which we use to discern when the AI has to make a move.
     \paragraph*{Game recording} At the end of development, we wanted to collect quantitative data about the tests. To do this, we implemented a recording system that saves multiple metrics about the runtime; such as the amount of moves made during a modality, the distance traveled with the hand and the number of utterances by the user. In the Experiments section of this report, we'll talk more about this.
-
-    \section{Hand gestures}
+    \section{Hand tracking and gestures}
+    \paragraph*{Libraries} The hand tracking and gesture recognition system is enabled by the \texttt{opencv} and \texttt{mediapipe} libraries. The first is used to capture the video stream of the camera, and the latter is used to detect and track the hand. The rest of the computation (mapping the hand position to the cursor position, detecting gestures, etc.) is done by our code.
+    \paragraph*{Hand detection loop} We design a singleton \texttt{HandDetector} class, which runs its own loop on a separate thread with respect to the main system. This is done to avoid blocking the main loop, and to give as smooth an experience as possible. The loop can be described as follows:
+    \begin{enumerate}
+        \item Capture the video stream.
+        \item If the video stream has stopped, stop the loop.
+        \item Flip the video stream horizontally (if needed).
+        \item If an async call to the \texttt{mediapipe} library is not running, execute one with the current frame.
+    \end{enumerate}
+    The async call is done to avoid blocking the loop as the \texttt{mediapipe} library can be quite slow, and the check for no other async calls is done to not accumulate multiple async calls (which, on a slow laptop, can cause the system to crash). Once the async call gets executed, \texttt{mediapipe} runs a custom callback which we design to processes the resulting hand landmarks into the \texttt{Hand} class, which we then store in the \texttt{HandDetector}.
+    \paragraph*{Normalizing hands} The landmarks $\mathbf{L}\in\mathrm{R}^3$ that \texttt{mediapipe} produces live in an approximated screen space. This is fairly useful when mapping the hand to the screen space $\mathrm{R}^2$, as we can just disregard the third dimension. But, when one wants to recognize hand gestures while being invariant to different people's hands, it must be modified. Therefore, before storing them, we normalize the landmarks such as to minimize the differences between different hands, their position and orientation.\\
+    First and foremost, we extract the palm center $p$ by calculating a weighted average (handmade by us) over the base of the fingers and the wrist
+    \begin{equation}
+        p = \frac{\mathbf{L}_1}{2} + \frac{\mathbf{L}_6 + \mathbf{L}_{10} + \mathbf{L}_{14} + \mathbf{L}_{18}}{8}.
+    \end{equation}
+    We extract the palm width $w$, as it is invariant to different hand positions,
+    \begin{equation}
+        w = ||\mathbf{L}_6 - \mathbf{L}_{18}||_2,
+    \end{equation}
+    and we get the relative landmarks $\overline{\mathbf{L}}$ by normalizing the landmarks with respect to the palm center and the palm width,
+    \begin{equation}
+        \overline{\mathbf{L}} = \frac{\mathbf{L} - p}{w}.
+    \end{equation}
+    \begin{figure}
+        \centering
+        \includegraphics[width=.33\textwidth]{images/norm_hand.png}
+        \caption{Right hand in $\mathbf{L}^\star$ doing a grab gesture.}
+        \label{fig:norm_hand}
+    \end{figure}
+    We could've stopped here, as $\overline{\mathbf{L}}$ is enough to recognize the gestures that we designed for the project; but at the time we weren't sure if we would've needed a more expressive representation for more complex gestures. Because of this, we decided to apply a change of basis to $\overline{\mathbf{L}}$ such as to get $\mathbf{L}^\star$, where the internal palm normal is the $z$ axis, the palm width is the $x$ axis (with the positive direction being that of the pinky, regardless of the handedness), and the $y$ axis as their cross product (which, when calculated, should be the direction of the fingers). To do this, we first get the palm normal
+    \begin{equation}
+        \mathbf{n}_{\mathrm{palm}} = (1 - \mathbf{2}_{\textrm{left}})\frac{(\mathbf{L}_6 - \mathbf{L}_1)\times(\mathbf{L}_{18} - \mathbf{L}_1)}{||(\mathbf{L}_6 - \mathbf{L}_1)\times(\mathbf{L}_{18} - \mathbf{L}_1)||_2},
+    \end{equation}
+    then we get the pinky normal,
+    \begin{equation}
+        \mathbf{n}_{\mathrm{pinky}} = (1 - \mathbf{2}_{\textrm{left}})\frac{\mathbf{n}_{\mathrm{palm}}\times(\mathbf{L}_{10} - \mathbf{L}_1)}{||\mathbf{n}_{\mathrm{palm}}\times(\mathbf{L}_{10} - \mathbf{L}_1)||_2}.
+    \end{equation}
+    and the fingers' normal,
+    \begin{equation}
+        \mathbf{n}_{\mathrm{fingers}} = (1 - \mathbf{2}_{\textrm{left}})\frac{\mathbf{n}_{\mathrm{pinky}}\times \mathbf{n}_{\mathrm{palm}}}{||\mathbf{n}_{\mathrm{pinky}}\times \mathbf{n}_{\mathrm{palm}}||_2}.
+    \end{equation}
+    This produces a basis $\mathbf{B} = \left[\mathbf{n}_{\mathrm{pinky}}, \mathbf{n}_{\mathrm{fingers}}, \mathbf{n}_{\mathrm{palm}}\right]$ that is invariant to the hand's orientation, and that gives explicit meaning to the axes. Finally, we produce $\mathbf{L}^\star$,
+    \begin{equation}
+        \mathbf{L}^\star = \overline{\mathbf{L}}\mathbf{B}^T.
+    \end{equation}
+    \paragraph*{Gesture recognition} At the outset, we wanted to design two different gestures:
+    \begin{enumerate}
+        \item A grabbing motion, which would let the user drag-n-drop the pieces. Composed when the thumb and the index are close enough to each other.
+        \item A tapping motion, which would let the user click the squares. Composed by a forward flick of the wrist.
+    \end{enumerate}
+    As we were developing the system, we found that the tapping motion was too hard to recognize reliably (as it doesn't require a change in the landmarks' relative positions). At the same time, we found that the grabbing motion we were developing was actually an already established gesture (used in devices like the Apple Vision Pro) used both for single-click gestures and for drag-n-drop ones. Because of this, we decided to stick with this single gesture, and to use it in a manner akin to pressing the left mouse button.\\
+    To recognize the gesture, we design
+    \begin{algorithmic}[1]
+        \State \textbf{input} \texttt{prev\_click}
+        \State $m \gets ||\mathbf{L}^\star_{\mathrm{thumb}} - \mathbf{L}^\star_{\mathrm{index}}||_2$
+        \State $d \gets \frac{\mathbf{L}^\star_{\mathrm{thumb}}\cdot\mathbf{L}^\star_{\mathrm{index}}}{||\mathbf{L}^\star_{\mathrm{thumb}}||_2 ||\mathbf{L}^\star_{\mathrm{index}}||_2}$
+        \If{\texttt{prev\_click}}
+            \State \textbf{return} $m < \alpha_\gamma \land d > \beta_\gamma$
+        \Else
+            \State \textbf{return} $m < \alpha \land d > \beta$
+        \EndIf
+    \end{algorithmic}
+    where $\alpha$ and $\beta$ are the normal thresholds, and $\alpha_\gamma$ and $\beta_\gamma$ are the thresholds for the hysteresis effect, when the user is already doing a grabbing motion (to avoid dropping the piece when the user is moving it).
+    \paragraph*{Hand-cursor mapping} As described in the coding section, at each main loop we retrieve the latest hand-cursor mapping, and, if its timestamp is later than the latest mouse timestamp, we use that. We run the hand-cursor mapping during this main loop, using the latest data given by the hand tracking async code.
+    While being fairly precise, \texttt{mediapipe}'s hand tracking system is not perfect: many frames can pass between one detection and the other, tracking is noisy and, finally, the system can lose track of the hand. Therefore we had to build a robust mechanism that could handle these issues.\\
+    First and foremost, we use the palm $p$ as the point to map the cursor to, and we rescale and clamp its position to a $[m, M]$ space, such that we can make it easier for the user to reach the edges of the window.
+    We do this by
+    \begin{equation}
+        r = \mathrm{clip}_{[m,M]}(\frac{p - m}{M - m}).
+    \end{equation}
+    Secondly, we use both the latest position $r_t$ and the previous one $r_{t-1}$ (if these are present, that is). Furthermore, we keep a cursor position $c$ internal to \texttt{HandDetector}, which is independent of the cursor position in the main loop. Then we define an algorithm that updates $c$ and returns it, complete with whether a grab or release event happened (whether the user has started or stopped grabbing).\\
+    The algorithm is robust in the sense that it tries to avoid experience-ruining events, such as:
+    \begin{enumerate}
+        \item The cursor jumping around because of noisy tracking, $c$ moves at a constant rate and can either be updated via bilinear or linear interpolation, based on whether $r_{t-1}$ is present, such as to make its movement smooth (at the cost of being a bit less responsive).
+        \item The cursor moving even when the hand is still. This can either happen because humans have a natural tremor in their hands, which can be picked up by the hand tracking system, or because the tracking is noisy. To avoid this, we only update the cursor if the hand has moved a certain distance.
+        \item A grabbed piece being dropped for whatever reason, while the user is still keeping a grab gesture. This is avoided by keeping a list of the most recent detections and checking if even one of them is a grab gesture.
+    \end{enumerate}
+    
 
     \section{Voice commands}
 
