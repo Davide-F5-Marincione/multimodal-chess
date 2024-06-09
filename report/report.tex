@@ -14,13 +14,8 @@
 
 \begin{document}
     \maketitle
-    \begin{abstract}
-        This is the abstract.
-    \end{abstract}
 
     \section{Introduction}
-
-    {\Huge This intro has to change!}\\
     In this report, we present the design, implementation, and testing, of a multimodal interface for playing chess. The interface allows the user to play with either mouse movements, hand gestures or voice commands. The user can switch between the different modalities at any time during the game. It is implemented in \texttt{python} and uses the \texttt{pygame} library for the audio-visual inteface, \texttt{opencv} and \texttt{mediapipe} for hand gesture recognition, and the \texttt{dragonfly} library for voice commands. The interface has been tested with a group of 12 users, and the results show that the multimodal interface is more engaging and fun to use than a traditional mouse-based interface.
 
     \section{Coding, Graphics \& Audio}
@@ -212,68 +207,63 @@
         \item \texttt{Action End} : Timestamp marking the end of the action    
     \end{itemize}
     Instead, the AI's moves are stored in a list, with each move represented as for Player's Moves.
-    \paragraph*{Metrics} Recording files, containing player's and AI's moves, were processed to extract relevant metrics. We conduct descriptive statistical analyses on our dataset to facilitate more informed interpretations. This involve generating a series of graphs aimed at providing quantitative and qualitative descriptions of specific metrics. \\ Looking at people's preferences:
+    \paragraph*{Metrics} Recording files, containing player's and AI's moves, were processed to extract relevant metrics. We conduct descriptive statistical analyses on our dataset to facilitate more informed interpretations. This involve generating a series of graphs aimed at providing quantitative and qualitative descriptions of specific metrics. \\ \emph{Note} : Periods of time during which individuals used to speak without executing any commands were recorded based on the last modality used. Given that the Gesture Modality was the most utilized, the data and distributions reported are influenced accordingly. \\\texttt{Time Spent Using Each Modality} : 
     \begin{figure}
         \centering
         \includegraphics[width=.5\textwidth]{images/total_time.png}
         \caption{Time spent on using each modality}
-        \label{fig:histplot_timespent}
+        \label{fig:total_time}
     \end{figure}
-    In the above Fig. \ref{fig:histplot_timespent}, we illustrate the distribution of time spent by users on each modality. It is calculated by summing the duration of all actions performed using that modality. The plot clearly demonstrates that users predominantly allocate more time to Gesture actions compared to Voice interactions. Concerning gesture commands, during the experiments, no user has reported fatigue using the handtracking mechanism (keeping in mind the tests were usually less than 10 minutes long). On the other side, altough using voice input has garnered particular interest too, its use was limited. This was due both to the greater familiarity with playing by hand and to linguistic difficulties encountered by some users. Instead, only a few users have opted to utilize the mouse as an input modality. Its limited usage may be attributed to users' curiosity and inclination to explore the functioning of alternative modalities. However, in the few cases in which the users chose to use the mouse, they were able to pick it up instantly and without any issues. This reassures us of the solid baseline implemented. 
+    In Fig. \ref{fig:total_time}, we illustrate the distribution of time spent by users on each modality. It is calculated by summing the duration of all actions performed using that modality. The plot clearly demonstrates that users predominantly allocate more time to Gesture actions compared to Voice interactions. Concerning the former, no user has reported fatigue using the handtracking mechanism, keeping in mind the tests were usually less than 10 minutes long. On the other side, altough using voice input has garnered particular interest too, its use was limited. This was due both to the greater familiarity with playing by hand and to linguistic difficulties encountered by some users. Instead, only a few users have opted to utilize the mouse as an input modality. Its limited usage may be attributed to users' curiosity and inclination to explore the functioning of alternative modalities. However, in the few cases in which the users chose to use the mouse, they were able to pick it up instantly and without any issues. This reassures us of the solid baseline implemented.\\\texttt{Actions Per Minute} :
     \begin{figure}
         \centering
         \includegraphics[width=.5\textwidth]{images/actions_per_minutes.png}
         \caption{Number of Actions per Minute performed by users across different modalities}
-        \label{fig:histplot_actionsperminute}
+        \label{fig:actions_per_minutes}
     \end{figure}
-    The actions per minute plot, Fig. \ref{fig:histplot_actionsperminute}, illustrates the frequency of actions performed by users across the different modalities during chess gameplay. It is a measurement of how efficient and fast users perform commands using the different modalities. We can see that the highest bars are those representing speech commands. However, this distribution is kind of skewed. This is due to the fact that people used to talk a lot between the usage of the different modalities. For this interleaving time period, the modality being saved was the last one used. Being \emph{Gesture} the most used modality, this metric is biased towards it.  
+    Fig. \ref{fig:actions_per_minutes} illustrates the frequency of actions performed by users across the different modalities during chess gameplay. It is a measurement of how efficient and fast users perform commands using the different modalities. We can see that the highest bars are those representing speech interactions. However, this distribution is skewed due to the aformentioned \emph{Note}. \\\texttt{Total Actions} : 
+    \begin{figure}
+        \centering
+        \includegraphics[width=.5\textwidth]{images/total_actions.png}
+        \caption{Number of total actions performed by users across different modalities}
+        \label{fig:total_actions}
+    \end{figure}
+    Fig. \ref{fig:total_actions} illustrates the total number of actions performed by users across different recordings, categorized by their type of modality. The plot indicates that the number of actions performed by users is relatively high, including both legal and illegal commands. As shown, the majority of users opted for gesture-based interactions, being consistent with Fig. \ref{fig:total_time}, in which we see that users have spent more time using the gesture modality. \\\texttt{Legal Actions} : 
     \begin{figure}
         \centering
         \includegraphics[width=.5\textwidth]{images/legal_actions.png}
         \caption{Number of legal actions performed by users across different modalities}
-        \label{fig:histplot_actions}
+        \label{fig:legal_actions}
     \end{figure}
-    Fig. \ref{fig:histplot_actions} shows the distribution of legal actions performed by users across different recordings, categorized by their type of modality.   
-    % maybe plot total number of actions ??? 
-    As we can see, the number of legal actions is relatively small compared to the total number of actions performed. For this purpose, we are particularly interested in analyzing the error rate of the introduced modalities, computed as: 
+    Fig. \ref{fig:legal_actions} shows the distribution of legal actions performed by users across different recordings, categorized by their type of modality. \\
+    From the previous plots, we can understand the number of legal actions is relatively small compared to the total number of actions performed. For this purpose, we are particularly interested in analyzing the error rate of the introduced modalities, computed as: 
     \begin{equation}
-        1 - \frac{\mathbf{total\_legal\_actions}}{\mathbf{total\_actions}}
+        1 - \frac{\mathrm{total\_legal\_actions}}{\mathrm{total\_actions}}
     \end{equation}
-
-    Concering Gesture commands:
+    \texttt{Gesture Error Rate} : 
     \begin{figure}
         \centering
         \includegraphics[width=.5\textwidth]{images/hand_error_rate.png}
         \caption{Hand Error Rate }
         \label{fig:hand_error_rate}
     \end{figure}
-    At the beginning of our experiments, there were issues related to the quality of the touch input. Specifically, the piece grabbing was too sticky. This problem was later resolved by removing the hysteresis effect.
-    Additionally, on a note, we have found that no user has ever complained about the visibility of the cursor, which we take as a sign that its conception was successful. 
-    As expected, there was no need to match hand and cursor in a 1:1 mapping, as users were more concerned in looking at where the cursor was, rather than where their hand was.
-    Speaking of Voice instructions : 
+    At the beginning of our experiments, there were issues related to the quality of the hand input, see Fig. \ref{fig:hand_error_rate}. Specifically, the piece grabbing was too sticky. This problem was later resolved by removing the hysteresis effect. Additionally, we observed that no user complained about the visibility of the cursor, which we consider a positive indication of its design. As anticipated, it was unnecessary to match hand and cursor in a 1:1 mapping, as users focused more on the cursor’s position rather than their hand's position.
+    \texttt{Speech Error Rate} : 
     \begin{figure}
         \centering
         \includegraphics[width=.5\textwidth]{images/speech_error_rate.png}
         \caption{Speech Error Rate }
         \label{fig:speech_error_rate}
     \end{figure}
-    The speech error rate is influenced by users' accents and pronunciation. It is important to note that the implemented grammars cover only a subset of all possible phrases that can be formulated in a chess game. However, this limitation did not pose a significant problem, as the phrases spoken by the users were within the scope of the implemented rules. Additionally, during the experiments, it was observed that the speech recognizer often struggled to distinguish between 'f' and 'e' and 'a'. To avoid comprehension errors, using the NATO phonetic alphabet for vocal input expressions is recommended. Moreover, As previously mentioned, many users used to talk while switching between modalities. Their conversations about matters unrelated to the application were often recognized as commands, which, being illegal, triggered a warning sound. This aspect was less appreciated by our users. However, it is assumed that during a chess game, players generally do not engage in unrelated conversations.
-    
-    \paragraph*{Game Over}
-    During the experiments, the need to introduce a "turnback" feature was highlighted. This feature allows users to revert to the previous action, proving especially useful when the gesture or voice recognizer inadvertently processes an unintended action due to a potential misinterpretation.
-    Users report also that the end of the game status was not clear enough, as they were not paying attention to the initial "Press R to restart" message. This led to the implementation of a more visible game over message at the end of the game directly on the board.
-    The following figure shows the final interface at the end of the development
+    Several factors influences the speech error rate, shown at \ref{fig:speech_error_rate}, including users' accents and pronunciation. It is important to note that the implemented grammars cover only a subset of all possible phrases that can be formulated in a chess game. However, this limitation did not pose a significant problem, as the phrases spoken by the users were within the scope of the implemented rules. Additionally, during the experiments, it was observed that the speech recognizer often struggled to distinguish between 'f' and 'e' and 'a'. To avoid comprehension errors, we implemented also the NATO phonetic alphabet, a system that assigns standardized code words to each letter of the alphabet, like 'Alpha' for 'A', 'Bravo' for 'B' and so on. Despite few players used it, it is highly recommended. Moreover, as previously mentioned, many users used to talk while switching between modalities. Their conversations about matters unrelated to the application were often recognized as commands, which, being illegal, triggered a warning sound. This aspect was less appreciated by our users. However, it is assumed that during a chess game, players generally do not engage in unrelated conversations.
+    \paragraph*{Game Over} During the experiments, the need to introduce a "takeback" feature was highlighted. This feature allows users to revert to the previous action, proving especially useful when the gesture or voice recognizer inadvertently processes an unintended action due to a potential misinterpretation. Users report also that the end of the game status was not clear enough, as they were not paying attention to the initial "Press R to restart" message. This led to the implementation of a more visible game over message at the end of the game directly on the board. 
     \begin{figure}
         \centering
-        \includegraphics[width=.5\textwidth]{images/interface.png}
+        \includegraphics[width=.45\textwidth]{images/interface.png}
         \caption{Final Image of the Interface at the end of the development}
         \label{fig:interface}
     \end{figure} 
-
-    scrivere del fatto che la mano blocca la voce  
-
-
-    
-    \section{Conclusions}
+    The interface at the end of the development is shown at Fig. \ref{fig:interface}
+    \section{Conclusions} The application provides a novel and interactive way to play chess, offering users the flexibility to choose their preferred input modality. Overall, the application garnered significant interest from the users, providing them with an enjoyable experience. However, despite being the least utilized input method, the mouse remains the preferred mode due to its convenience and suitability for various situations. The collected results indicate potential, but it is important to note that the calculated metrics are biased by several factors, including the limited amount of data collected, lengthy conversations unrelated to chess during the game, and the users' accents and pronunciation. Looking ahead, future work could involve further refining the hand tracking and gesture recognition system, as well as expanding the range of voice commands supported by the application and using a more robust speech recognizer to improve accuracy and reliability. Additionally, one of our future projects involves implementing chess gameplay through eye-gaze tracking, trying to add a novel dimension to digital chess gameplay. 
 
 \end{document}
