@@ -78,6 +78,7 @@
         \item Run metrics recorder.
     \end{enumerate}
     During the game, the player competes against Stockfish 16 (which, in our tests, we limited); we easily were able to do this thanks to the \texttt{python-chess} library, which has an built-in interface to communicate with a multitude of chess engines. The AI is run during event handling, as our \texttt{Board} emits a custom \texttt{TURN\_DONE} event which we use to discern when the AI has to make a move.
+    \paragraph*{Audio} In the game, we only have three different sounds: two of which we already mentioned, played by the \texttt{Board}, and the last one played in response to malformed voice commands. The sound played when a move is done is a simple "wood-on-wood" sound, which reminisces the sound of a piece being moved on a wooden chessboard. The other two sounds, being alarm/attention sounds, are intentionally synthetic beeps, to make them stand out.
     \paragraph*{Game recording} At the end of development, we wanted to collect quantitative data about the tests. To do this, we implemented a recording system that saves multiple metrics about the runtime; such as the amount of moves made during a modality, the distance traveled with the hand and the number of utterances by the user. In the Experiments section of this report, we'll talk more about this.
     \section{Hand tracking and gestures}
     \paragraph*{Libraries} The hand tracking and gesture recognition system is enabled by the \texttt{opencv} and \texttt{mediapipe} libraries. The first is used to capture the video stream of the camera, and the latter is used to detect and track the hand. The rest of the computation (mapping the hand position to the cursor position, detecting gestures, etc.) is done by our code.
@@ -249,8 +250,6 @@
     At the beginning of our experiments, there were issues related to the quality of the touch input. Specifically, the piece grabbing was too sticky. This problem was later resolved by removing the hysteresis effect.
     Additionally, on a note, we have found that no user has ever complained about the visibility of the cursor, which we take as a sign that its conception was successful. 
     As expected, there was no need to match hand and cursor in a 1:1 mapping, as users were more concerned in looking at where the cursor was, rather than where their hand was.
-
-
     Speaking of Voice instructions : 
     \begin{figure}
         \centering
