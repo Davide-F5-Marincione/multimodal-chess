@@ -157,11 +157,9 @@
         \item A grabbed piece being dropped for whatever reason, while the user is still keeping a grab gesture. This is avoided by keeping a list of the most recent detections and checking if even one of them is a grab gesture.
     \end{enumerate}
     With all of this combined we achieved a system that, in spite of all the noise and issues, provides a smooth experience. We describe the tests and the results in the Experiments section.
-
     \section{Voice commands}
-    To enhance user interaction with our application, our project aims to integrate voice commands. Playing chess using verbal instructions can provide a more engaging experience and offer advantages over traditional input methods. This approach can be particularly beneficial for users with accessibility needs or those in hands-free environments.
-    \paragraph*{Dragonfly} To implement voice commands, we used the \emph{dragonfly} library, a Python package that facilitates the creation of voice command scripts. Dragonfly allows for the intuitive definition of complex command grammars and simplifies the processing of recognition results by treating speech commands and grammar objects as first-class Python objects. Additionally, Dragonfly provides a unified front-end interface that seamlessly integrates with Kaldi as a back-end speech recognition engine.
-    
+    To enhance user interaction with the application, our project aims to integrate voice commands. Playing chess using verbal instructions can provide a more engaging experience and offer advantages over traditional input methods. In fact, It can be particularly beneficial for users with accessibility needs or those in hands-free environments.
+    \paragraph*{Dragonfly} To implement voice commands, we use the \emph{dragonfly} library, a Python package that facilitates the creation of voice command scripts. Dragonfly allows for the intuitive definition of complex command grammars and simplifies the processing of recognition results by treating speech commands and grammar objects as first-class Python objects. Additionally, It provides a unified front-end interface that seamlessly integrates with Kaldi as a back-end speech recognition engine.
     \begin{table*}[h]
         \centering
         \caption{Rules and Specifications}
@@ -184,46 +182,99 @@
         \end{tabularx}
         \label{tab:rules}
     \end{table*}
-    
-    
-    \paragraph*{Rules} Voice commands are defined using a set of rules that specify the structure of the commands and map them to corresponding actions in the chess game. Each rule is defined as a \texttt{CompoundRule} class, designed to make it very easy to create a rule based on a single compound spec. This rule class has the following parameters to customize its behavior:
+    \paragraph*{Rules} Vocal instructions are defined using a set of rules, which specify the structure of the commands and associate them with specific actions within the game. Each rule is instantiated as a \emph{CompoundRule} class, which facilitates the straightforward creation of rules based on a single compound specification. This rule class has the following parameters to customize its behavior:
     \begin{itemize}
         \item \emph{spec} : Compound specification for the rules root element 
         \item \emph{extras} : Extras elements referenced from the compound spec. It includes choices for prepositions, pieces, and squares.
     \end{itemize}
-    The rules are organized into a hierarchy, with each rule defining a specific type of voice command. 
-        
-    \paragraph*{Grammar} The rules are combined into a grammar object, which is then loaded into the Dragonfly engine. The grammar object is responsible for processing the voice input and matching it against the defined rules. When a match is found, the corresponding action is executed, such as moving a chess piece or promoting a pawn. In particular, our Chess Grammar is composed of the following set of rules, shown at \ref{tab:rules}: 
+    \paragraph*{Grammar} Rules are combined into a Grammar object, which is subsequently loaded into the Dragonfly engine. The grammar object is tasked with processing voice input and comparing it to the established rules. Upon identifying a match, the associated action is executed, such as moving a chess piece or promoting a pawn. Specifically, our Chess Grammar comprises the following set of rules, detailed in \ref{tab:rules} : 
     \begin{itemize}
-        \item \textit{MoveRule}: It defines a structured syntax pattern for recognizing different types of actions, specifically those that start with the verb \emph{"Move"}. Examples of commands recognized by this rule are : 
-        \item \textit{CaptureRule}:  It defines a syntax pattern for recognizing and processing those actions that start with the verb \emph{"Capture"}. This pattern allows for the identification of the target piece and square, the source piece and square, and any promotion piece involved in the capture action. Examples of commands recognized by this rule are : 
-        \item \textit{PromotionRule}:  It defines the syntax for recognizing and processing pawn promotion actions, specifically those that start with the verb \emph{"Promote"}. This pattern allows for the identification of either the source piece or the source square from which the promotion is initiated and specifies the piece to which the pawn should be promoted. Examples of commands recognized by this rule are : 
-        \item \textit{CastleRule}: It defines the syntax for recognizing and processing castling commands. This rule focuses on recognizing the castling action and the specific direction of the castle (kingside or queenside). Examples of commands recognized by this rule are :
-        \item \textit{PieceRule}: It defines a structured syntax pattern for interpreting commands that start with a piece name. This rule is designed to handle various actions involving a specified piece, such as moving, capturing, and promoting.
-        \item \textit{SquareRule}: It defines a pattern for recognizing commands that involve specifying source square and, subsequently, a target square or a target piece on the chessboard. This rule is designed to handle actions that involve moving or capturing a piece from a specific square to another square or piece. Example of this rule are: 
+        \item \texttt{Move Rule}: Defines a structured syntax pattern for recognizing actions initiated with the verb \emph{"Move"}. Examples of commands recognized by this rule are: "Move E7 to E8 and promote to Queen", "Move Queen on H8 to H7" 
+        \item \texttt{Capture Rule}: Establishes a syntax pattern for recognizing and processing actions starting with the verb \emph{"Capture"}. This pattern allows for the identification of target and source pieces and squares, along with any promotion involved. Examples of actions recognized by this rule are: "Capture Bishop on E4 with Queen", "Capture Pawn with E6" 
+        \item \texttt{Promotion Rule}: Specifies the syntax for recognizing and processing pawn promotion actions, beginning with the verb \emph{"Promote"}. It identifies the source piece or square and specifies the promotion piece. Examples of instructions recognized by this rule are: "Promote Pawn to Queen", "Promote to Queen"
+        \item \texttt{Castle Rule}: Defines the syntax for recognizing and processing castling commands, focusing on identifying the direction of the castle (kingside or queenside). Examples of commands recognized by this rule are : "Kingside Castle", "Castle Queenside"
+        \item \texttt{Piece Rule}: Establishes a structured syntax pattern for interpreting commands starting with a piece name, handling various actions involving a specified piece. Examples of actions recognized by this rule are: "Pawn capture Knight and promote to Queen", "Queen capture Bishop"
+        \item \texttt{Square Rule}: Specifies a pattern for recognizing commands that involve specifying source square and, subsequently, a target square or a target piece on the chessboard. This rule is designed to handle actions that involve moving or capturing a piece from a specific square to another square or piece. Example of this commands recognized by this rule are: "A2 move to A3", "E6 capture Bishop on E7"
     \end{itemize} 
+    Each rule contains a method for processing recognition, tasked with managing the identified voice commands. Upon recognition, it extracts the pertinent elements from the outcome and assembles a Command object embodying the chess move. This Command object, encapsulating details such as the action verb, source and target pieces, and their corresponding chessboard squares, serves as a container for the information conveyed by the voice commands. Subsequently, this command is transmitted to the Speech Manager for execution.
+    \paragraph*{Speech Manager} It is responsible for interpreting vocal commands and translating them into actionable moves within the chess application. It acts as a bridge between the speech recognition system and the chess engine, ensuring seamless interaction between the user's spoken instructions and the game state. Upon receiving vocal commands from the speech recognition system, it analyzes each command to extract relevant information such as the verb (e.g., move, capture), source and target pieces, and destination squares. The function validates the extracted commands against the legal moves available on the chessboard. It filters the available moves based on the provided details and determines the most appropriate move based on the context. Moreover, It handles special cases such as castling and pawn promotion separately to ensure accurate interpretation and execution of these complex maneuvers. To prevent outdated or delayed commands from being executed, the function incorporates a timeout mechanism to discard commands that exceed a specified time threshold. As for the \texttt{HandDetector} class, the \texttt{Speech Manager} runs on a separate thread with respect to the main system. This is done to avoid blocking the main loop, and ensures efficient processing of vocal commands within the application.
+    \section{Experiments and Results} As previously mentioned, at the end of each game, we aim to collect both qualitative and quantitative data related to it. 
+    \paragraph*{Recording System} For this purpose, we implemented a recording system that captures various metrics about the runtime. The collected data, detailed in the JSON file, offers a comprehensive view of the chess game, capturing player moves and AI action. This systematic approach to data collection not only aids in understanding user behavior and preferences but also provides valuable insights into the accuracy and effectiveness of the proposed gameplay modalities.The JSON file is organized into two primary sections, namely the \emph{Player Actions} and the \emph{AI moves}. \\ Each player action object contains:
+    \begin{itemize}
+        \item \texttt{Action Start} : Timestamp marking the beginning of the action
+        \item \texttt{Action Type} : Type of action (e.g., "speech", "hand", "mouse")
+        \item \texttt{Utterances} (Optional) : Number of speech utterances if the action type is "speech"
+        \item \texttt{Hand Distance} (Optional) : Distance traveled by the hand if the action type is "hand" 
+        \item \texttt{Mouse Distance} (Optional) : Distance traveled by the mouse if the action type is "mouse"
+        \item \texttt{Down and Up Botton} (Optional) : Button press counts if the action type is "hand" or "mouse"
+        \item \texttt{Moves} : Array of moves made during the action. Each move is detailed by piece type, starting position, ending position, and any promotion piece, if present 
+        \item \texttt{Action End} : Timestamp marking the end of the action    
+    \end{itemize}
+    Instead, the AI's moves are stored in a list, with each move represented as for Player's Moves.
+    \paragraph*{Metrics} Recording files, containing player's and AI's moves, were processed to extract relevant metrics. We conduct descriptive statistical analyses on our dataset to facilitate more informed interpretations. This involve generating a series of graphs aimed at providing quantitative and qualitative descriptions of specific metrics. \\ Looking at people's preferences:
+    \begin{figure}
+        \centering
+        \includegraphics[width=.5\textwidth]{images/total_time.png}
+        \caption{Time spent on using each modality}
+        \label{fig:histplot_timespent}
+    \end{figure}
+    In the above Fig. \ref{fig:histplot_timespent}, we illustrate the distribution of time spent by users on each modality. It is calculated by summing the duration of all actions performed using that modality. The plot clearly demonstrates that users predominantly allocate more time to Gesture actions compared to Voice interactions. Concerning gesture commands, during the experiments, no user has reported fatigue using the handtracking mechanism (keeping in mind the tests were usually less than 10 minutes long). On the other side, altough using voice input has garnered particular interest too, its use was limited. This was due both to the greater familiarity with playing by hand and to linguistic difficulties encountered by some users. Instead, only a few users have opted to utilize the mouse as an input modality. Its limited usage may be attributed to users' curiosity and inclination to explore the functioning of alternative modalities. However, in the few cases in which the users chose to use the mouse, they were able to pick it up instantly and without any issues. This reassures us of the solid baseline implemented. 
+    \begin{figure}
+        \centering
+        \includegraphics[width=.5\textwidth]{images/actions_per_minutes.png}
+        \caption{Number of Actions per Minute performed by users across different modalities}
+        \label{fig:histplot_actionsperminute}
+    \end{figure}
+    The actions per minute plot, Fig. \ref{fig:histplot_actionsperminute}, illustrates the frequency of actions performed by users across the different modalities during chess gameplay. It is a measurement of how efficient and fast users perform commands using the different modalities. We can see that the highest bars are those representing speech commands. However, this distribution is kind of skewed. This is due to the fact that people used to talk a lot between the usage of the different modalities. For this interleaving time period, the modality being saved was the last one used. Being \emph{Gesture} the most used modality, this metric is biased towards it.  
+    \begin{figure}
+        \centering
+        \includegraphics[width=.5\textwidth]{images/legal_actions.png}
+        \caption{Number of legal actions performed by users across different modalities}
+        \label{fig:histplot_actions}
+    \end{figure}
+    Fig. \ref{fig:histplot_actions} shows the distribution of legal actions performed by users across different recordings, categorized by their type of modality.   
+    % maybe plot total number of actions ??? 
+    As we can see, the number of legal actions is relatively small compared to the total number of actions performed. For this purpose, we are particularly interested in analyzing the error rate of the introduced modalities, computed as: 
+    \begin{equation}
+        1 - \frac{\mathbf{total\_legal\_actions}}{\mathbf{total\_actions}}
+    \end{equation}
 
-    Each rule has a process recognition method, responsible for handling the recognized voice command. It extracts the relevant components from the recognition result and constructs a Command object representing the chess move. This command is then passed to the Speech Manager for execution.
-
-    \paragraph*{Speech Manager} 
-    We have opted for a single-threaded approach for speech recognition too. This design choice was made to simplify the implementation and ensure efficient processing of vocal commands within the application. The \emph{SpeechManager} class is responsible for interpreting vocal commands and translating them into actionable moves within the chess application. It acts as a bridge between the speech recognition system and the chess engine, ensuring seamless interaction between the user's spoken instructions and the game state. Upon receiving vocal commands from the speech recognition system, it analyzes each command to extract relevant information such as the verb (e.g., move, capture), source and target pieces, and destination squares. The function validates the extracted commands against the legal moves available on the chessboard. It filters the available moves based on the provided details and determines the most appropriate move based on the context. Moreover, It handles special cases such as castling and pawn promotion separately to ensure accurate interpretation and execution of these complex maneuvers. To prevent outdated or delayed commands from being executed, the function incorporates a timeout mechanism to discard commands that exceed a specified time threshold.
-
-
-
-
-
-    
-    \section{Experiments and Results}
-
-    On a note, in each of our experiments, we have found that no user has ever complained about the visibility of the cursor, which we take as a sign that its conception was successful.
-
-    In the few cases when the users chose to use the mouse, they were able to pick it up instantly and without any issues. Reassuring us that we had a solid baseline.
-
-    When it comes to the hand tracking mechanism, we found that no user reported fatigue (keeping in mind the tests were usually less than 10 minutes long). 
-
+    Concering Gesture commands:
+    \begin{figure}
+        \centering
+        \includegraphics[width=.5\textwidth]{images/hand_error_rate.png}
+        \caption{Hand Error Rate }
+        \label{fig:hand_error_rate}
+    \end{figure}
+    At the beginning of our experiments, there were issues related to the quality of the touch input. Specifically, the piece grabbing was too sticky. This problem was later resolved by removing the hysteresis effect.
+    Additionally, on a note, we have found that no user has ever complained about the visibility of the cursor, which we take as a sign that its conception was successful. 
     As expected, there was no need to match hand and cursor in a 1:1 mapping, as users were more concerned in looking at where the cursor was, rather than where their hand was.
 
 
+    Speaking of Voice instructions : 
+    \begin{figure}
+        \centering
+        \includegraphics[width=.5\textwidth]{images/speech_error_rate.png}
+        \caption{Speech Error Rate }
+        \label{fig:speech_error_rate}
+    \end{figure}
+    The speech error rate is influenced by users' accents and pronunciation. It is important to note that the implemented grammars cover only a subset of all possible phrases that can be formulated in a chess game. However, this limitation did not pose a significant problem, as the phrases spoken by the users were within the scope of the implemented rules. Additionally, during the experiments, it was observed that the speech recognizer often struggled to distinguish between 'f' and 'e' and 'a'. To avoid comprehension errors, using the NATO phonetic alphabet for vocal input expressions is recommended. Moreover, As previously mentioned, many users used to talk while switching between modalities. Their conversations about matters unrelated to the application were often recognized as commands, which, being illegal, triggered a warning sound. This aspect was less appreciated by our users. However, it is assumed that during a chess game, players generally do not engage in unrelated conversations.
+    
+    \paragraph*{Game Over}
+    During the experiments, the need to introduce a "turnback" feature was highlighted. This feature allows users to revert to the previous action, proving especially useful when the gesture or voice recognizer inadvertently processes an unintended action due to a potential misinterpretation.
+    Users report also that the end of the game status was not clear enough, as they were not paying attention to the initial "Press R to restart" message. This led to the implementation of a more visible game over message at the end of the game directly on the board.
+    The following figure shows the final interface at the end of the development
+    \begin{figure}
+        \centering
+        \includegraphics[width=.5\textwidth]{images/interface.png}
+        \caption{Final Image of the Interface at the end of the development}
+        \label{fig:interface}
+    \end{figure} 
+
+    scrivere del fatto che la mano blocca la voce  
+
+
+    
     \section{Conclusions}
 
 \end{document}
