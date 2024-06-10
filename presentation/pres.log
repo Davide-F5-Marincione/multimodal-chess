@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.10.12) (preloaded format=pdflatex 2023.12.21)  10 JUN 2024 19:23
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.10.12) (preloaded format=pdflatex 2023.12.21)  10 JUN 2024 22:22
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1295,7 +1295,7 @@ Package microtype Info: Loading generic protrusion settings for font family
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
  (pres.nav)
-<logo-sapienza.pdf, id=62, 108.43109pt x 109.2612pt>
+<logo-sapienza.pdf, id=66, 108.43109pt x 109.2612pt>
 File: logo-sapienza.pdf Graphic file (type pdf)
 <use logo-sapienza.pdf>
 Package pdftex.def Info: logo-sapienza.pdf  used on input line 32.
@@ -1346,21 +1346,102 @@ LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <6> not available
 (Font)              Font shape `T1/lmss/m/sl' tried instead on input line 32.
  [1
 
-{C:/Users/surre/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{D:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc} <./logo-sapienza.pdf>] [2
+{C:/Users/surre/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{D:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc} <./logo-sapienza.pdf>]
+<images/wizard_chess.png, id=116, 674.52pt x 398.48875pt>
+File: images/wizard_chess.png Graphic file (type png)
+<use images/wizard_chess.png>
+Package pdftex.def Info: images/wizard_chess.png  used on input line 42.
+(pdftex.def)             Requested size: 272.42159pt x 160.94318pt.
 
-] [3
+Overfull \vbox (10.86395pt too high) detected at line 42
+ []
 
-] [4
+[2
 
-] [5
+ <./images/wizard_chess.png>]
+<images/stock_hand.jpeg, id=197, 475.7775pt x 318.18875pt>
+File: images/stock_hand.jpeg Graphic file (type jpg)
+<use images/stock_hand.jpeg>
+Package pdftex.def Info: images/stock_hand.jpeg  used on input line 51.
+(pdftex.def)             Requested size: 224.3446pt x 150.0391pt.
 
-] [6
+Overfull \vbox (2.089pt too high) detected at line 51
+ []
 
-] [7
+[3
 
-] [8
+ <./images/stock_hand.jpeg>]
+<images/empty_set.png, id=256, 213.04594pt x 296.60812pt>
+File: images/empty_set.png Graphic file (type png)
+<use images/empty_set.png>
+Package pdftex.def Info: images/empty_set.png  used on input line 73.
+(pdftex.def)             Requested size: 104.15945pt x 145.01338pt.
+<images/gui_example.png, id=257, 602.25pt x 602.25pt>
+File: images/gui_example.png Graphic file (type png)
+<use images/gui_example.png>
+Package pdftex.def Info: images/gui_example.png  used on input line 73.
+(pdftex.def)             Requested size: 144.22118pt x 144.22131pt.
 
-] [9
+Overfull \vbox (0.80078pt too high) detected at line 73
+ []
+
+[4
+
+ <./images/empty_set.png> <./images/gui_example.png>]
+<images/uml.pdf, id=317, 1204.5pt x 524.71031pt>
+File: images/uml.pdf Graphic file (type pdf)
+<use images/uml.pdf>
+Package pdftex.def Info: images/uml.pdf  used on input line 81.
+(pdftex.def)             Requested size: 314.08244pt x 136.82178pt.
+ [5
+
+ <./images/uml.pdf>]
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 102.
+ (D:\Program Files\MiKTeX\tex/latex/lm\t1lmtt.fd
+File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `lmtt' (encoding: T1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+ [6
+
+]
+<images/cursor_comparison.png, id=437, 264.99pt x 98.3675pt>
+File: images/cursor_comparison.png Graphic file (type png)
+<use images/cursor_comparison.png>
+Package pdftex.def Info: images/cursor_comparison.png  used on input line 126.
+(pdftex.def)             Requested size: 157.04121pt x 58.29596pt.
+LaTeX Font Info:    Trying to load font information for T1+lmr on input line 126.
+ (D:\Program Files\MiKTeX\tex/latex/lm\t1lmr.fd
+File: t1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+) (D:\Program Files\MiKTeX\tex/latex/microtype\mt-cmr.cfg
+File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman (RS)
+) [7
+
+{D:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-mathsy.enc}{D:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-rm.enc}{D:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-mathit.enc} <./images/cursor_comparison.png>]
+<images/check_coloring.png, id=504, 210.7875pt x 210.7875pt>
+File: images/check_coloring.png Graphic file (type png)
+<use images/check_coloring.png>
+Package pdftex.def Info: images/check_coloring.png  used on input line 149.
+(pdftex.def)             Requested size: 64.09775pt x 64.09871pt.
+<images/moves_coloring.png, id=505, 210.7875pt x 210.7875pt>
+File: images/moves_coloring.png Graphic file (type png)
+<use images/moves_coloring.png>
+Package pdftex.def Info: images/moves_coloring.png  used on input line 149.
+(pdftex.def)             Requested size: 64.09775pt x 64.09871pt.
+<images/promotion_ex.png, id=506, 351.3125pt x 210.7875pt>
+File: images/promotion_ex.png Graphic file (type png)
+<use images/promotion_ex.png>
+Package pdftex.def Info: images/promotion_ex.png  used on input line 149.
+(pdftex.def)             Requested size: 104.15945pt x 62.49376pt.
+
+Overfull \vbox (3.91324pt too high) detected at line 149
+ []
+
+[8
+
+ <./images/check_coloring.png> <./images/moves_coloring.png> <./images/promotion_ex.png>] [9
 
 ] [10
 
@@ -1384,6 +1465,10 @@ LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <6> not available
 
 ] [20
 
+] [21
+
+] [22
+
 ]
 \tf@nav=\write5
 \openout5 = `pres.nav'.
@@ -1401,17 +1486,17 @@ L3 programming layer <2023-12-11>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 26722 strings out of 474495
- 508217 string characters out of 5753749
- 1941460 words of memory out of 5000000
- 48365 multiletter control sequences out of 15000+600000
- 592794 words of font info for 82 fonts, out of 8000000 for 9000
+ 27055 strings out of 474495
+ 515618 string characters out of 5753749
+ 1947460 words of memory out of 5000000
+ 48660 multiletter control sequences out of 15000+600000
+ 605967 words of font info for 97 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 128i,21n,123p,1057b,774s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss12.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss8.pfb>
-Output written on pres.pdf (20 pages, 286490 bytes).
+ 128i,21n,123p,1057b,869s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<D:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmr10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss12.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmsso10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmsy8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmtt10.pfb>
+Output written on pres.pdf (22 pages, 1267475 bytes).
 PDF statistics:
- 1181 PDF objects out of 1200 (max. 8388607)
- 46 named destinations out of 1000 (max. 500000)
- 20568 words of extra memory for PDF output out of 20736 (max. 10000000)
+ 1425 PDF objects out of 1440 (max. 8388607)
+ 50 named destinations out of 1000 (max. 500000)
+ 29829 words of extra memory for PDF output out of 29859 (max. 10000000)
 

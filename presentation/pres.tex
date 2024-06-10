@@ -32,47 +32,133 @@
 \end{frame}
 
 \section{Introduction}
-\begin{frame}{The Idea}
-    Write something
+\begin{frame}[c]{The Idea}
+    Remember this?
+    \begin{figure}
+        \centering
+        \includegraphics[width=.85\textwidth]{images/wizard_chess.png}
+        \caption{Wizard's Chess, Harry Potter and the Philosopher's Stone}
+    \end{figure}
 \end{frame}
 
-\begin{frame}{The Idea 2}
-    Write something 2
+\begin{frame}[c]{The Idea 2}
+    Know this feeling?
+    \begin{figure}
+        \centering
+        \includegraphics[width=.7\textwidth]{images/stock_hand.jpeg}
+        \caption{Some stock image of an hand holding a chess piece.}
+    \end{figure}
 \end{frame}
 
 \section{Code, Graphx, \& Sound}
-\begin{frame}{The full picture}
-    Full page frame
+\begin{frame}{Before that}
+    \begin{columns}[T]
+        \begin{column}{.5\textwidth}
+            We have to get from here\dots
+            \begin{figure}
+                \centering
+                \includegraphics[width=.65\textwidth]{images/empty_set.png}
+                \caption{What we have.}
+            \end{figure}
+        \end{column}
+        \begin{column}{.5\textwidth}
+            To here!
+            \begin{figure}
+                \centering
+                \includegraphics[width=.9\textwidth]{images/gui_example.png}
+                \caption{What we want.}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{We need some OOP}
+    \begin{figure}
+        \centering
+        \includegraphics[width=.98\textwidth]{images/uml.pdf}
+        \caption{Class diagram of the game's elements}
+    \end{figure}
 \end{frame}
 
 \begin{frame}{A bit in detail 1}
-    \begin{columns}
+    \begin{columns}[T]
         \begin{column}{.5\textwidth}
-            First column
+            The \texttt{Renderer}\dots draws \texttt{Renderables}!
+            \begin{enumerate}
+                \item Keeps track of them.
+                \item Draws them based on each object's \texttt{order} attribute.
+                \item Draws them only if they are set to visible.
+            \end{enumerate}
         \end{column}
         \begin{column}{.5\textwidth}
-            Second column
+            The \texttt{Clicker}:
+            \begin{enumerate}
+                \item Keeps track of the \texttt{Clickable}s.
+                \item Highlights the current \texttt{Clickable}, calls its click/declick method.
+                \item Drives hold/release with \texttt{Cursor}.
+            \end{enumerate}
         \end{column}
     \end{columns}
 \end{frame}
 
 \begin{frame}{A bit in detail 2}
+    \begin{columns}[T]
+        \begin{column}{.5\textwidth}
+            Our \texttt{Cursor} is this neat thing:
+            \begin{figure}
+                \centering
+                \includegraphics[width=.98\textwidth]{images/cursor_comparison.png}
+                \caption{Our \texttt{Cursor}.}
+            \end{figure}
+        \end{column}
+        \begin{column}{.5\textwidth}
+            It is simple, but we are pretty happy about it:
+            \begin{enumerate}
+                \item It is extremely visible, because of the dynamic color
+                \begin{equation*}
+                    c^* = (c + 128)\ \mathrm{mod}\ 256.
+                \end{equation*}
+                \item It can hold pieces.
+                \item Being stylistically different might have helped!
+            \end{enumerate}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{A bit in detail 3}
+    \begin{columns}
+        \begin{column}{.5\textwidth}
+            The \texttt{Board}:
+            \begin{enumerate}
+                \item Wraps a \texttt{chess.Board} object (and all its complicated chess logic).
+                \item Handles the state of all the \texttt{GUISquare} and that of the \texttt{PromotionBubble}.
+                \item Plays audio when moves are done!
+            \end{enumerate}
+        \end{column}
+        \begin{column}{.5\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=.4\textwidth]{images/check_coloring.png}
+                \includegraphics[width=.4\textwidth]{images/moves_coloring.png}
+                \caption{Examples of \texttt{GUISquare} states}
+                \includegraphics[width=.65\textwidth]{images/promotion_ex.png}
+                \caption{What \texttt{PromotionBubble} looks like}
+            \end{figure}
+        \end{column}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{The main loop}
-\end{frame}
+    All of this runs on the main thread, within the loop:
 
-\section{Hand tracking \& gestures}
-\begin{frame}{Good ol' mediapipe}
-\end{frame}
-
-\begin{frame}{'Hand'made normalization}
-\end{frame}
-
-\begin{frame}{Gesture recognition}
-\end{frame}
-
-\begin{frame}{Hand2Cursor mapping}
+    \begin{enumerate}
+        \item Update cursor with latest mouse or hand position.
+        \item \texttt{clicker.highlight(cursor\_pos)}.
+        \item Resolve events, such as mouse clicks, key presses (quit game, takebacks), and moves done (for the AI).
+        \item Resolve voice commands.
+        \item \texttt{renderer.step()}.
+        \item Run metrics recorder.
+    \end{enumerate}
 \end{frame}
 
 \section{Voice commands}
@@ -86,6 +172,20 @@
 \end{frame}
 
 \begin{frame}{Validating commands}
+\end{frame}
+
+
+\section{Hand tracking \& gestures}
+\begin{frame}{Good ol' mediapipe}
+\end{frame}
+
+\begin{frame}{'Hand'made normalization}
+\end{frame}
+
+\begin{frame}{Gesture recognition}
+\end{frame}
+
+\begin{frame}{Hand2Cursor mapping}
 \end{frame}
 
 \section{Experiments}
