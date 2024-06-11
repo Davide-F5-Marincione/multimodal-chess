@@ -346,6 +346,14 @@ INPUT D:\Program Files\MiKTeX\tex\latex\caption\caption3.sty
 INPUT D:\Program Files\MiKTeX\tex\latex\caption\caption-beamer.sto
 INPUT D:\Program Files\MiKTeX\tex\latex\caption\caption-beamer.sto
 INPUT D:\Program Files\MiKTeX\tex\latex\caption\caption-beamer.sto
+INPUT D:\Program Files\MiKTeX\tex\latex\wasysym\wasysym.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\wasysym\wasysym.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\algorithmicx\algpseudocode.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\algorithmicx\algpseudocode.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\base\ifthen.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\base\ifthen.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\algorithmicx\algorithmicx.sty
+INPUT D:\Program Files\MiKTeX\tex\latex\algorithmicx\algorithmicx.sty
 INPUT .\beamerthemeRoma.sty
 INPUT beamerthemeRoma.sty
 INPUT D:\Program Files\MiKTeX\tex\latex\tools\calc.sty
@@ -442,6 +450,12 @@ INPUT D:\Program Files\MiKTeX\tex\latex\microtype\mt-msb.cfg
 INPUT D:\Program Files\MiKTeX\tex\latex\microtype\mt-msb.cfg
 INPUT D:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
 INPUT D:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm7.tfm
+INPUT D:\Program Files\MiKTeX\tex\latex\wasysym\uwasy.fd
+INPUT D:\Program Files\MiKTeX\tex\latex\wasysym\uwasy.fd
+INPUT D:\Program Files\MiKTeX\tex\latex\wasysym\uwasy.fd
+INPUT D:\Program Files\MiKTeX\fonts\tfm\public\wasy\wasy10.tfm
+INPUT D:\Program Files\MiKTeX\fonts\tfm\public\wasy\wasy8.tfm
+INPUT D:\Program Files\MiKTeX\fonts\tfm\public\wasy\wasy6.tfm
 INPUT D:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmss8.tfm
 INPUT D:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmsso10.tfm
 INPUT D:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmsso8.tfm
@@ -528,22 +542,72 @@ INPUT .\images\promotion_ex.png
 INPUT .\images\promotion_ex.png
 INPUT .\images\promotion_ex.png
 INPUT .\images\promotion_ex.png
+INPUT .\images\hand_landmark.png
+INPUT .\images\hand_landmark.png
+INPUT .\images\hand_landmark.png
+INPUT .\images\hand_landmark.png
+INPUT .\images\hand_landmark.png
+INPUT .\images\hand_landmark.png
+INPUT .\images\hand_landmark.png
+INPUT D:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmssbx10.tfm
+INPUT D:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmssbx10.tfm
+INPUT D:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmssbx10.tfm
+INPUT .\images\norm_hand.png
+INPUT .\images\norm_hand.png
+INPUT .\images\norm_hand.png
+INPUT .\images\norm_hand.png
+INPUT .\images\norm_hand.png
+INPUT .\images\norm_hand.png
+INPUT .\images\norm_hand.png
+INPUT .\images\apple_click.jpg
+INPUT .\images\apple_click.jpg
+INPUT .\images\apple_click.jpg
+INPUT .\images\apple_click.jpg
+INPUT .\images\apple_click.jpg
+INPUT .\images\apple_click.jpg
+INPUT .\images\apple_click.jpg
+INPUT D:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmss9.tfm
+INPUT .\images\canny.png
+INPUT .\images\canny.png
+INPUT .\images\canny.png
+INPUT .\images\canny.png
+INPUT .\images\canny.png
+INPUT .\images\canny.png
+INPUT .\images\canny.png
 OUTPUT pres.nav
 OUTPUT pres.toc
 OUTPUT pres.snm
 INPUT pres.aux
+INPUT C:\Users\surre\AppData\Local\MiKTeX\fonts\pk\ljfour\public\wasy\dpi657\wasy10.pk
+INPUT C:\Users\surre\AppData\Local\MiKTeX\fonts\pk\ljfour\public\wasy\dpi657\wasy10.pk
 INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmmi10.pfb
 INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmmi10.pfb
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmmi6.pfb
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmmi6.pfb
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmmi8.pfb
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmmi8.pfb
 INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmr10.pfb
 INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmr10.pfb
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmr6.pfb
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmr6.pfb
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmr8.pfb
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmr8.pfb
 INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmss10.pfb
 INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmss10.pfb
 INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmss12.pfb
 INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmss12.pfb
 INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmss8.pfb
 INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmss8.pfb
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmss9.pfb
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmss9.pfb
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmssbx10.pfb
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmssbx10.pfb
 INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmsso10.pfb
 INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmsso10.pfb
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmsso8.pfb
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmsso8.pfb
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmsy10.pfb
+INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmsy10.pfb
 INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmsy8.pfb
 INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmsy8.pfb
 INPUT D:\Program Files\MiKTeX\fonts\type1\public\lm\lmtt10.pfb

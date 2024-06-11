@@ -7,6 +7,8 @@
 \usepackage{microtype}
 \usepackage{graphicx}
 \usepackage{subcaption}
+\usepackage{wasysym}
+\usepackage{algpseudocode}
 
 \usetheme[
   bullet=circle,                  % Use circles instead of squares for bullets
@@ -50,7 +52,7 @@
     \end{figure}
 \end{frame}
 
-\section{Code, Graphx, \& Sound}
+\section{Code, Graphics, and Sound}
 \begin{frame}{Before that}
     \begin{columns}[T]
         \begin{column}{.5\textwidth}
@@ -161,6 +163,7 @@
     \end{enumerate}
 \end{frame}
 
+
 \section{Voice commands}
 \begin{frame}{Dragonfly? What's that?}
 \end{frame}
@@ -177,16 +180,133 @@
 
 \section{Hand tracking \& gestures}
 \begin{frame}{Good ol' mediapipe}
+    \begin{columns}
+        \begin{column}{.5\textwidth}
+            Of course, we use \texttt{mediapipe} for hand tracking.
+            \begin{figure}
+                \centering
+                \includegraphics[width=.9\textwidth]{images/hand_landmark.png}
+                \caption{You know what this is.}
+            \end{figure}
+        \end{column}
+        \begin{column}{.5\textwidth}
+            \begin{enumerate}
+                \item We run it on a separate thread (\texttt{HandDetector}).
+                \item Process it for our needs.
+                \item Make it temporally coherent.
+            \end{enumerate}
+        \end{column}
+    \end{columns}
 \end{frame}
 
-\begin{frame}{'Hand'made normalization}
+\begin{frame}{'Hand'made normalization 1}
+    Get palm center:
+    \begin{equation}
+        p = \frac{\mathbf{L}_1}{2} + \frac{\mathbf{L}_6 + \mathbf{L}_{10} + \mathbf{L}_{14} + \mathbf{L}_{18}}{8}.
+    \end{equation}
+    Its width
+    \begin{equation}
+        w = ||\mathbf{L}_6 - \mathbf{L}_{18}||_2,
+    \end{equation}
+    and compute the relative position:
+    \begin{equation}
+        \overline{\mathbf{L}} = \frac{\mathbf{L} - p}{w}.
+    \end{equation}
+\end{frame}
+
+\begin{frame}{'Hand'made normalization 2}
+    Find the palm's normal:
+    \begin{equation}
+        \mathbf{n}_{\mathrm{palm}} = (1 - \mathbf{2}_{\textrm{left}})\frac{(\mathbf{L}_6 - \mathbf{L}_1)\times(\mathbf{L}_{18} - \mathbf{L}_1)}{||(\mathbf{L}_6 - \mathbf{L}_1)\times(\mathbf{L}_{18} - \mathbf{L}_1)||_2}.
+    \end{equation}
+    Then we get the pinky normal,
+    \begin{equation}
+        \mathbf{n}_{\mathrm{pinky}} = (1 - \mathbf{2}_{\textrm{left}})\frac{\mathbf{n}_{\mathrm{palm}}\times(\mathbf{L}_{10} - \mathbf{L}_1)}{||\mathbf{n}_{\mathrm{palm}}\times(\mathbf{L}_{10} - \mathbf{L}_1)||_2}.
+    \end{equation}
+    And the fingers' normal,
+    \begin{equation}
+        \mathbf{n}_{\mathrm{fingers}} = (1 - \mathbf{2}_{\textrm{left}})\frac{\mathbf{n}_{\mathrm{pinky}}\times \mathbf{n}_{\mathrm{palm}}}{||\mathbf{n}_{\mathrm{pinky}}\times \mathbf{n}_{\mathrm{palm}}||_2}.
+    \end{equation}
+\end{frame}
+
+\begin{frame}{'Hand'made normalization 3}
+    Finally, 
+    \begin{equation}
+        \mathbf{L}^\star = \overline{\mathbf{L}}\left[\mathbf{n}_{\mathrm{pinky}}, \mathbf{n}_{\mathrm{fingers}}, \mathbf{n}_{\mathrm{palm}}\right]^T
+    \end{equation}
+    \begin{figure}
+        \centering
+        \includegraphics[width=.4\textwidth]{images/norm_hand.png}
+        \caption{A right hand, normalized}
+    \end{figure}
 \end{frame}
 
 \begin{frame}{Gesture recognition}
+    \begin{columns}
+        \begin{column}{.3\textwidth}
+            At first, we wanted two gestures:
+            \begin{enumerate}
+                \item Tapping gesture, for "clicks". \frownie{}
+                \item Grabbing gesture, to hold pieces. \smiley{}
+            \end{enumerate}
+        \end{column}
+        \begin{column}{.7\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=.9\textwidth]{images/apple_click.jpg}
+                \caption{Frame from "A Guided Tour of Apple Vision Pro"}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Recognizing grab}
+    \begin{columns}
+        \begin{column}{.5\textwidth}
+            Very simple: hysteresis.
+
+            \begin{algorithmic}[1]
+                \State \textbf{input} \texttt{prev\_click}
+                \State $m \gets ||\mathbf{L}^\star_{\mathrm{thumb}} - \mathbf{L}^\star_{\mathrm{index}}||_2$
+                \State $d \gets \frac{\mathbf{L}^\star_{\mathrm{thumb}}\cdot\mathbf{L}^\star_{\mathrm{index}}}{||\mathbf{L}^\star_{\mathrm{thumb}}||_2 ||\mathbf{L}^\star_{\mathrm{index}}||_2}$
+                \If{\texttt{prev\_click}}
+                    \State \textbf{return} $m < \alpha_\gamma \land d > \beta_\gamma$
+                \Else
+                    \State \textbf{return} $m < \alpha \land d > \beta$
+                \EndIf
+            \end{algorithmic}
+        \end{column}
+        \begin{column}{.5\textwidth}
+            Remember the Canny edge detector?
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{images/canny.png}
+            \end{figure}
+            That uses hysteresis too!
+        \end{column}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Hand2Cursor mapping}
+    \begin{columns}
+        \begin{column}{.5\textwidth}
+            The direct mapping is
+            \begin{equation}
+                r = \mathrm{clip}_{[m,M]}(\frac{p - m}{M - m}).
+            \end{equation}
+            But we can't directly use $r$\dots\\
+            Let $c$ be the internal cursor of \texttt{HandDetector}.
+        \end{column}
+        \begin{column}{.5\textwidth}
+            \begin{enumerate}
+                \item Noisy tracking: $c$ moves at constant rate, either bilinear or linear interpolation, if $r_{t-1}$ present.
+                \item Cursor moving when hand still: only update if distance is enough.
+                \item Random dropping of pieces: keep a list of most recent detections, if even one is a grab then output a grab.
+            \end{enumerate}
+        \end{column}
+    \end{columns}
 \end{frame}
+
 
 \section{Experiments}
 \begin{frame}{Recording users}
@@ -200,7 +320,6 @@
 
 \begin{frame}{Results 2}
 \end{frame}
-
 
 \begin{frame}{Conclusions}
 \end{frame}

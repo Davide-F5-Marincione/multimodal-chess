@@ -9,7 +9,7 @@
 \headcommand {\beamer@framepages {3}{3}}
 \headcommand {\beamer@sectionpages {2}{3}}
 \headcommand {\beamer@subsectionpages {2}{3}}
-\headcommand {\sectionentry {2}{Code, Graphx, \& Sound}{4}{Code, Graphx, \& Sound}{0}}
+\headcommand {\sectionentry {2}{Code, Graphics, and Sound}{4}{Code, Graphics, and Sound}{0}}
 \headcommand {\slideentry {2}{0}{1}{4/4}{}{0}}
 \headcommand {\beamer@framepages {4}{4}}
 \headcommand {\slideentry {2}{0}{2}{5/5}{}{0}}
@@ -44,21 +44,27 @@
 \headcommand {\beamer@framepages {16}{16}}
 \headcommand {\slideentry {4}{0}{4}{17/17}{}{0}}
 \headcommand {\beamer@framepages {17}{17}}
-\headcommand {\beamer@sectionpages {14}{17}}
-\headcommand {\beamer@subsectionpages {14}{17}}
-\headcommand {\sectionentry {5}{Experiments}{18}{Experiments}{0}}
-\headcommand {\slideentry {5}{0}{1}{18/18}{}{0}}
+\headcommand {\slideentry {4}{0}{5}{18/18}{}{0}}
 \headcommand {\beamer@framepages {18}{18}}
-\headcommand {\slideentry {5}{0}{2}{19/19}{}{0}}
+\headcommand {\slideentry {4}{0}{6}{19/19}{}{0}}
 \headcommand {\beamer@framepages {19}{19}}
-\headcommand {\slideentry {5}{0}{3}{20/20}{}{0}}
+\headcommand {\slideentry {4}{0}{7}{20/20}{}{0}}
 \headcommand {\beamer@framepages {20}{20}}
-\headcommand {\slideentry {5}{0}{4}{21/21}{}{0}}
+\headcommand {\beamer@sectionpages {14}{20}}
+\headcommand {\beamer@subsectionpages {14}{20}}
+\headcommand {\sectionentry {5}{Experiments}{21}{Experiments}{0}}
+\headcommand {\slideentry {5}{0}{1}{21/21}{}{0}}
 \headcommand {\beamer@framepages {21}{21}}
-\headcommand {\slideentry {5}{0}{5}{22/22}{}{0}}
+\headcommand {\slideentry {5}{0}{2}{22/22}{}{0}}
 \headcommand {\beamer@framepages {22}{22}}
-\headcommand {\beamer@partpages {1}{22}}
-\headcommand {\beamer@subsectionpages {18}{22}}
-\headcommand {\beamer@sectionpages {18}{22}}
-\headcommand {\beamer@documentpages {22}}
-\headcommand {\gdef \inserttotalframenumber {22}}
+\headcommand {\slideentry {5}{0}{3}{23/23}{}{0}}
+\headcommand {\beamer@framepages {23}{23}}
+\headcommand {\slideentry {5}{0}{4}{24/24}{}{0}}
+\headcommand {\beamer@framepages {24}{24}}
+\headcommand {\slideentry {5}{0}{5}{25/25}{}{0}}
+\headcommand {\beamer@framepages {25}{25}}
+\headcommand {\beamer@partpages {1}{25}}
+\headcommand {\beamer@subsectionpages {21}{25}}
+\headcommand {\beamer@sectionpages {21}{25}}
+\headcommand {\beamer@documentpages {25}}
+\headcommand {\gdef \inserttotalframenumber {25}}
