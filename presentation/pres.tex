@@ -9,6 +9,7 @@
 \usepackage{subcaption}
 \usepackage{wasysym}
 \usepackage{algpseudocode}
+\usepackage{tabularx}
 
 \usetheme[
   bullet=circle,                  % Use circles instead of squares for bullets
@@ -165,13 +166,70 @@
 
 
 \section{Voice commands}
+
 \begin{frame}{Dragonfly? What's that?}
+    \begin{columns}[T]
+        \begin{column}{.5\textwidth}
+            We have to get from here\dots
+            \begin{figure}
+                \centering
+                \includegraphics[width=.65\textwidth]{images/dragonfly_python.png}
+                \caption{What we have.}
+            \end{figure}
+        \end{column}
+        \begin{column}{.5\textwidth}
+            To here!
+            \begin{figure}
+                \centering
+                \includegraphics[width=.9\textwidth]{images/dragonfly_python.png}
+                \caption{What we want.}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Hey, but what is a Rule?}
 \end{frame}
 
 \begin{frame}{Rules 1}
+    \begin{table}[h]
+        \centering
+        \caption{Rules Pt.1}
+        \small % Adjust font size as needed
+        \begin{tabularx}{1.0\textwidth}{|l|X|} % Adjust width here, e.g., 1.0\textwidth
+            \hline
+            \textbf{Rule Name} & \textbf{Specification} \\
+            \hline
+            Move Rule & \texttt{"move ( [ <src\_piece>] | [ <src\_piece> [<prep> <src\_square>] to <tgt\_square>] | [ [<prep>] <src\_square> to <tgt\_square>]) [and promote to <prm\_piece>]"} \\
+            \hline
+            Capture Rule & \texttt{"capture (<tgt\_piece> [<prep> <tgt\_square>] | <tgt\_square>) [with (<src\_piece> [<prep> <src\_square>] | <src\_square>)] [and promote to <prm\_piece>]"}\\
+            \hline
+            Promote Rule & \texttt{"promote [(<src\_piece> | <src\_square>)] to <prm\_piece>"} \\
+            \hline 
+        \end{tabularx}
+        \label{tab:rules}
+    \end{table}
 \end{frame}
 
+
 \begin{frame}{Rules 2}
+    \begin{table}[h]
+        \centering
+        \caption{Rules Pt.1}
+        \small % Adjust font size as needed
+        \begin{tabularx}{1.0\textwidth}{|l|X|} % Adjust width here, e.g., 1.0\textwidth
+            \hline
+            \textbf{Rule Name} & \textbf{Specification} \\
+            \hline 
+            Castle Rule & \texttt{"(castle <special\_direction> | <special\_direction> castle)"} \\
+            \hline 
+            Piece Rule & \texttt{"<src\_piece> ( [<prep>] <tgt\_square> |in <src\_square> <verb> [<prep>] ( <tgt\_square> | <tgt\_piece> [in <tgt\_square>] ) | <verb> [<prep> <src\_square>]( [<prep>] <tgt\_square> | <tgt\_piece>  [in <tgt\_square>])) [and promote to <prm\_piece>]"}\\
+            \hline
+            Square Rule & \texttt{"<src\_square> <verb> ( [<prep>] <tgt\_square> | <tgt\_piece> [<prep> <tgt\_square>])"}\\
+            \hline
+        \end{tabularx}
+        \label{tab:rules}
+    \end{table}
 \end{frame}
 
 \begin{frame}{Validating commands}
