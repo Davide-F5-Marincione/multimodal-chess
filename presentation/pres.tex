@@ -189,12 +189,33 @@
 \end{frame}
 
 \begin{frame}{Hey, but what is a Rule?}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{images/compound_rule.png}
+        \caption{Example of Compound Rule}
+    \end{figure}
+    Each rule is instantiated as a \texttt{Compound Rule}, with parameters : 
+    \begin{itemize}
+        \item \texttt{spec} : Compound specification for the rules root element 
+        \item \texttt{extras} :  Extras elements referenced from the compound spec, like choices for prepositions, pieces, and squares.
+    \end{itemize}
 \end{frame}
 
-\begin{frame}{Rules 1}
+\begin{frame}{Hey, but what is a Rule? - ALTERNATIVE}
+    % Simply this slide 
+    Each rule is instantiated as a \texttt{Compound Rule}, with parameters : 
+    \begin{itemize}
+        \item \texttt{spec} : Compound specification for the rules root element 
+        \item \texttt{extras} :  Extras elements referenced from the compound spec, like choices for prepositions, pieces, and squares.
+    \end{itemize}
+    It is characterized by a process recognition method that bla bla bla 
+\end{frame}
+
+
+\begin{frame}{Rules I}
     \begin{table}[h]
         \centering
-        \caption{Rules Pt.2}
+        \caption{Rules I}
         \small % Adjust font size as needed
         \begin{tabularx}{1.0\textwidth}{|l|X|} % Adjust width here, e.g., 1.0\textwidth
             \hline
@@ -215,7 +236,7 @@
 \begin{frame}{Rules 2}
     \begin{table}[h]
         \centering
-        \caption{Rules Pt.1}
+        \caption{Rules II}
         \small % Adjust font size as needed
         \begin{tabularx}{1.0\textwidth}{|l|X|} % Adjust width here, e.g., 1.0\textwidth
             \hline
@@ -367,10 +388,20 @@
 
 
 \section{Experiments}
-\begin{frame}{Recording users}
+\begin{frame}{Recording System I}
+    % insert image here 
+    Each recording is organized into two primary sections, namely \textbf{Player Actions} and \textbf{AI Moves}. \\
 \end{frame}
 
-\begin{frame}{Some metrics}
+\begin{frame}{Recording System II}
+    
+    Each action performed contains information about :   
+    \begin{itemize}
+            \item \texttt{Type} : Mouse, Hand or Voice
+            \item \texttt{Start \& End Time} : Time of Action Start and End 
+            \item \texttt{Moves} :  (Source Piece, Source Square, Target Piece, Target Square, Promotion Piece)
+            \item \texttt{Optional} : Utterances, Hand \& Mouse Distance, Hand \& Mouse Bottons Up and Down 
+    \end{itemize}
 \end{frame}
 
 
