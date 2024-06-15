@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.10.12) (preloaded format=pdflatex 2023.12.21)  14 JUN 2024 21:24
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.10.12) (preloaded format=pdflatex 2023.12.21)  15 JUN 2024 16:53
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1645,67 +1645,77 @@ Package pdftex.def Info: images/canny.png  used on input line 346.
 
  <./images/canny.png (PNG copy)>] [21
 
-] [22
+]
+<images/example_record.png, id=1695, 884.30376pt x 884.30376pt>
+File: images/example_record.png Graphic file (type png)
+<use images/example_record.png>
+Package pdftex.def Info: images/example_record.png  used on input line 383.
+(pdftex.def)             Requested size: 160.24684pt x 160.24727pt.
 
-] [23
+Overfull \vbox (5.30132pt too high) detected at line 383
+ []
+
+[22
+
+ <./images/example_record.png>] [23
 
 ]
-<images/total_time.png, id=1844, 613.69275pt x 367.97475pt>
+<images/total_time.png, id=1845, 613.69275pt x 367.97475pt>
 File: images/total_time.png Graphic file (type png)
 <use images/total_time.png>
-Package pdftex.def Info: images/total_time.png  used on input line 383.
+Package pdftex.def Info: images/total_time.png  used on input line 396.
 (pdftex.def)             Requested size: 256.39594pt x 153.73418pt.
  [24
 
  <./images/total_time.png>]
-<images/actions_per_minutes.png, id=1920, 611.886pt x 363.15675pt>
+<images/actions_per_minutes.png, id=1921, 611.886pt x 363.15675pt>
 File: images/actions_per_minutes.png Graphic file (type png)
 <use images/actions_per_minutes.png>
-Package pdftex.def Info: images/actions_per_minutes.png  used on input line 391.
+Package pdftex.def Info: images/actions_per_minutes.png  used on input line 404.
 (pdftex.def)             Requested size: 256.39594pt x 152.17014pt.
  [25
 
  <./images/actions_per_minutes.png>]
-<images/total_actions.png, id=1997, 531.78674pt x 337.86224pt>
+<images/total_actions.png, id=1998, 531.78674pt x 337.86224pt>
 File: images/total_actions.png Graphic file (type png)
 <use images/total_actions.png>
-Package pdftex.def Info: images/total_actions.png  used on input line 399.
+Package pdftex.def Info: images/total_actions.png  used on input line 412.
 (pdftex.def)             Requested size: 256.39594pt x 162.89377pt.
  [26
 
  <./images/total_actions.png>]
-<images/legal_actions.png, id=2073, 527.571pt x 337.86224pt>
+<images/legal_actions.png, id=2074, 527.571pt x 337.86224pt>
 File: images/legal_actions.png Graphic file (type png)
 <use images/legal_actions.png>
-Package pdftex.def Info: images/legal_actions.png  used on input line 407.
+Package pdftex.def Info: images/legal_actions.png  used on input line 420.
 (pdftex.def)             Requested size: 256.39594pt x 164.19807pt.
 
-Overfull \vbox (0.51884pt too high) detected at line 407
+Overfull \vbox (0.51884pt too high) detected at line 420
  []
 
 [27
 
  <./images/legal_actions.png>]
-<images/hand_error_rate.png, id=2149, 734.14275pt x 369.7815pt>
+<images/hand_error_rate.png, id=2150, 734.14275pt x 369.7815pt>
 File: images/hand_error_rate.png Graphic file (type png)
 <use images/hand_error_rate.png>
-Package pdftex.def Info: images/hand_error_rate.png  used on input line 415.
+Package pdftex.def Info: images/hand_error_rate.png  used on input line 428.
 (pdftex.def)             Requested size: 256.39594pt x 129.14333pt.
  [28
 
  <./images/hand_error_rate.png>]
-<images/speech_error_rate.png, id=2225, 620.91975pt x 362.5545pt>
+<images/speech_error_rate.png, id=2226, 620.91975pt x 362.5545pt>
 File: images/speech_error_rate.png Graphic file (type png)
 <use images/speech_error_rate.png>
-Package pdftex.def Info: images/speech_error_rate.png  used on input line 423.
+Package pdftex.def Info: images/speech_error_rate.png  used on input line 436.
 (pdftex.def)             Requested size: 256.39594pt x 149.71048pt.
  [29
 
  <./images/speech_error_rate.png>]
-<images/game_over_small.png, id=2301, 622.325pt x 622.325pt>
+<images/game_over_small.png, id=2302, 622.325pt x 622.325pt>
 File: images/game_over_small.png Graphic file (type png)
 <use images/game_over_small.png>
-Package pdftex.def Info: images/game_over_small.png  used on input line 432.
+Package pdftex.def Info: images/game_over_small.png  used on input line 445.
 (pdftex.def)             Requested size: 144.22118pt x 144.21426pt.
  [30
 
@@ -1730,17 +1740,17 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 28259 strings out of 474495
- 534382 string characters out of 5753749
+ 28266 strings out of 474495
+ 534605 string characters out of 5753749
  1952460 words of memory out of 5000000
- 49746 multiletter control sequences out of 15000+600000
+ 49753 multiletter control sequences out of 15000+600000
  658739 words of font info for 163 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  128i,21n,123p,1057b,869s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\surre\AppData\Local\MiKTeX\fonts/pk/ljfour/public/wasy/dpi657\wasy10.pk><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi6.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmr10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmr6.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmr8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss12.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss9.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmssbx10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmsso10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmsso8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmsy10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmsy8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmtt10.pfb>
-Output written on pres.pdf (30 pages, 3383350 bytes).
+Output written on pres.pdf (30 pages, 3414392 bytes).
 PDF statistics:
- 2452 PDF objects out of 2487 (max. 8388607)
+ 2453 PDF objects out of 2487 (max. 8388607)
  67 named destinations out of 1000 (max. 500000)
- 62662 words of extra memory for PDF output out of 74296 (max. 10000000)
+ 62667 words of extra memory for PDF output out of 74296 (max. 10000000)
 
