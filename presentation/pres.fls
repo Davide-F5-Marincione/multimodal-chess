@@ -560,6 +560,13 @@ INPUT .\images\dragonfly_python.png
 INPUT .\images\dragonfly_python.png
 INPUT .\images\dragonfly_python.png
 INPUT .\images\dragonfly_python.png
+INPUT .\images\compound_rule.png
+INPUT .\images\compound_rule.png
+INPUT .\images\compound_rule.png
+INPUT .\images\compound_rule.png
+INPUT .\images\compound_rule.png
+INPUT .\images\compound_rule.png
+INPUT .\images\compound_rule.png
 INPUT D:\Program Files\MiKTeX\fonts\tfm\public\lm\rm-lmss10.tfm
 INPUT D:\Program Files\MiKTeX\fonts\tfm\public\lm\rm-lmss8.tfm
 INPUT D:\Program Files\MiKTeX\fonts\tfm\public\lm\rm-lmss8.tfm
@@ -626,6 +633,9 @@ INPUT .\images\example_record.png
 INPUT .\images\example_record.png
 INPUT .\images\example_record.png
 INPUT .\images\example_record.png
+INPUT D:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmssbx10.tfm
+INPUT D:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmssbx10.tfm
+INPUT D:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmssbx10.tfm
 INPUT .\images\total_time.png
 INPUT .\images\total_time.png
 INPUT .\images\total_time.png

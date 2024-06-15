@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1718463219 "d:/Files/Documents/GitHub/multimodal-chess/presentation/pres.tex" "pres.pdf" "pres" 1718463228 0
+["pdflatex"] 1718463402 "d:/Files/Documents/GitHub/multimodal-chess/presentation/pres.tex" "pres.pdf" "pres" 1718463412 0
   "C:/Users/surre/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1718130148 121180 3502c8ea38ab933fde3a514d693acccc ""
   "C:/Users/surre/AppData/Local/MiKTeX/fonts/pk/ljfour/public/wasy/dpi657/wasy10.pk" 1718130170 16476 c276e9fbf7cbfef71b97c3732859d9b6 ""
   "C:/Users/surre/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1703174863 24214216 def7956b4ba833756095b4d27fd41fa8 ""
@@ -268,11 +268,12 @@
   "beamerinnerthemespiffy.sty" 1704292939 5492 c84e29bfc5ab4e8ff7e6fb2a97750092 ""
   "beamerouterthemerunglines.sty" 1704292939 5509 bea565e6ee5fdb90035bf4a589fee5c2 ""
   "beamerthemeRoma.sty" 1704292939 1145 02b1211b7da7404c1624e99041deb945 ""
-  "d:/Files/Documents/GitHub/multimodal-chess/presentation/pres.tex" 1718463218 16493 e86bce1e028c20e2150db67e855d8397 ""
+  "d:/Files/Documents/GitHub/multimodal-chess/presentation/pres.tex" 1718463391 18065 9c1691af22b47d84eef2d02c4273019e ""
   "images/actions_per_minutes.png" 1718391263 43320 d76cf27ea1d08e3709748936d94358d2 ""
   "images/apple_click.jpg" 1718129359 183503 0c61a581e68fe10ea0af27de48ab8977 ""
   "images/canny.png" 1718134651 436201 cc6d8cfb9d928ec6c3f57eebc3a0a549 ""
   "images/check_coloring.png" 1718050296 11767 7ab6f766bfb1827afed4af5c0d6f64f7 ""
+  "images/compound_rule.png" 1718463268 28497 c5b4a9f0a752ce14c5556f213e5012e0 ""
   "images/cursor_comparison.png" 1717693652 2813 ef631c636bc415f9cd0beccd8df7a2fc ""
   "images/dragonfly.png" 1718391263 179147 18b99b2c7307fae232d420955942aa2b ""
   "images/dragonfly_python.png" 1718391263 267695 673c288549a5e5dcf237de48952e6dd7 ""
@@ -293,9 +294,9 @@
   "images/uml.pdf" 1717683321 326339 4c3df7d5bcd58d502fb0d48c900eff63 ""
   "images/wizard_chess.png" 1718042518 331856 7d2f13b53feec4442b1a20095e15f01f ""
   "logo-sapienza.pdf" 1704292939 127307 8ac357822ac0e6b431f1bd85d894855c ""
-  "pres.aux" 1718463228 7391 85002d255ed393c6390c32f8f931587c "pdflatex"
-  "pres.nav" 1718463228 3795 b27d508651e84228567f7f5999d4b506 "pdflatex"
-  "pres.tex" 1718463218 16493 e86bce1e028c20e2150db67e855d8397 ""
+  "pres.aux" 1718463412 7514 bba59bd314765819b407099aa1bf9351 "pdflatex"
+  "pres.nav" 1718463412 3887 5ada5a0565296cc8e0548add0d3e6072 "pdflatex"
+  "pres.tex" 1718463391 18065 9c1691af22b47d84eef2d02c4273019e ""
   (generated)
   "pres.aux"
   "pres.log"

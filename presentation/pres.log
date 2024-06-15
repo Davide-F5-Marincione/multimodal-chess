@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.10.12) (preloaded format=pdflatex 2023.12.21)  15 JUN 2024 16:53
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.10.12) (preloaded format=pdflatex 2023.12.21)  15 JUN 2024 16:56
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1343,7 +1343,7 @@ Package microtype Info: Loading generic protrusion settings for font family
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
  (pres.nav)
-<logo-sapienza.pdf, id=82, 108.43109pt x 109.2612pt>
+<logo-sapienza.pdf, id=84, 108.43109pt x 109.2612pt>
 File: logo-sapienza.pdf Graphic file (type pdf)
 <use logo-sapienza.pdf>
 Package pdftex.def Info: logo-sapienza.pdf  used on input line 35.
@@ -1399,7 +1399,7 @@ LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <6> not available
  [1
 
 {C:/Users/surre/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{D:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc} <./logo-sapienza.pdf>]
-<images/wizard_chess.png, id=140, 674.52pt x 398.48875pt>
+<images/wizard_chess.png, id=143, 674.52pt x 398.48875pt>
 File: images/wizard_chess.png Graphic file (type png)
 <use images/wizard_chess.png>
 Package pdftex.def Info: images/wizard_chess.png  used on input line 45.
@@ -1411,7 +1411,7 @@ Overfull \vbox (10.86395pt too high) detected at line 45
 [2
 
  <./images/wizard_chess.png>]
-<images/stock_hand.jpeg, id=245, 475.7775pt x 318.18875pt>
+<images/stock_hand.jpeg, id=251, 475.7775pt x 318.18875pt>
 File: images/stock_hand.jpeg Graphic file (type jpg)
 <use images/stock_hand.jpeg>
 Package pdftex.def Info: images/stock_hand.jpeg  used on input line 54.
@@ -1423,12 +1423,12 @@ Overfull \vbox (2.089pt too high) detected at line 54
 [3
 
  <./images/stock_hand.jpeg>]
-<images/empty_set.png, id=320, 213.04594pt x 296.60812pt>
+<images/empty_set.png, id=328, 213.04594pt x 296.60812pt>
 File: images/empty_set.png Graphic file (type png)
 <use images/empty_set.png>
 Package pdftex.def Info: images/empty_set.png  used on input line 76.
 (pdftex.def)             Requested size: 104.15945pt x 145.01338pt.
-<images/gui_example.png, id=321, 602.25pt x 602.25pt>
+<images/gui_example.png, id=329, 602.25pt x 602.25pt>
 File: images/gui_example.png Graphic file (type png)
 <use images/gui_example.png>
 Package pdftex.def Info: images/gui_example.png  used on input line 76.
@@ -1440,7 +1440,7 @@ Overfull \vbox (0.80078pt too high) detected at line 76
 [4
 
  <./images/empty_set.png> <./images/gui_example.png>]
-<images/uml.pdf, id=397, 1204.5pt x 524.71031pt>
+<images/uml.pdf, id=407, 1204.5pt x 524.71031pt>
 File: images/uml.pdf Graphic file (type pdf)
 <use images/uml.pdf>
 Package pdftex.def Info: images/uml.pdf  used on input line 84.
@@ -1459,7 +1459,7 @@ Package microtype Info: Loading generic protrusion settings for font family
  [6
 
 ]
-<images/cursor_comparison.png, id=549, 264.99pt x 98.3675pt>
+<images/cursor_comparison.png, id=563, 264.99pt x 98.3675pt>
 File: images/cursor_comparison.png Graphic file (type png)
 <use images/cursor_comparison.png>
 Package pdftex.def Info: images/cursor_comparison.png  used on input line 129.
@@ -1472,17 +1472,17 @@ File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman (
 ) [7
 
 {D:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-mathsy.enc}{D:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-rm.enc}{D:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-mathit.enc} <./images/cursor_comparison.png>]
-<images/check_coloring.png, id=632, 210.7875pt x 210.7875pt>
+<images/check_coloring.png, id=648, 210.7875pt x 210.7875pt>
 File: images/check_coloring.png Graphic file (type png)
 <use images/check_coloring.png>
 Package pdftex.def Info: images/check_coloring.png  used on input line 152.
 (pdftex.def)             Requested size: 64.09775pt x 64.09871pt.
-<images/moves_coloring.png, id=633, 210.7875pt x 210.7875pt>
+<images/moves_coloring.png, id=649, 210.7875pt x 210.7875pt>
 File: images/moves_coloring.png Graphic file (type png)
 <use images/moves_coloring.png>
 Package pdftex.def Info: images/moves_coloring.png  used on input line 152.
 (pdftex.def)             Requested size: 64.09775pt x 64.09871pt.
-<images/promotion_ex.png, id=634, 351.3125pt x 210.7875pt>
+<images/promotion_ex.png, id=650, 351.3125pt x 210.7875pt>
 File: images/promotion_ex.png Graphic file (type png)
 <use images/promotion_ex.png>
 Package pdftex.def Info: images/promotion_ex.png  used on input line 152.
@@ -1496,12 +1496,12 @@ Overfull \vbox (3.91324pt too high) detected at line 152
  <./images/check_coloring.png> <./images/moves_coloring.png> <./images/promotion_ex.png>] [9
 
 ]
-<images/dragonfly.png, id=784, 602.25pt x 602.25pt>
+<images/dragonfly.png, id=804, 602.25pt x 602.25pt>
 File: images/dragonfly.png Graphic file (type png)
 <use images/dragonfly.png>
 Package pdftex.def Info: images/dragonfly.png  used on input line 189.
 (pdftex.def)             Requested size: 104.15472pt x 104.15945pt.
-<images/dragonfly_python.png, id=785, 814.242pt x 552.26324pt>
+<images/dragonfly_python.png, id=805, 814.242pt x 552.26324pt>
 File: images/dragonfly_python.png Graphic file (type png)
 <use images/dragonfly_python.png>
 Package pdftex.def Info: images/dragonfly_python.png  used on input line 189.
@@ -1513,77 +1513,97 @@ Overfull \hbox (5.13322pt too wide) in paragraph at lines 189--189
 
 [10
 
- <./images/dragonfly.png> <./images/dragonfly_python.png>] [11
+ <./images/dragonfly.png> <./images/dragonfly_python.png>]
+<images/compound_rule.png, id=884, 626.34pt x 181.8795pt>
+File: images/compound_rule.png Graphic file (type png)
+<use images/compound_rule.png>
+Package pdftex.def Info: images/compound_rule.png  used on input line 202.
+(pdftex.def)             Requested size: 320.4937pt x 93.06813pt.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10> on input line 202.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <7> on input line 202.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5> on input line 202.
+LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <10> not available
+(Font)              Font shape `T1/lmss/m/sl' tried instead on input line 202.
+LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <7> not available
+(Font)              Font shape `T1/lmss/m/sl' tried instead on input line 202.
+LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <5> not available
+(Font)              Font shape `T1/lmss/m/sl' tried instead on input line 202.
+ [11
+
+ <./images/compound_rule.png>] [12
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 212--212
+Underfull \hbox (badness 10000) in paragraph at lines 233--233
 []|\T1/lmtt/m/n/10 "move ( [ <src_piece>] | [ <src_piece>
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 212--212
+Underfull \hbox (badness 10000) in paragraph at lines 233--233
 \T1/lmtt/m/n/10 [<prep> <src_square>] to <tgt_square>] | [
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 212--212
+Underfull \hbox (badness 10000) in paragraph at lines 233--233
 \T1/lmtt/m/n/10 [<prep>] <src_square> to <tgt_square>]) [and
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 212--212
+Underfull \hbox (badness 10000) in paragraph at lines 233--233
 []|\T1/lmtt/m/n/10 "capture (<tgt_piece> [<prep> <tgt_square>]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 212--212
+Underfull \hbox (badness 10000) in paragraph at lines 233--233
 \T1/lmtt/m/n/10 | <tgt_square>) [with (<src_piece> [<prep>
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 212--212
+Underfull \hbox (badness 10000) in paragraph at lines 233--233
 \T1/lmtt/m/n/10 <src_square>] | <src_square>)] [and promote
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 212--212
+Underfull \hbox (badness 10000) in paragraph at lines 233--233
 []|\T1/lmtt/m/n/10 "promote [(<src_piece> | <src_square>)] to
  []
 
-[12
+[13
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 233--233
+Underfull \hbox (badness 10000) in paragraph at lines 254--254
 []|\T1/lmtt/m/n/10 "(castle <special_direction> |
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 233--233
+Underfull \hbox (badness 10000) in paragraph at lines 254--254
 []|\T1/lmtt/m/n/10 "<src_piece> ( [<prep>] <tgt_square> |in
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 233--233
+Underfull \hbox (badness 10000) in paragraph at lines 254--254
 \T1/lmtt/m/n/10 <src_square> <verb> [<prep>] ( <tgt_square>
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 233--233
+Underfull \hbox (badness 10000) in paragraph at lines 254--254
 \T1/lmtt/m/n/10 | <tgt_piece> [in <tgt_square>] ) | <verb>
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 233--233
+Underfull \hbox (badness 10000) in paragraph at lines 254--254
 \T1/lmtt/m/n/10 [<prep> <src_square>]( [<prep>] <tgt_square> |
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 233--233
+Underfull \hbox (badness 10000) in paragraph at lines 254--254
 \T1/lmtt/m/n/10 <tgt_piece> [in <tgt_square>])) [and promote
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 233--233
+Underfull \hbox (badness 10000) in paragraph at lines 254--254
 []|\T1/lmtt/m/n/10 "<src_square> <verb> ( [<prep>] <tgt_square> |
  []
 
@@ -1591,133 +1611,136 @@ Underfull \hbox (badness 10000) in paragraph at lines 233--233
 pdfTeX warning (ext4): destination with the same identifier (name{tab:rules}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.233 \end{frame}
-                  [13
+l.254 \end{frame}
+                  [14
 
-] [14
+] [15
 
 ]
-<images/hand_landmark.png, id=1161, 246.6816pt x 138.2766pt>
+<images/hand_landmark.png, id=1270, 246.6816pt x 138.2766pt>
 File: images/hand_landmark.png Graphic file (type png)
 <use images/hand_landmark.png>
-Package pdftex.def Info: images/hand_landmark.png  used on input line 258.
+Package pdftex.def Info: images/hand_landmark.png  used on input line 279.
 (pdftex.def)             Requested size: 144.22118pt x 80.844pt.
- [15
+ [16
 
  <./images/hand_landmark.png>]
 LaTeX Font Info:    Font shape `T1/lmss/b/n' in size <10.95> not available
-(Font)              Font shape `T1/lmss/bx/n' tried instead on input line 273.
+(Font)              Font shape `T1/lmss/bx/n' tried instead on input line 294.
 LaTeX Font Info:    Font shape `T1/lmss/b/n' in size <8> not available
-(Font)              Font shape `T1/lmss/bx/n' tried instead on input line 273.
+(Font)              Font shape `T1/lmss/bx/n' tried instead on input line 294.
 LaTeX Font Info:    Font shape `T1/lmss/b/n' in size <6> not available
-(Font)              Font shape `T1/lmss/bx/n' tried instead on input line 273.
- [16
+(Font)              Font shape `T1/lmss/bx/n' tried instead on input line 294.
+ [17
 
-] [17
+] [18
 
 ]
-<images/norm_hand.png, id=1388, 306.14375pt x 346.29375pt>
+<images/norm_hand.png, id=1502, 306.14375pt x 346.29375pt>
 File: images/norm_hand.png Graphic file (type png)
 <use images/norm_hand.png>
-Package pdftex.def Info: images/norm_hand.png  used on input line 300.
+Package pdftex.def Info: images/norm_hand.png  used on input line 321.
 (pdftex.def)             Requested size: 128.19551pt x 145.00908pt.
 
-Overfull \vbox (15.32477pt too high) detected at line 300
+Overfull \vbox (15.32477pt too high) detected at line 321
  []
 
-[18
+[19
 
  <./images/norm_hand.png>]
-<images/apple_click.jpg, id=1465, 1927.2pt x 1084.05pt>
+<images/apple_click.jpg, id=1582, 1927.2pt x 1084.05pt>
 File: images/apple_click.jpg Graphic file (type jpg)
 <use images/apple_click.jpg>
-Package pdftex.def Info: images/apple_click.jpg  used on input line 319.
+Package pdftex.def Info: images/apple_click.jpg  used on input line 340.
 (pdftex.def)             Requested size: 201.90877pt x 113.57222pt.
- [19
-
- <./images/apple_click.jpg>]
-<images/canny.png, id=1542, 990.70125pt x 471.7625pt>
-File: images/canny.png Graphic file (type png)
-<use images/canny.png>
-Package pdftex.def Info: images/canny.png  used on input line 346.
-(pdftex.def)             Requested size: 160.24684pt x 76.30417pt.
  [20
 
- <./images/canny.png (PNG copy)>] [21
+ <./images/apple_click.jpg>]
+<images/canny.png, id=1660, 990.70125pt x 471.7625pt>
+File: images/canny.png Graphic file (type png)
+<use images/canny.png>
+Package pdftex.def Info: images/canny.png  used on input line 367.
+(pdftex.def)             Requested size: 160.24684pt x 76.30417pt.
+ [21
+
+ <./images/canny.png (PNG copy)>] [22
 
 ]
-<images/example_record.png, id=1695, 884.30376pt x 884.30376pt>
+<images/example_record.png, id=1817, 884.30376pt x 884.30376pt>
 File: images/example_record.png Graphic file (type png)
 <use images/example_record.png>
-Package pdftex.def Info: images/example_record.png  used on input line 383.
+Package pdftex.def Info: images/example_record.png  used on input line 404.
 (pdftex.def)             Requested size: 160.24684pt x 160.24727pt.
+ [23
 
-Overfull \vbox (5.30132pt too high) detected at line 383
- []
-
-[22
-
- <./images/example_record.png>] [23
-
-]
-<images/total_time.png, id=1845, 613.69275pt x 367.97475pt>
-File: images/total_time.png Graphic file (type png)
-<use images/total_time.png>
-Package pdftex.def Info: images/total_time.png  used on input line 396.
-(pdftex.def)             Requested size: 256.39594pt x 153.73418pt.
+ <./images/example_record.png>]
+LaTeX Font Info:    Font shape `T1/lmss/b/n' in size <10> not available
+(Font)              Font shape `T1/lmss/bx/n' tried instead on input line 415.
+LaTeX Font Info:    Font shape `T1/lmss/b/n' in size <7> not available
+(Font)              Font shape `T1/lmss/bx/n' tried instead on input line 415.
+LaTeX Font Info:    Font shape `T1/lmss/b/n' in size <5> not available
+(Font)              Font shape `T1/lmss/bx/n' tried instead on input line 415.
  [24
 
- <./images/total_time.png>]
-<images/actions_per_minutes.png, id=1921, 611.886pt x 363.15675pt>
-File: images/actions_per_minutes.png Graphic file (type png)
-<use images/actions_per_minutes.png>
-Package pdftex.def Info: images/actions_per_minutes.png  used on input line 404.
-(pdftex.def)             Requested size: 256.39594pt x 152.17014pt.
+]
+<images/total_time.png, id=1971, 613.69275pt x 367.97475pt>
+File: images/total_time.png Graphic file (type png)
+<use images/total_time.png>
+Package pdftex.def Info: images/total_time.png  used on input line 424.
+(pdftex.def)             Requested size: 256.39594pt x 153.73418pt.
  [25
 
- <./images/actions_per_minutes.png>]
-<images/total_actions.png, id=1998, 531.78674pt x 337.86224pt>
-File: images/total_actions.png Graphic file (type png)
-<use images/total_actions.png>
-Package pdftex.def Info: images/total_actions.png  used on input line 412.
-(pdftex.def)             Requested size: 256.39594pt x 162.89377pt.
+ <./images/total_time.png>]
+<images/actions_per_minutes.png, id=2050, 611.886pt x 363.15675pt>
+File: images/actions_per_minutes.png Graphic file (type png)
+<use images/actions_per_minutes.png>
+Package pdftex.def Info: images/actions_per_minutes.png  used on input line 432.
+(pdftex.def)             Requested size: 256.39594pt x 152.17014pt.
  [26
 
+ <./images/actions_per_minutes.png>]
+<images/total_actions.png, id=2128, 531.78674pt x 337.86224pt>
+File: images/total_actions.png Graphic file (type png)
+<use images/total_actions.png>
+Package pdftex.def Info: images/total_actions.png  used on input line 440.
+(pdftex.def)             Requested size: 256.39594pt x 162.89377pt.
+ [27
+
  <./images/total_actions.png>]
-<images/legal_actions.png, id=2074, 527.571pt x 337.86224pt>
+<images/legal_actions.png, id=2206, 527.571pt x 337.86224pt>
 File: images/legal_actions.png Graphic file (type png)
 <use images/legal_actions.png>
-Package pdftex.def Info: images/legal_actions.png  used on input line 420.
+Package pdftex.def Info: images/legal_actions.png  used on input line 448.
 (pdftex.def)             Requested size: 256.39594pt x 164.19807pt.
 
-Overfull \vbox (0.51884pt too high) detected at line 420
+Overfull \vbox (0.51884pt too high) detected at line 448
  []
 
-[27
+[28
 
  <./images/legal_actions.png>]
-<images/hand_error_rate.png, id=2150, 734.14275pt x 369.7815pt>
+<images/hand_error_rate.png, id=2284, 734.14275pt x 369.7815pt>
 File: images/hand_error_rate.png Graphic file (type png)
 <use images/hand_error_rate.png>
-Package pdftex.def Info: images/hand_error_rate.png  used on input line 428.
+Package pdftex.def Info: images/hand_error_rate.png  used on input line 456.
 (pdftex.def)             Requested size: 256.39594pt x 129.14333pt.
- [28
-
- <./images/hand_error_rate.png>]
-<images/speech_error_rate.png, id=2226, 620.91975pt x 362.5545pt>
-File: images/speech_error_rate.png Graphic file (type png)
-<use images/speech_error_rate.png>
-Package pdftex.def Info: images/speech_error_rate.png  used on input line 436.
-(pdftex.def)             Requested size: 256.39594pt x 149.71048pt.
  [29
 
+ <./images/hand_error_rate.png>]
+<images/speech_error_rate.png, id=2362, 620.91975pt x 362.5545pt>
+File: images/speech_error_rate.png Graphic file (type png)
+<use images/speech_error_rate.png>
+Package pdftex.def Info: images/speech_error_rate.png  used on input line 464.
+(pdftex.def)             Requested size: 256.39594pt x 149.71048pt.
+ [30
+
  <./images/speech_error_rate.png>]
-<images/game_over_small.png, id=2302, 622.325pt x 622.325pt>
+<images/game_over_small.png, id=2440, 622.325pt x 622.325pt>
 File: images/game_over_small.png Graphic file (type png)
 <use images/game_over_small.png>
-Package pdftex.def Info: images/game_over_small.png  used on input line 445.
+Package pdftex.def Info: images/game_over_small.png  used on input line 473.
 (pdftex.def)             Requested size: 144.22118pt x 144.21426pt.
- [30
+ [31
 
  <./images/game_over_small.png>]
 \tf@nav=\write5
@@ -1740,17 +1763,17 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 28266 strings out of 474495
- 534605 string characters out of 5753749
- 1952460 words of memory out of 5000000
- 49753 multiletter control sequences out of 15000+600000
- 658739 words of font info for 163 fonts, out of 8000000 for 9000
+ 28308 strings out of 474495
+ 535444 string characters out of 5753749
+ 1953460 words of memory out of 5000000
+ 49781 multiletter control sequences out of 15000+600000
+ 667649 words of font info for 172 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  128i,21n,123p,1057b,869s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\surre\AppData\Local\MiKTeX\fonts/pk/ljfour/public/wasy/dpi657\wasy10.pk><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi6.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmr10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmr6.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmr8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss12.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss9.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmssbx10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmsso10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmsso8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmsy10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmsy8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmtt10.pfb>
-Output written on pres.pdf (30 pages, 3414392 bytes).
+Output written on pres.pdf (31 pages, 3450005 bytes).
 PDF statistics:
- 2453 PDF objects out of 2487 (max. 8388607)
- 67 named destinations out of 1000 (max. 500000)
- 62667 words of extra memory for PDF output out of 74296 (max. 10000000)
+ 2593 PDF objects out of 2984 (max. 8388607)
+ 69 named destinations out of 1000 (max. 500000)
+ 68816 words of extra memory for PDF output out of 74296 (max. 10000000)
 

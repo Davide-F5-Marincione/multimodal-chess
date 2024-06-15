@@ -147,7 +147,8 @@ class PromoteRule(CompoundRule):
         Choice("prep", prep_map), 
         Choice("src_piece", piece),
         Choice("prm_piece", prm_piece),
-        Compound( name = "src_square", spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], value_func = lambda node, extras: (extras["file"], extras["rank"]))
+        Compound( name = "src_square", spec = "<file> <rank>", extras = [ Choice("file", file_map), Choice("rank", rank_map)], 
+                 value_func = lambda node, extras: (extras["file"], extras["rank"]))
     ]
 
     def _process_recognition(self, node, extras):
