@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.10.12) (preloaded format=pdflatex 2023.12.21)  15 JUN 2024 17:12
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.10.12) (preloaded format=pdflatex 2023.12.21)  15 JUN 2024 17:22
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1666,14 +1666,14 @@ Package pdftex.def Info: images/canny.png  used on input line 367.
  <./images/canny.png (PNG copy)>] [22
 
 ]
-<images/example_record2.png, id=1817, 922.94812pt x 645.16031pt>
-File: images/example_record2.png Graphic file (type png)
-<use images/example_record2.png>
-Package pdftex.def Info: images/example_record2.png  used on input line 397.
-(pdftex.def)             Requested size: 224.3446pt x 156.82034pt.
+<images/example_record3.png, id=1817, 1050.17343pt x 443.40656pt>
+File: images/example_record3.png Graphic file (type png)
+<use images/example_record3.png>
+Package pdftex.def Info: images/example_record3.png  used on input line 397.
+(pdftex.def)             Requested size: 314.08244pt x 132.61028pt.
  [23
 
- <./images/example_record2.png>]
+ <./images/example_record3.png>]
 LaTeX Font Info:    Font shape `T1/lmss/b/n' in size <10> not available
 (Font)              Font shape `T1/lmss/bx/n' tried instead on input line 408.
 LaTeX Font Info:    Font shape `T1/lmss/b/n' in size <7> not available
@@ -1771,7 +1771,7 @@ Here is how much of TeX's memory you used:
  1141 hyphenation exceptions out of 8191
  128i,21n,123p,1057b,869s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\surre\AppData\Local\MiKTeX\fonts/pk/ljfour/public/wasy/dpi657\wasy10.pk><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi6.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmr10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmr6.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmr8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss12.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss9.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmssbx10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmsso10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmsso8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmsy10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmsy8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmtt10.pfb>
-Output written on pres.pdf (31 pages, 3488065 bytes).
+Output written on pres.pdf (31 pages, 3476880 bytes).
 PDF statistics:
  2593 PDF objects out of 2984 (max. 8388607)
  69 named destinations out of 1000 (max. 500000)
