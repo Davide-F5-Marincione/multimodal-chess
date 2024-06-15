@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.10.12) (preloaded format=pdflatex 2023.12.21)  15 JUN 2024 16:56
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.10.12) (preloaded format=pdflatex 2023.12.21)  15 JUN 2024 17:06
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1666,27 +1666,31 @@ Package pdftex.def Info: images/canny.png  used on input line 367.
  <./images/canny.png (PNG copy)>] [22
 
 ]
-<images/example_record.png, id=1817, 884.30376pt x 884.30376pt>
-File: images/example_record.png Graphic file (type png)
-<use images/example_record.png>
-Package pdftex.def Info: images/example_record.png  used on input line 404.
-(pdftex.def)             Requested size: 160.24684pt x 160.24727pt.
- [23
+<images/example_record2.png, id=1817, 922.94812pt x 645.16031pt>
+File: images/example_record2.png Graphic file (type png)
+<use images/example_record2.png>
+Package pdftex.def Info: images/example_record2.png  used on input line 398.
+(pdftex.def)             Requested size: 208.31894pt x 145.61748pt.
 
- <./images/example_record.png>]
+Overfull \vbox (9.13826pt too high) detected at line 398
+ []
+
+[23
+
+ <./images/example_record2.png>]
 LaTeX Font Info:    Font shape `T1/lmss/b/n' in size <10> not available
-(Font)              Font shape `T1/lmss/bx/n' tried instead on input line 415.
+(Font)              Font shape `T1/lmss/bx/n' tried instead on input line 409.
 LaTeX Font Info:    Font shape `T1/lmss/b/n' in size <7> not available
-(Font)              Font shape `T1/lmss/bx/n' tried instead on input line 415.
+(Font)              Font shape `T1/lmss/bx/n' tried instead on input line 409.
 LaTeX Font Info:    Font shape `T1/lmss/b/n' in size <5> not available
-(Font)              Font shape `T1/lmss/bx/n' tried instead on input line 415.
+(Font)              Font shape `T1/lmss/bx/n' tried instead on input line 409.
  [24
 
 ]
 <images/total_time.png, id=1971, 613.69275pt x 367.97475pt>
 File: images/total_time.png Graphic file (type png)
 <use images/total_time.png>
-Package pdftex.def Info: images/total_time.png  used on input line 424.
+Package pdftex.def Info: images/total_time.png  used on input line 418.
 (pdftex.def)             Requested size: 256.39594pt x 153.73418pt.
  [25
 
@@ -1694,7 +1698,7 @@ Package pdftex.def Info: images/total_time.png  used on input line 424.
 <images/actions_per_minutes.png, id=2050, 611.886pt x 363.15675pt>
 File: images/actions_per_minutes.png Graphic file (type png)
 <use images/actions_per_minutes.png>
-Package pdftex.def Info: images/actions_per_minutes.png  used on input line 432.
+Package pdftex.def Info: images/actions_per_minutes.png  used on input line 426.
 (pdftex.def)             Requested size: 256.39594pt x 152.17014pt.
  [26
 
@@ -1702,7 +1706,7 @@ Package pdftex.def Info: images/actions_per_minutes.png  used on input line 432.
 <images/total_actions.png, id=2128, 531.78674pt x 337.86224pt>
 File: images/total_actions.png Graphic file (type png)
 <use images/total_actions.png>
-Package pdftex.def Info: images/total_actions.png  used on input line 440.
+Package pdftex.def Info: images/total_actions.png  used on input line 434.
 (pdftex.def)             Requested size: 256.39594pt x 162.89377pt.
  [27
 
@@ -1710,10 +1714,10 @@ Package pdftex.def Info: images/total_actions.png  used on input line 440.
 <images/legal_actions.png, id=2206, 527.571pt x 337.86224pt>
 File: images/legal_actions.png Graphic file (type png)
 <use images/legal_actions.png>
-Package pdftex.def Info: images/legal_actions.png  used on input line 448.
+Package pdftex.def Info: images/legal_actions.png  used on input line 442.
 (pdftex.def)             Requested size: 256.39594pt x 164.19807pt.
 
-Overfull \vbox (0.51884pt too high) detected at line 448
+Overfull \vbox (0.51884pt too high) detected at line 442
  []
 
 [28
@@ -1722,7 +1726,7 @@ Overfull \vbox (0.51884pt too high) detected at line 448
 <images/hand_error_rate.png, id=2284, 734.14275pt x 369.7815pt>
 File: images/hand_error_rate.png Graphic file (type png)
 <use images/hand_error_rate.png>
-Package pdftex.def Info: images/hand_error_rate.png  used on input line 456.
+Package pdftex.def Info: images/hand_error_rate.png  used on input line 450.
 (pdftex.def)             Requested size: 256.39594pt x 129.14333pt.
  [29
 
@@ -1730,7 +1734,7 @@ Package pdftex.def Info: images/hand_error_rate.png  used on input line 456.
 <images/speech_error_rate.png, id=2362, 620.91975pt x 362.5545pt>
 File: images/speech_error_rate.png Graphic file (type png)
 <use images/speech_error_rate.png>
-Package pdftex.def Info: images/speech_error_rate.png  used on input line 464.
+Package pdftex.def Info: images/speech_error_rate.png  used on input line 458.
 (pdftex.def)             Requested size: 256.39594pt x 149.71048pt.
  [30
 
@@ -1738,7 +1742,7 @@ Package pdftex.def Info: images/speech_error_rate.png  used on input line 464.
 <images/game_over_small.png, id=2440, 622.325pt x 622.325pt>
 File: images/game_over_small.png Graphic file (type png)
 <use images/game_over_small.png>
-Package pdftex.def Info: images/game_over_small.png  used on input line 473.
+Package pdftex.def Info: images/game_over_small.png  used on input line 467.
 (pdftex.def)             Requested size: 144.22118pt x 144.21426pt.
  [31
 
@@ -1764,14 +1768,14 @@ LaTeX Warning: There were multiply-defined labels.
  ) 
 Here is how much of TeX's memory you used:
  28308 strings out of 474495
- 535444 string characters out of 5753749
+ 535451 string characters out of 5753749
  1953460 words of memory out of 5000000
  49781 multiletter control sequences out of 15000+600000
  667649 words of font info for 172 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  128i,21n,123p,1057b,869s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\surre\AppData\Local\MiKTeX\fonts/pk/ljfour/public/wasy/dpi657\wasy10.pk><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi6.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmr10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmr6.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmr8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss12.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmss9.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmssbx10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmsso10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmsso8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmsy10.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmsy8.pfb><D:/Program Files/MiKTeX/fonts/type1/public/lm/lmtt10.pfb>
-Output written on pres.pdf (31 pages, 3450005 bytes).
+Output written on pres.pdf (31 pages, 3488136 bytes).
 PDF statistics:
  2593 PDF objects out of 2984 (max. 8388607)
  69 named destinations out of 1000 (max. 500000)

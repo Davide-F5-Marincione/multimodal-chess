@@ -23,23 +23,9 @@
             "action_start": "2024-05-28 20:15:06.577269",
             "action_type": "speech",
             "utterances": 7,
-            "moves": [
-                [
-                    "pawn",
-                    "a2",
-                    "a3",
-                    null
-                ]
-            ],
+            "moves": [["pawn","a2","a3",null]],
             "action_end": "2024-05-28 20:15:31.592501"
         }
     ],
-    "ai": [
-        [
-            "pawn",
-            "e7",
-            "e5",
-            null
-        ]
-    ]
+    "ai": [["pawn","e7","e5",null]]
 }
