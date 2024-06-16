@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1718464920 "d:/Files/Documents/GitHub/multimodal-chess/presentation/pres.tex" "pres.pdf" "pres" 1718464931 0
+["pdflatex"] 1718525335 "d:/Files/Documents/GitHub/multimodal-chess/presentation/pres.tex" "pres.pdf" "pres" 1718525346 0
   "C:/Users/surre/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1718130148 121180 3502c8ea38ab933fde3a514d693acccc ""
   "C:/Users/surre/AppData/Local/MiKTeX/fonts/pk/ljfour/public/wasy/dpi657/wasy10.pk" 1718130170 16476 c276e9fbf7cbfef71b97c3732859d9b6 ""
   "C:/Users/surre/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1703174863 24214216 def7956b4ba833756095b4d27fd41fa8 ""
@@ -268,7 +268,7 @@
   "beamerinnerthemespiffy.sty" 1704292939 5492 c84e29bfc5ab4e8ff7e6fb2a97750092 ""
   "beamerouterthemerunglines.sty" 1704292939 5509 bea565e6ee5fdb90035bf4a589fee5c2 ""
   "beamerthemeRoma.sty" 1704292939 1145 02b1211b7da7404c1624e99041deb945 ""
-  "d:/Files/Documents/GitHub/multimodal-chess/presentation/pres.tex" 1718464919 17821 7a0637f36ce20a6907bfbc61b6272378 ""
+  "d:/Files/Documents/GitHub/multimodal-chess/presentation/pres.tex" 1718525335 18244 7b1c6e7a655cb054c17d5b0256037db1 ""
   "images/actions_per_minutes.png" 1718391263 43320 d76cf27ea1d08e3709748936d94358d2 ""
   "images/apple_click.jpg" 1718129359 183503 0c61a581e68fe10ea0af27de48ab8977 ""
   "images/canny.png" 1718134651 436201 cc6d8cfb9d928ec6c3f57eebc3a0a549 ""
@@ -280,6 +280,7 @@
   "images/empty_set.png" 1718047795 15163 b4e5f84e688f1896f36fa9c32c110a16 ""
   "images/example_record3.png" 1718464892 63375 b5c691f98fefc9cbf93ae78f7548ea58 ""
   "images/game_over_small.png" 1718393025 52418 970cebb5483413b0ca05fd446e1a924e ""
+  "images/girl_tracking.jpg" 1718524865 100463 b9b367d042ca59c65b0667d14670e6f7 ""
   "images/gui_example.png" 1717852822 48173 c6ee9d2c85f2ffae3fe14aaf53b966b9 ""
   "images/hand_error_rate.png" 1718391263 37585 193f383e7be8ce9ede985b6e5fe2a55c ""
   "images/hand_landmark.png" 1718127303 740231 ee838a4112e06c584f33c3b8998e00cb ""
@@ -294,9 +295,9 @@
   "images/uml.pdf" 1717683321 326339 4c3df7d5bcd58d502fb0d48c900eff63 ""
   "images/wizard_chess.png" 1718042518 331856 7d2f13b53feec4442b1a20095e15f01f ""
   "logo-sapienza.pdf" 1704292939 127307 8ac357822ac0e6b431f1bd85d894855c ""
-  "pres.aux" 1718464930 7514 bba59bd314765819b407099aa1bf9351 "pdflatex"
-  "pres.nav" 1718464930 3887 5ada5a0565296cc8e0548add0d3e6072 "pdflatex"
-  "pres.tex" 1718464919 17821 7a0637f36ce20a6907bfbc61b6272378 ""
+  "pres.aux" 1718525345 8113 32dbb5bb497006e876bd05d573367dce "pdflatex"
+  "pres.nav" 1718525345 4138 92bbaf9a65d3baac7a70389939d73e2d "pdflatex"
+  "pres.tex" 1718525335 18244 7b1c6e7a655cb054c17d5b0256037db1 ""
   (generated)
   "pres.aux"
   "pres.log"

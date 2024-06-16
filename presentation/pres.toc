@@ -4,3 +4,4 @@
 \beamer@sectionintoc {3}{Voice commands}{10}{0}{3}
 \beamer@sectionintoc {4}{Hand tracking \& gestures}{16}{0}{4}
 \beamer@sectionintoc {5}{Experiments}{23}{0}{5}
+\beamer@sectionintoc {6}{Conclusions}{31}{0}{6}
