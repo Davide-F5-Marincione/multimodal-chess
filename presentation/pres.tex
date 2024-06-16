@@ -201,8 +201,6 @@
     \end{itemize}
 \end{frame}
 
-
-
 \begin{frame}{Rules I}
     \begin{table}[h]
         \centering
@@ -219,7 +217,6 @@
             Promote Rule & \texttt{"promote [(<src\_piece> | <src\_square>)] to <prm\_piece>"} \\
             \hline 
         \end{tabularx}
-        \label{tab:rules}
     \end{table}
 \end{frame}
 
@@ -240,11 +237,21 @@
             Square Rule & \texttt{"<src\_square> <verb> ( [<prep>] <tgt\_square> | <tgt\_piece> [<prep> <tgt\_square>])"}\\
             \hline
         \end{tabularx}
-        \label{tab:rules}
     \end{table}
 \end{frame}
 
 \begin{frame}{Validating commands}
+    All rule activations are passed, in a common format, to the \texttt{SpeechManager}, which is then called to produce valid commands, once every frame:
+    \begin{equation*}
+        \langle\texttt{verb},\texttt{src\_piece},\texttt{src\_square},\texttt{tgt\_piece},\texttt{tgt\_square},\texttt{prm\_piece}\rangle
+    \end{equation*}
+    \vspace*{-.5cm} % There's too vspace
+    \begin{enumerate}
+        \item Check that the command is not too old.
+        \item Check if the command is a castle or a promotion. (If so, output early)
+        \item Filter out all legal moves which do not match the parameters.
+        \item If there is only one move left, output it. Otherwise, output a null.
+    \end{enumerate}
 \end{frame}
 
 
