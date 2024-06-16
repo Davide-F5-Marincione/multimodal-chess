@@ -1,0 +1,21 @@
+{
+    "fen": "r2qk2r/ppp1bppp/2n1bn2/3pp3/4P3/3P1P2/PPP2KPP/RNB1QBNR",
+    "player": [
+        {
+            "action_start": "2024-05-28 20:14:37.066157", "action_end": "2024-05-28 20:14:42.439008",
+            "action_type": "mouse", "action_dist": 811.0, "down_button": 0, "up_button": 0,
+            "moves": []
+        },
+        {
+            "action_start": "2024-05-28 20:14:42.439008", "action_end": "2024-05-28 20:15:06.577269",
+            "action_type": "hand", "action_dist": 539.4, "down_button": 3, "up_button": 3,
+            "moves": []
+        },
+        {
+            "action_start": "2024-05-28 20:15:06.577269", "action_end": "2024-05-28 20:15:31.592501",
+            "action_type": "speech", "utterances": 7,
+            "moves": [["pawn","a2","a3",null]]
+        }
+    ],
+    "ai": [["pawn","e7","e5",null]]
+}
